@@ -31,12 +31,12 @@ class DptVlan : DataFile() {
         var index = 0
         try {
             val routeSequence = "T(\\d*)".toRegex()
-                    .matchEntire(record[Header.SEQUENCE_NUMBER])?.groupValues
+                    .matchEntire(record[Header.SEQUENCE_NUMBER])?.groupValues?.getOrNull(1)
                     ?: throw NumberFormatException()
 
             stmt.setString(++index, region.name)
-            stmt.setString(++index, record[Header.VLAN])
-            stmt.setInt(++index, routeSequence[1].toInt())
+            stmt.setString(++index, record[Header.VLAN].replace("Pré", "Prv"))
+            stmt.setInt(++index, routeSequence.toInt())
             stmt.setString(++index, record[Header.LIEN])
             stmt.setString(++index, record[Header.SITE_1].extractSiteG2R())
             stmt.setString(++index, record[Header.NOEUD_1])
