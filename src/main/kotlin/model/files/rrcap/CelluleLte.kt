@@ -1,23 +1,22 @@
-package model.files
+package model.files.rrcap
 
 import model.DataFile
 import model.Region
 import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 
-class CelluleUmts : DataFile() {
-    override val fileName = "Cellule-UMTS"
+class CelluleLte : DataFile() {
+    override val fileName = "Cellule-LTE"
     override val fileHeader = Header::class.java
 
-    override val tableName = "CELL_3G"
-    override val tableHeader = listOf("nodeB", "cell_name", "alias1", "system", "carrier")
+    override val tableName = "CELL_4G"
+    override val tableHeader = listOf("eNodeB", "cell_name", "system", "carrier")
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
-        stmt.setString(1, record[Header.NODEB])
+        stmt.setString(1, record[Header.ENODEB])
         stmt.setString(2, record[Header.CELLULE])
-        stmt.setString(3, record[Header.ALIAS1])
-        stmt.setString(4, record[Header.SYSTEM])
-        stmt.setString(5, record[Header.PROPRIETAIRE])
+        stmt.setString(3, record[Header.SYSTEM])
+        stmt.setString(4, record[Header.PROPRIETAIRE])
         stmt.addBatch()
         return true
     }
@@ -27,7 +26,7 @@ class CelluleUmts : DataFile() {
         SOUS_REGION,
         DEPARTEMENT,
         SITE,
-        NODEB,
+        ENODEB,
         CELLULE,
         ALIAS1,
         CREATEDDATE,
@@ -37,15 +36,15 @@ class CelluleUmts : DataFile() {
         ETAT,
         CI,
         SECTORNUMBER,
+        NUMCELL,
+        ECI,
         SYSTEM,
         CELLTYPE,
-        LAC_PREV,
+        TAC_PREV,
+        TAC_REEL,
         LAC_REEL,
         STATUSCHANGEDATE,
         ID_INTERNE,
-        RAC_PREV,
-        RAC_REEL,
-        SAC,
         PLMN,
         ZP_CELL_CODE,
         PROPRIETAIRE

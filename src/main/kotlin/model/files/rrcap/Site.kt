@@ -1,4 +1,4 @@
-package model.files
+package model.files.rrcap
 
 import model.DataFile
 import model.Region
@@ -49,8 +49,6 @@ class Site : DataFile() {
 
         return false
     }
-
-    private fun String.extractSiteName() = "\\d*\\s*-\\s*(.*)".toRegex().matchEntire(this)?.groups?.get(1)?.value
 
     enum class Header {
         REGION,

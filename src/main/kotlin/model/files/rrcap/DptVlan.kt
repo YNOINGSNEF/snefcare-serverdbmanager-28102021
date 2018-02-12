@@ -1,13 +1,37 @@
-package model.files
+package model.files.rrcap
 
 import model.DataFile
+import model.Region
+import org.apache.commons.csv.CSVRecord
+import java.sql.PreparedStatement
 
 class DptVlan : DataFile() {
     override val fileName = "DPT-VLAN"
     override val fileHeader = Header::class.java
 
-    override val tableName = "TODO"
-    override val tableHeader = listOf("TODO", "TODO")
+    override val tableName = "DPT_VLAN"
+    override val tableHeader = listOf(
+            "region_code",
+            "vlan",
+            "route_sequence",
+            "lien",
+            "site1",
+            "node1",
+            "port1",
+            "site2",
+            "node2",
+            "port2",
+            "type",
+            "status"
+    )
+
+    override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
+//        stmt.setString(1, region.name)
+//        stmt.setString(2, record[Header.S1_NAME])
+//        stmt.setString(3, record[Header.ENODEB_NAME])
+//        stmt.addBatch()
+        return true
+    }
 
     enum class Header {
         REGION,

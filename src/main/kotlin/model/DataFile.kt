@@ -6,6 +6,7 @@ import java.nio.charset.Charset
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.sql.PreparedStatement
+import java.sql.Types
 
 abstract class DataFile {
 
@@ -14,6 +15,7 @@ abstract class DataFile {
 
     protected abstract val tableName: String
     protected abstract val tableHeader: List<String>
+    protected open val onDuplicateKeySql = ""
 
     val insertSql
         get() = "INSERT INTO $tableName" +
@@ -28,7 +30,8 @@ abstract class DataFile {
                         prefix = "(",
                         postfix = ")",
                         transform = { _ -> "?" }
-                )
+                ) +
+                onDuplicateKeySql
     val deleteSql get() = "DELETE FROM $tableName"
 
     open val delimiter = ';'
@@ -36,10 +39,18 @@ abstract class DataFile {
     open val ignoreEmptyLines = true
     open val charset: Charset = CHARSET_ANSI
 
-    open fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean = false // TODO Make it abstract
+    abstract fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean
 
     fun getFullPath(rootPath: String, region: Region): Path =
             Paths.get(rootPath + region.name + File.separatorChar + region.name + "-" + fileName + ".csv")
+
+    protected fun String.extractSiteName() = "(\\d*)\\s*-\\s*(.*)".toRegex().matchEntire(this)?.groupValues?.get(2)?.takeIf { it.isNotBlank() }
+    protected fun String.extractSiteG2R() = "(\\d*)\\s*-\\s*(.*)".toRegex().matchEntire(this)?.groupValues?.get(1)?.takeIf { it.isNotBlank() }
+    protected fun String.extractBandwidth() = takeIf { it != "-" && it != "Not Specified" && !it.isBlank() }
+    protected fun PreparedStatement.setNullableString(parameterIndex: Int, x: String?) {
+        if (x != null) setString(parameterIndex, x)
+        else setNull(parameterIndex, Types.VARCHAR)
+    }
 
     companion object {
         private val CHARSET_ANSI = Charset.forName("Cp1252")

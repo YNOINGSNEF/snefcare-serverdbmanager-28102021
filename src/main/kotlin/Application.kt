@@ -1,6 +1,6 @@
 import model.DataFile
 import model.Region
-import model.files.*
+import model.files.rrcap.*
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.nio.file.Files
@@ -8,7 +8,7 @@ import java.sql.BatchUpdateException
 import java.sql.DriverManager
 import java.util.concurrent.TimeUnit
 
-private const val ROOT_PATH = "C:\\Users\\DEV_SNEF4\\Desktop\\Trans\\"
+private const val ROOT_PATH = "C:\\Users\\DEV_SNEF4\\Desktop\\Test\\"
 
 private const val MYSQL_URL = "jdbc:mysql://v2068.phpnet.fr:3306"
 private const val MYSQL_DB = "rrcap"
@@ -23,10 +23,16 @@ private val filesToProcess = listOf(
         Bts(),
         CelluleGsmDcs(),
         CelluleUmts(),
-        CelluleLte()
+        CelluleLte(),
+        S1Bearer(),
+        S1BearerRoutes(),
+        Dpt(),
+        DptMlppp()
+//        DptVlan()
 )
 
 fun main(args: Array<String>) {
+    println("--> Initialising tasks")
     val globalStartTimeMillis = System.currentTimeMillis()
 
     DriverManager.getConnection("$MYSQL_URL/$MYSQL_DB?rewriteBatchedStatements=true", MYSQL_USER, MYSQL_PASSWORD).use { dbConnection ->
@@ -40,25 +46,28 @@ fun main(args: Array<String>) {
         println("--> Starting imports")
 
         filesToProcess.forEach { file ->
+            println("--> Starting import of \"${file.fileName}\"")
             val startTimeMillis = System.currentTimeMillis()
-
+            var count = 0
             dbConnection.prepareStatement(file.insertSql).use { stmt ->
                 Region.values().forEach { region ->
+                    println("--> Importing data from ${region.name}")
                     createCsvParser(file, region).use { csvParser ->
                         val records = csvParser.records
-                        records.forEachIndexed { index, record ->
-                            val isValid = file.addBatch(stmt, record, region)
-                            if (!isValid) println("Ignored line : ${region.name}-${file.fileName} -> " + record.toList())
+                        records.forEachIndexed({ index, record ->
+                            if (file.addBatch(stmt, record, region)) count++
+                            else println("Ignored line : ${region.name}-${file.fileName} -> " + record.toList())
 
-                            if ((index > 0 && index % BATCH_SIZE == 0) || index == records.size - 1) {
+                            if ((count > 0 && count % BATCH_SIZE == 0) || index == records.size - 1) {
                                 try {
                                     stmt.executeBatch()
                                 } catch (ex: BatchUpdateException) {
                                     println("Error ${ex.errorCode}: ${region.name} -> ${ex.message}")
+                                } finally {
+                                    dbConnection.commit()
                                 }
-                                dbConnection.commit()
                             }
-                        }
+                        })
                     }
                 }
             }

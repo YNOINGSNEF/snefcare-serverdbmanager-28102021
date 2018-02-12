@@ -1,19 +1,19 @@
-package model.files
+package model.files.rrcap
 
 import model.DataFile
 import model.Region
 import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 
-class Bts : DataFile() {
-    override val fileName = "Bts"
+class NodeB : DataFile() {
+    override val fileName = "NodeB"
     override val fileHeader = Header::class.java
 
-    override val tableName = "BTS"
-    override val tableHeader = listOf("bts", "zpt")
+    override val tableName = "NODEB"
+    override val tableHeader = listOf("nodeB", "zpt")
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
-        stmt.setString(1, record[Header.BTS])
+        stmt.setString(1, record[Header.NODEB])
         stmt.setString(2, record[Header.ZPT])
         stmt.addBatch()
         return true
@@ -25,21 +25,24 @@ class Bts : DataFile() {
         DEPARTEMENT,
         SITE,
         ZPT,
-        BTS,
-        BTS_ALIAS_1,
-        MODELE,
+        NODEB,
+        NODEB_ALIAS1,
+        DEF,
         CREATEDDATE,
         LASTMODIFIEDDATE,
         CREATEDBY,
         LASTMODIFIEDBY,
         TYPE,
         STATUS,
-        COMBINERTYPE,
         SYSTEM,
-        STATUSCHANGEDATE,
-        BTS_ALIAS_2,
+        VERSIONNUMBERLOG,
         BAIETYPE,
+        STATUSCHANGEDATE,
+        CONFCE_UMTS_REEL,
+        CONFCE_UMTS_PREV,
+        MODELE,
         ID_INTERNE,
+        NODEB_ALIAS2,
         TRX_GSM_PREV,
         TRX_GSM_REEL,
         TRX_DCS_PREV,
@@ -53,7 +56,9 @@ class Bts : DataFile() {
         TRXEDGE_DCS_PREV,
         TRXEDGE_DCS_REEL,
         EMPLACEMENT,
-        ADRESSE_IP,
-        CONSTRUCTEUR
+        SECTORISATION,
+        NOM_EXPLOITATION_2G,
+        NOM_EXPLOITATION_3G,
+        NOM_EXPLOITATION_4G
     }
 }
