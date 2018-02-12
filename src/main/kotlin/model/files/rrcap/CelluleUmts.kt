@@ -13,11 +13,12 @@ class CelluleUmts : DataFile() {
     override val tableHeader = listOf("nodeB", "cell_name", "alias1", "system", "carrier")
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
-        stmt.setString(1, record[Header.NODEB])
-        stmt.setString(2, record[Header.CELLULE])
-        stmt.setString(3, record[Header.ALIAS1])
-        stmt.setString(4, record[Header.SYSTEM])
-        stmt.setString(5, record[Header.PROPRIETAIRE])
+        var index = 0
+        stmt.setString(++index, record[Header.NODEB])
+        stmt.setString(++index, record[Header.CELLULE])
+        stmt.setString(++index, record[Header.ALIAS1])
+        stmt.setString(++index, record[Header.SYSTEM])
+        stmt.setString(++index, record[Header.PROPRIETAIRE])
         stmt.addBatch()
         return true
     }

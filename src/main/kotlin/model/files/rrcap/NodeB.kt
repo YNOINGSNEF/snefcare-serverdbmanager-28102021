@@ -13,8 +13,9 @@ class NodeB : DataFile() {
     override val tableHeader = listOf("nodeB", "zpt")
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
-        stmt.setString(1, record[Header.NODEB])
-        stmt.setString(2, record[Header.ZPT])
+        var index = 0
+        stmt.setString(++index, record[Header.NODEB])
+        stmt.setString(++index, record[Header.ZPT])
         stmt.addBatch()
         return true
     }

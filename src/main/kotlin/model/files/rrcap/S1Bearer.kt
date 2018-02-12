@@ -13,9 +13,10 @@ class S1Bearer : DataFile() {
     override val tableHeader = listOf("region_code", "s1_name", "eNodeB")
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
-        stmt.setString(1, region.name)
-        stmt.setString(2, record[Header.S1_NAME])
-        stmt.setString(3, record[Header.ENODEB_NAME])
+        var index = 0
+        stmt.setString(++index, region.name)
+        stmt.setString(++index, record[Header.S1_NAME])
+        stmt.setString(++index, record[Header.ENODEB_NAME])
         stmt.addBatch()
         return true
     }

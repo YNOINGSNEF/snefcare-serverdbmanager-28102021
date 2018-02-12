@@ -13,10 +13,11 @@ class CelluleLte : DataFile() {
     override val tableHeader = listOf("eNodeB", "cell_name", "system", "carrier")
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
-        stmt.setString(1, record[Header.ENODEB])
-        stmt.setString(2, record[Header.CELLULE])
-        stmt.setString(3, record[Header.SYSTEM])
-        stmt.setString(4, record[Header.PROPRIETAIRE])
+        var index = 0
+        stmt.setString(++index, record[Header.ENODEB])
+        stmt.setString(++index, record[Header.CELLULE])
+        stmt.setString(++index, record[Header.SYSTEM])
+        stmt.setString(++index, record[Header.PROPRIETAIRE])
         stmt.addBatch()
         return true
     }

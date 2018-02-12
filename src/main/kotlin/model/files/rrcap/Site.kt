@@ -4,45 +4,33 @@ import model.DataFile
 import model.Region
 import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
-import java.sql.Types
+import java.text.NumberFormat
+import java.util.*
 
 class Site : DataFile() {
     override val fileName = "Site"
     override val fileHeader = Header::class.java
 
     override val tableName = "SITE"
-    override val tableHeader = listOf("region_code", "num_g2r", "name", "x_coord", "y_coord", "z_coord")
+    override val tableHeader = listOf(
+            "region_code",
+            "num_g2r",
+            "name",
+            "x_coord",
+            "y_coord",
+            "z_coord"
+    )
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
+        var index = 0
         val siteName = record[Header.SITE].extractSiteName()
         if (siteName != null) {
-            val numG2r = record[Header.ALIAS_SITE]
-            val xCoord = record[Header.COORDX].replace(',', '.').toDoubleOrNull()
-            val yCoord = record[Header.COORDY].replace(',', '.').toDoubleOrNull()
-            val zCoord = record[Header.COORDZ].replace(',', '.').toDoubleOrNull()
-
-            stmt.setString(1, region.name)
-            stmt.setString(2, numG2r)
-            stmt.setString(3, siteName)
-
-            if (xCoord != null) {
-                stmt.setDouble(4, xCoord)
-            } else {
-                stmt.setNull(4, Types.DOUBLE)
-            }
-
-            if (yCoord != null) {
-                stmt.setDouble(5, yCoord)
-            } else {
-                stmt.setNull(5, Types.DOUBLE)
-            }
-
-            if (zCoord != null) {
-                stmt.setDouble(6, zCoord)
-            } else {
-                stmt.setNull(6, Types.DOUBLE)
-            }
-
+            stmt.setString(++index, region.name)
+            stmt.setString(++index, record[Header.ALIAS_SITE])
+            stmt.setString(++index, siteName)
+            stmt.setNullableDouble(++index, record[Header.COORDX].replace(',', '.').toDoubleOrNull())
+            stmt.setNullableDouble(++index, record[Header.COORDY].replace(',', '.').toDoubleOrNull())
+            stmt.setNullableDouble(++index, record[Header.COORDZ].replace(',', '.').toDoubleOrNull())
             stmt.addBatch()
             return true
         }

@@ -32,7 +32,7 @@ abstract class DataFile {
                         transform = { _ -> "?" }
                 ) +
                 onDuplicateKeySql
-    val deleteSql get() = "DELETE FROM $tableName"
+    val emptyTableSql get() = "TRUNCATE $tableName"
 
     open val delimiter = ';'
     open val lineSeparator = "\r\n"
@@ -47,9 +47,15 @@ abstract class DataFile {
     protected fun String.extractSiteName() = "(\\d*)\\s*-\\s*(.*)".toRegex().matchEntire(this)?.groupValues?.get(2)?.takeIf { it.isNotBlank() }
     protected fun String.extractSiteG2R() = "(\\d*)\\s*-\\s*(.*)".toRegex().matchEntire(this)?.groupValues?.get(1)?.takeIf { it.isNotBlank() }
     protected fun String.extractBandwidth() = takeIf { it != "-" && it != "Not Specified" && !it.isBlank() }
+
     protected fun PreparedStatement.setNullableString(parameterIndex: Int, x: String?) {
         if (x != null) setString(parameterIndex, x)
         else setNull(parameterIndex, Types.VARCHAR)
+    }
+
+    protected fun PreparedStatement.setNullableDouble(parameterIndex: Int, x: Double?) {
+        if (x != null) setDouble(parameterIndex, x)
+        else setNull(parameterIndex, Types.DOUBLE)
     }
 
     companion object {

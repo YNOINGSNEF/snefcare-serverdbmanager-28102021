@@ -31,26 +31,27 @@ class DptMlppp : DataFile() {
     )
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
+        var index = 0
         try {
             val routeGroups = "R(\\d*)T(\\d*)".toRegex()
                     .matchEntire(record[Header.SEQUENCE_NUMBER])?.groupValues
                     ?: throw NumberFormatException()
 
-            stmt.setString(1, region.name)
-            stmt.setString(2, record[Header.MLPPP])
-            stmt.setInt(3, routeGroups[1].toInt())
-            stmt.setInt(4, routeGroups[2].toInt())
-            stmt.setString(5, record[Header.LIEN])
-            stmt.setString(6, record[Header.TRAINFH])
-            stmt.setString(7, record[Header.SITE_1].extractSiteG2R())
-            stmt.setString(8, record[Header.NOEUD_1])
-            stmt.setNullableString(9, record[Header.PORT_1].takeIf { it.isNotBlank() })
-            stmt.setString(10, record[Header.SITE_2].extractSiteG2R())
-            stmt.setString(11, record[Header.NOEUD_2])
-            stmt.setNullableString(12, record[Header.PORT_2].takeIf { it.isNotBlank() })
-            stmt.setNullableString(13, record[Header.BANDWIDTH].extractBandwidth())
-            stmt.setString(14, TypeLien.from(record[Header.TYPE]).label)
-            stmt.setString(15, Status.from(record[Header.ETAT]).label)
+            stmt.setString(++index, region.name)
+            stmt.setString(++index, record[Header.MLPPP])
+            stmt.setInt(++index, routeGroups[1].toInt())
+            stmt.setInt(++index, routeGroups[2].toInt())
+            stmt.setString(++index, record[Header.LIEN])
+            stmt.setString(++index, record[Header.TRAINFH])
+            stmt.setString(++index, record[Header.SITE_1].extractSiteG2R())
+            stmt.setString(++index, record[Header.NOEUD_1])
+            stmt.setNullableString(++index, record[Header.PORT_1].takeIf { it.isNotBlank() })
+            stmt.setString(++index, record[Header.SITE_2].extractSiteG2R())
+            stmt.setString(++index, record[Header.NOEUD_2])
+            stmt.setNullableString(++index, record[Header.PORT_2].takeIf { it.isNotBlank() })
+            stmt.setNullableString(++index, record[Header.BANDWIDTH].extractBandwidth())
+            stmt.setString(++index, TypeLien.from(record[Header.TYPE]).label)
+            stmt.setString(++index, Status.from(record[Header.ETAT]).label)
             stmt.addBatch()
             return true
         } catch (ex: NumberFormatException) {
