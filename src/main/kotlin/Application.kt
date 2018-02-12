@@ -27,8 +27,8 @@ private val filesToProcess = listOf(
         S1Bearer(),
         S1BearerRoutes(),
         Dpt(),
-        DptMlppp()
-//        DptVlan()
+        DptMlppp(),
+        DptVlan()
 )
 
 fun main(args: Array<String>) {

@@ -2,6 +2,8 @@ package model.files.rrcap
 
 import model.DataFile
 import model.Region
+import model.Status
+import model.TypeLien
 import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 
@@ -26,11 +28,33 @@ class DptVlan : DataFile() {
     )
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
-//        stmt.setString(1, region.name)
-//        stmt.setString(2, record[Header.S1_NAME])
-//        stmt.setString(3, record[Header.ENODEB_NAME])
-//        stmt.addBatch()
-        return true
+        var index = 0
+        try {
+            val routeSequence = "T(\\d*)".toRegex()
+                    .matchEntire(record[Header.SEQUENCE_NUMBER])?.groupValues
+                    ?: throw NumberFormatException()
+
+            stmt.setString(++index, region.name)
+            stmt.setString(++index, record[Header.VLAN])
+            stmt.setInt(++index, routeSequence[1].toInt())
+            stmt.setString(++index, record[Header.LIEN])
+            stmt.setString(++index, record[Header.SITE_1].extractSiteG2R())
+            stmt.setString(++index, record[Header.NOEUD_1])
+            stmt.setString(++index, record[Header.PORT_1])
+            stmt.setString(++index, record[Header.SITE_2].extractSiteG2R())
+            stmt.setString(++index, record[Header.NOEUD_2])
+            stmt.setString(++index, record[Header.PORT_2])
+            stmt.setString(++index, TypeLien.from(record[Header.TYPE]).label)
+            stmt.setString(++index, Status.from(record[Header.STATUS]).label)
+            stmt.addBatch()
+            return true
+        } catch (ex: NumberFormatException) {
+            stmt.clearParameters()
+            return false
+        } catch (ex: TypeCastException) {
+            stmt.clearParameters()
+            return false
+        }
     }
 
     enum class Header {
