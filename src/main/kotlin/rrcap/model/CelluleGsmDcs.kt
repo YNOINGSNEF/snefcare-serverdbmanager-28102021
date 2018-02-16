@@ -1,7 +1,7 @@
-package model.files.rrcap
+package rrcap.model
 
-import model.DataFile
-import model.Region
+import rrcap.DataFile
+import rrcap.Region
 import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 

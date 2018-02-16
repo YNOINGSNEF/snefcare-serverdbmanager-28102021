@@ -1,9 +1,9 @@
-package model.files.rrcap
+package rrcap.model
 
-import model.DataFile
-import model.Region
-import model.Status
-import model.TypeLien
+import rrcap.DataFile
+import rrcap.Region
+import rrcap.Status
+import rrcap.TypeLien
 import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 

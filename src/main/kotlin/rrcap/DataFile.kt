@@ -1,4 +1,4 @@
-package model
+package rrcap
 
 import org.apache.commons.csv.CSVRecord
 import java.io.File
