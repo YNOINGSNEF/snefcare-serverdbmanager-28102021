@@ -8,7 +8,7 @@ import java.sql.BatchUpdateException
 import java.sql.DriverManager
 import java.util.concurrent.TimeUnit
 
-private const val ROOT_PATH = "C:\\Users\\DEV_SNEF4\\Desktop\\RRCAP_02.12\\"
+private const val ROOT_PATH = "C:\\Users\\DEV_SNEF4\\Desktop\\RRCAP_2018.02.12\\"
 
 private const val MYSQL_URL = "jdbc:mysql://v2068.phpnet.fr:3306"
 private const val MYSQL_DB = "rrcap"
