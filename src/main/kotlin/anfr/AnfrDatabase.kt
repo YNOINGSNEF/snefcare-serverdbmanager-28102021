@@ -1,25 +1,34 @@
-//package comsis
-//
-//import DataFile
-//import Database
-//import comsis.model.LastComsis
-//import org.apache.commons.csv.CSVFormat
-//import org.apache.commons.csv.CSVParser
-//import java.nio.file.Files
-//import java.sql.BatchUpdateException
-//import java.sql.DriverManager
-//
-//object ComsisDatabase : Database() {
-//    override val dumpFolderPath = "D:\\dump\\sfr\\comsis\\"
-//    override val dbName = "atoll"
-//    override val dbUser = "atoll"
-//    override val dbPassword = "Ye2sw49pxG"
-//
-//    private val filesToProcess = listOf<DataFile>(
-//            LastComsis()
-//    )
-//
-//    override fun importDump() {
+package anfr
+
+import DataFile
+import Database
+
+object AnfrDatabase : Database() {
+    override val dumpFolderPath = "D:\\dump\\anfr\\"
+    override val dbName = "atoll"
+    override val dbUser = "atoll"
+    override val dbPassword = "Ye2sw49pxG"
+
+    private val filesToProcess = listOf<DataFile>(
+    )
+
+    private const val dumpArchiveFilename = "20180228_Export_Etalab_Ref.zip"
+    private const val dumpSubArchiveFilename = "20180228_Export_Etalab_Data.zip"
+
+    override fun retrieveNewDump(): Boolean {
+        return getLocalFile(dumpArchiveFilename).isFile
+    }
+
+    override fun backupDump() {
+        getLocalFile(dumpArchiveFilename).copyTo(getLocalFile("$formattedDate.zip"), true)
+    }
+
+    override fun prepareDump() {
+        extractArchive(dumpArchiveFilename)
+        extractArchive(dumpSubArchiveFilename)
+    }
+
+    override fun importToDatabase() {
 //        DriverManager.getConnection("$dbUrl/$dbName?rewriteBatchedStatements=true", dbUser, dbPassword).use { dbConnection ->
 //            dbConnection.autoCommit = false
 //
@@ -62,17 +71,11 @@
 //                println("--> Completed import of \"${file.fileName}\" in $diff milliseconds")
 //            }
 //        }
-//    }
-//
-//    private fun createCsvParser(file: DataFile): CSVParser {
-//        val reader = Files.newBufferedReader(file.getFullPath(dumpFolderPath), file.fileCharset)
-//
-//        val csvFormat = CSVFormat.newFormat(file.delimiter)
-//                .withHeader(file.fileHeader)
-//                .withRecordSeparator(file.lineSeparator)
-//                .withIgnoreEmptyLines(file.ignoreEmptyLines)
-//                .withSkipHeaderRecord(file.hasHeaderLine)
-//
-//        return CSVParser(reader, csvFormat)
-//    }
-//}
+    }
+
+    override fun cleanDump() {
+        getLocalFile(dumpArchiveFilename).delete()
+        getLocalFile(dumpSubArchiveFilename).delete()
+        getLocalFile().listFiles { _, name -> name.endsWith(".txt", true) }.forEach { it.delete() }
+    }
+}
