@@ -1,7 +1,10 @@
-import rrcap.RrcapDatabase
+import comsis.ComsisDatabase
 import java.util.concurrent.TimeUnit
 
-private val databases = listOf<Database>(RrcapDatabase)
+private val databases = listOf<Database>(
+        ComsisDatabase
+//        AtollDatabase
+)
 
 fun main(args: Array<String>) {
     println("--> Initialising tasks")
