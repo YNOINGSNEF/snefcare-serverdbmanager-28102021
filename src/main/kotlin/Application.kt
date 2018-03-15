@@ -1,8 +1,9 @@
 import anfr.AnfrDatabase
+import comsis.ComsisDatabase
 import java.util.concurrent.TimeUnit
 
 private val databases = listOf<Database>(
-//        ComsisDatabase
+        ComsisDatabase,
         AnfrDatabase
 )
 
