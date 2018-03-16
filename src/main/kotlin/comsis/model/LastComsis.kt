@@ -8,6 +8,7 @@ class LastComsis : DataFile() {
     override val fileName = "last_comsis_15-03-2018_070001"
     override val fileHeader = Header::class.java
     override val fileCharset = DataFile.CHARSET_ANSI
+    override val fileExtension = "csv"
 
     override val tableName = "LAST_COMSIS"
     override val tableHeader = listOf(
@@ -40,7 +41,7 @@ class LastComsis : DataFile() {
             stmt.setString(++index, record[Header.REGION])
             stmt.setString(++index, g2r)
             stmt.setString(++index, record[Header.NOM_G2R])
-            stmt.setNullableInt(++index, record[Header.NUMERO_OTC].takeIf { it.isNotBlank() }?.toInt())
+            stmt.setNullableInt(++index, record[Header.NUMERO_OTC].toIntOrNull())
             stmt.setString(++index, record[Header.NUMERO_ANFR])
             stmt.setString(++index, record[Header.TYPES_DE_DEMANDE])
             stmt.setInt(++index, record[Header.VERSION].toInt())
@@ -53,9 +54,9 @@ class LastComsis : DataFile() {
             stmt.setString(++index, record[Header.MOTIF_ANFR])
             stmt.setString(++index, record[Header.STATION_DECLAR].take(1))
             stmt.setNullableBoolean(++index, record[Header.CROZON].takeIf { it.isNotBlank() }?.contentEquals("1"))
-            stmt.setNullableInt(++index, record[Header.IDJV].takeIf { it.isNotBlank() }?.toInt())
-            stmt.setNullableInt(++index, record[Header.ID_LEADER].takeIf { it.isNotBlank() }?.toInt())
-            stmt.setNullableInt(++index, record[Header.ID_ANFR_SITE_LEADER].takeIf { it.isNotBlank() }?.toInt())
+            stmt.setNullableInt(++index, record[Header.IDJV].toIntOrNull())
+            stmt.setNullableInt(++index, record[Header.ID_LEADER].toIntOrNull())
+            stmt.setNullableInt(++index, record[Header.ID_ANFR_SITE_LEADER].toIntOrNull())
 
             stmt.addBatch()
             return true

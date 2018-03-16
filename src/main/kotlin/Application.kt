@@ -2,7 +2,7 @@ import anfr.AnfrDatabase
 import comsis.ComsisDatabase
 import java.util.concurrent.TimeUnit
 
-private val databases = listOf<Database>(
+private val databases: List<Database> = listOf(
         ComsisDatabase,
         AnfrDatabase
 )
@@ -12,12 +12,13 @@ fun main(args: Array<String>) {
     val startTimeMillis = System.currentTimeMillis()
 
     databases.forEach { db ->
-        println("> Starting update of ${db::class.java.simpleName}")
+        println("> ${db::class.java.simpleName} - Starting update")
         if (db.update()) {
-            println("> Finished ${db::class.java.simpleName} update\n")
+            println("> ${db::class.java.simpleName} - Finished update")
         } else {
-            println("> Ignored ${db::class.java.simpleName} update, no new dump available\n")
+            println("> ${db::class.java.simpleName} - Ignored update, no new dump available")
         }
+        println()
     }
 
     val diff = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTimeMillis)
