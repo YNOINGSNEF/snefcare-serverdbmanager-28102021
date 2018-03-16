@@ -4,7 +4,7 @@ import DataFile
 import Database
 
 object AnfrDatabase : Database() {
-    override val dumpFolderPath = "D:\\dump\\anfr\\"
+    override val dumpFolder = "anfr\\"
     override val dbName = "atoll"
     override val dbUser = "atoll"
     override val dbPassword = "Ye2sw49pxG"
@@ -19,8 +19,8 @@ object AnfrDatabase : Database() {
         return getLocalFile(dumpArchiveFilename).isFile
     }
 
-    override fun backupDump() {
-        getLocalFile(dumpArchiveFilename).copyTo(getLocalFile("$formattedDate.zip"), true)
+    override fun archiveDump() {
+        getLocalFile(dumpArchiveFilename).copyTo(getArchiveFile("$formattedDate.zip"), true)
     }
 
     override fun prepareDump() {

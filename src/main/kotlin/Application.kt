@@ -8,18 +8,18 @@ private val databases = listOf<Database>(
 )
 
 fun main(args: Array<String>) {
-    println("--> Initialising tasks")
+    println("> Initialising tasks\n")
     val startTimeMillis = System.currentTimeMillis()
 
     databases.forEach { db ->
-        println("--> Starting update of ${db::class.java.simpleName}")
+        println("> Starting update of ${db::class.java.simpleName}")
         if (db.update()) {
-            println("--> Finished ${db::class.java.simpleName} update")
+            println("> Finished ${db::class.java.simpleName} update\n")
         } else {
-            println("--> Ignored ${db::class.java.simpleName} update, no new dump available")
+            println("> Ignored ${db::class.java.simpleName} update, no new dump available\n")
         }
     }
 
     val diff = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTimeMillis)
-    println("--> Completed all tasks in $diff seconds")
+    println("> Completed all tasks in $diff seconds")
 }

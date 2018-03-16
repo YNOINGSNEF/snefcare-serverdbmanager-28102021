@@ -10,7 +10,12 @@ abstract class Database {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd")
     protected val formattedDate: String get() = dateFormat.format(Date())
 
-    protected abstract val dumpFolderPath: String
+    private val rootPath = "D:\\dump\\"
+    protected abstract val dumpFolder: String
+
+    private val dumpFolderPath get() = rootPath + dumpFolder
+    private val archiveFolderPath get() = rootPath + "archive\\" + dumpFolder
+
     protected val dbUrl = "jdbc:mysql://v2068.phpnet.fr:3306"
     protected abstract val dbName: String
     protected abstract val dbUser: String
@@ -20,20 +25,21 @@ abstract class Database {
     fun update(): Boolean {
         if (!retrieveNewDump()) return false
 
-        backupDump()
+        archiveDump()
         prepareDump()
         importToDatabase()
-        cleanDump()
+//        cleanDump()
         return true
     }
 
     protected abstract fun retrieveNewDump(): Boolean
-    protected abstract fun backupDump()
+    protected abstract fun archiveDump()
     protected abstract fun prepareDump()
     protected abstract fun importToDatabase()
     protected abstract fun cleanDump()
 
     protected fun getLocalFile(filename: String = "") = File(dumpFolderPath + filename)
+    protected fun getArchiveFile(filename: String = "") = File(archiveFolderPath + filename)
 
     protected fun extractArchive(archiveFilename: String) {
         ZipFile(getLocalFile(archiveFilename)).use { zipFile ->

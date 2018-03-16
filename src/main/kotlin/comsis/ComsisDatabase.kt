@@ -7,7 +7,7 @@ import java.sql.BatchUpdateException
 import java.sql.DriverManager
 
 object ComsisDatabase : Database() {
-    override val dumpFolderPath = "D:\\dump\\sfr\\comsis\\"
+    override val dumpFolder = "sfr\\comsis\\"
     override val dbName = "atoll"
     override val dbUser = "atoll"
     override val dbPassword = "Ye2sw49pxG"
@@ -22,8 +22,8 @@ object ComsisDatabase : Database() {
         return getLocalFile(dumpFilename).isFile
     }
 
-    override fun backupDump() {
-        getLocalFile(dumpFilename).copyTo(getLocalFile("$formattedDate.csv"), true)
+    override fun archiveDump() {
+        getLocalFile(dumpFilename).copyTo(getArchiveFile("$formattedDate.csv"), true)
     }
 
     override fun prepareDump() {
