@@ -27,12 +27,12 @@ abstract class Database {
     protected abstract val filesToProcess: List<DataFile>
 
     fun update(): Boolean {
-//        if (!retrieveNewDump()) return false
-//
-//        archiveDump()
-//        prepareDump()
+        if (!retrieveNewDump()) return false
+
+        archiveDump()
+        prepareDump()
         importFilesToDatabase()
-//        cleanDump()
+        cleanDump()
         return true
     }
 
@@ -71,7 +71,7 @@ abstract class Database {
                                     dbConnection.commit()
                                 } catch (ex: BatchUpdateException) {
                                     dbConnection.rollback()
-                                    println("    > Error ${ex.errorCode}: ${ex.message} - Current index = $index = ${record.toList()}")
+                                    println("    > Error ${ex.errorCode} on batch between index ${index - batchSize} and $index : ${ex.message}")
                                 }
                             }
                         })
@@ -79,7 +79,7 @@ abstract class Database {
                 }
 
                 val diff = System.currentTimeMillis() - startTimeMillis
-                println("  > \"${file.fileName}\" - Import completed in $diff milliseconds")
+                println("  > \"${file.fileName}\" - Import completed in ${diff.toFormattedElapsedTime()}")
             }
         }
     }

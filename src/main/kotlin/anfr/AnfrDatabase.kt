@@ -15,10 +15,10 @@ object AnfrDatabase : Database() {
             Exploitant(),
             TypeAntenne(),
             Station(),
-            Support()
-//            Antenne()
-//            Emetteur()
-//            Bande()
+            Support(),
+            Antenne(),
+            Emetteur(),
+            Bande()
     )
 
     private const val dumpArchiveFilename = "20180228_Export_Etalab_Ref.zip"

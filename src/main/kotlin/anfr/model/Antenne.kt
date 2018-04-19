@@ -6,9 +6,27 @@ import java.sql.PreparedStatement
 
 class Antenne : AnfrDataFile() {
     override val fileHeader = Header::class.java
+    override val ignoreInsertErrors = true
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
-        TODO()
+        var index = 0
+        return try {
+            stmt.setString(++index, record[Header.STA_NM_ANFR])
+            stmt.setInt(++index, record[Header.AER_ID].toInt())
+            stmt.setInt(++index, record[Header.TAE_ID].toInt())
+            stmt.setNullableFloat(++index, record[Header.AER_NB_DIMENSION].toFloatOrNull())
+            stmt.setNullableString(++index, record[Header.AER_FG_RAYON].take(1).takeIf { it.isNotBlank() })
+            stmt.setNullableFloat(++index, record[Header.AER_NB_AZIMUT].toFloatOrNull())
+            stmt.setNullableFloat(++index, record[Header.AER_NB_ALT_BAS].toFloatOrNull())
+            stmt.addBatch()
+            true
+        } catch (ex: NumberFormatException) {
+            stmt.clearParameters()
+            false
+        } catch (ex: TypeCastException) {
+            stmt.clearParameters()
+            false
+        }
     }
 
     enum class Header {
