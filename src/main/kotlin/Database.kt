@@ -87,7 +87,9 @@ abstract class Database {
         }
     }
 
-    protected abstract fun cleanDump()
+    protected fun cleanDump() {
+        getLocalFile().listFiles().forEach { it.deleteRecursively() }
+    }
 
     protected fun getLocalFile(filename: String = "") = File(dumpFolderPath + filename)
     protected fun getArchiveFile(filename: String = "") = File(archiveFolderPath + filename)

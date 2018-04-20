@@ -13,9 +13,7 @@ object ComsisDatabase : Database() {
 
     private const val dumpFilename = "last_comsis_15-03-2018_070001.csv"
 
-    override fun retrieveNewDump(): Boolean {
-        return getLocalFile(dumpFilename).isFile
-    }
+    override fun retrieveNewDump(): Boolean = getLocalFile(dumpFilename).isFile
 
     override fun archiveDump() {
         getLocalFile(dumpFilename).copyTo(getArchiveFile("$formattedDate.csv"), true)
@@ -23,9 +21,5 @@ object ComsisDatabase : Database() {
 
     override fun prepareDump() {
         // Nothing to do
-    }
-
-    override fun cleanDump() {
-        getLocalFile(dumpFilename).delete()
     }
 }

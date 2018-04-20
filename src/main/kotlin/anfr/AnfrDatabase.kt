@@ -75,12 +75,6 @@ object AnfrDatabase : Database() {
         extractArchive(dumpDataArchiveFilename)
     }
 
-    override fun cleanDump() {
-        getLocalFile(dumpReferencesArchiveFilename).delete()
-        getLocalFile(dumpDataArchiveFilename).delete()
-        getLocalFile().listFiles { _, name -> name.endsWith(".txt", true) }.forEach { it.delete() }
-    }
-
     private fun getLastDumpUpdate(): Date? = getArchiveFile()
             .listFiles()
             ?.mapNotNull {
