@@ -15,11 +15,11 @@ abstract class Database {
     protected val dateFormat = SimpleDateFormat("yyyy-MM-dd")
     protected val formattedDate: String get() = dateFormat.format(Date())
 
-    private val rootPath = "D:\\dump\\"
+    private val rootPath = "D:" + File.separator + "dump" + File.separator
     protected abstract val dumpFolder: String
 
     private val dumpFolderPath get() = rootPath + dumpFolder
-    private val archiveFolderPath get() = rootPath + "archive\\" + dumpFolder
+    private val archiveFolderPath get() = rootPath + "archive" + File.separator + dumpFolder
 
     private val dbUrl = "jdbc:mysql://v2068.phpnet.fr:3306"
     protected abstract val dbName: String

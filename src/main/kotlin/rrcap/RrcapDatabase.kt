@@ -2,10 +2,11 @@ package rrcap
 
 import Database
 import rrcap.model.*
+import java.io.File
 
 object RrcapDatabase : Database() {
 
-    override val dumpFolder = "sfr\\rrcap\\"
+    override val dumpFolder = "sfr" + File.separator + "rrcap" + File.separator
     override val dbName = "rrcap"
     override val dbUser = "rrcap"
     override val dbPassword = "9WBpJuDhRZ"

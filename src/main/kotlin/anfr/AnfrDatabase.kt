@@ -3,12 +3,13 @@ package anfr
 import Database
 import anfr.api.RestApi
 import anfr.model.*
+import java.io.File
 import java.io.IOException
 import java.text.ParseException
 import java.util.*
 
 object AnfrDatabase : Database() {
-    override val dumpFolder = "anfr\\france\\"
+    override val dumpFolder = "anfr" + File.separator + "france" + File.separator
     override val dbName = "atoll"
     override val dbUser = "atoll"
     override val dbPassword = "Ye2sw49pxG"

@@ -2,9 +2,10 @@ package comsis
 
 import Database
 import comsis.model.LastComsis
+import java.io.File
 
 object ComsisDatabase : Database() {
-    override val dumpFolder = "sfr\\comsis\\"
+    override val dumpFolder = "sfr" + File.separator + "comsis" + File.separator
     override val dbName = "atoll"
     override val dbUser = "atoll"
     override val dbPassword = "Ye2sw49pxG"
