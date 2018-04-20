@@ -3,6 +3,7 @@ buildscript {
     ext.retrofit_version = '2.0.0'
     ext.apache_csv_version = '1.5'
     ext.mysql_connector_version = '5.1.45'
+    ext.apache_compress_version = '1.16.1'
     //ext.rxkotlin_version = '2.2.0'
 
     repositories {
@@ -34,6 +35,8 @@ dependencies {
 
     compile "com.squareup.retrofit2:retrofit:$retrofit_version"
     compile "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+
+    compile "org.apache.commons:commons-compress:$apache_compress_version"
 }
 
 compileKotlin {

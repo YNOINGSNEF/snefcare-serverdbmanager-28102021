@@ -9,7 +9,6 @@ import java.sql.PreparedStatement
 import java.sql.Types
 
 abstract class DataFile {
-
     /**
      * Name of the file (without extension)
      */

@@ -1,5 +1,8 @@
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
+import org.apache.commons.compress.compressors.z.ZCompressorInputStream
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
+import java.io.BufferedInputStream
 import java.io.File
 import java.nio.file.Files
 import java.sql.BatchUpdateException
@@ -90,6 +93,15 @@ abstract class Database {
     protected fun getArchiveFile(filename: String = "") = File(archiveFolderPath + filename)
 
     protected fun extractArchive(archiveFilename: String) {
+        when (archiveFilename.substringAfterLast(".").toLowerCase()) {
+            "zip" -> extractZip(archiveFilename)
+            "tar" -> extractTar(archiveFilename)
+            "taz" -> extractTaz(archiveFilename)
+            else -> throw UnsupportedOperationException("Unsupported archive format : $archiveFilename")
+        }
+    }
+
+    private fun extractZip(archiveFilename: String) {
         ZipFile(getLocalFile(archiveFilename)).use { zipFile ->
             zipFile.entries().asSequence().forEach { zipEntry ->
                 zipFile.getInputStream(zipEntry).use { inputStream ->
@@ -99,6 +111,38 @@ abstract class Database {
                 }
             }
         }
+    }
+
+    private fun extractTar(archiveFilename: String) {
+        val archiveFile = getLocalFile(archiveFilename)
+        TarArchiveInputStream(archiveFile.inputStream()).use { tarArchiveInputStream ->
+            while (true) {
+                val tarEntry = tarArchiveInputStream.nextTarEntry ?: break
+                if (tarEntry.isDirectory) continue
+
+                val outputFile = getLocalFile(archiveFile.nameWithoutExtension + File.separator + tarEntry.name)
+                outputFile.parentFile?.let { parentFile ->
+                    if (!parentFile.exists()) parentFile.mkdirs()
+                }
+
+                outputFile.outputStream().use { outputStream ->
+                    tarArchiveInputStream.copyTo(outputStream)
+                }
+            }
+        }
+    }
+
+    private fun extractTaz(archiveFilename: String) {
+        val inputFile = getLocalFile(archiveFilename)
+        val outputFile = getLocalFile(archiveFilename.substringBeforeLast(".") + ".tar")
+
+        ZCompressorInputStream(BufferedInputStream(inputFile.inputStream())).use { inputStream ->
+            outputFile.outputStream().use { outputStream ->
+                inputStream.copyTo(outputStream)
+            }
+        }
+
+        extractTar(outputFile.name)
     }
 
     private fun createCsvParser(file: DataFile): CSVParser {
