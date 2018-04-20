@@ -32,9 +32,13 @@ abstract class Database {
     fun update(): Boolean {
         if (!retrieveNewDump()) return false
 
+        println("  > New dump available, backing it up")
         archiveDump()
+        println("  > Preparing dump (unzipping, etc.)")
         prepareDump()
+        println("  > Starting import")
         importFilesToDatabase()
+        println("  > Cleaning dump")
         cleanDump()
         return true
     }
@@ -52,7 +56,7 @@ abstract class Database {
                 filesToProcess.asReversed().forEach { file -> stmt.addBatch(file.emptyTableSql) }
                 stmt.addBatch("SET FOREIGN_KEY_CHECKS = 1")
                 stmt.executeBatch()
-                println("  > Cleared all tables")
+                println("    > Cleared all tables")
             }
 
             filesToProcess.forEach { file ->
@@ -65,7 +69,7 @@ abstract class Database {
                             if (file.addBatch(stmt, record)) {
                                 batchCount++
                             } else {
-                                println("    > Ignored line : " + record.toList())
+                                println("      > Ignored line : " + record.toList())
                             }
 
                             if ((batchCount > 0 && batchCount % batchSize == 0) || index == records.size - 1) {
@@ -74,7 +78,7 @@ abstract class Database {
                                     dbConnection.commit()
                                 } catch (ex: BatchUpdateException) {
                                     dbConnection.rollback()
-                                    println("    > Error ${ex.errorCode} on batch between index ${index - batchSize} and $index : ${ex.message}")
+                                    println("      > Error ${ex.errorCode} on batch between index ${index - batchSize} and $index : ${ex.message}")
                                 }
                             }
                         })
@@ -82,7 +86,7 @@ abstract class Database {
                 }
 
                 val diff = System.currentTimeMillis() - startTimeMillis
-                println("  > \"${file.fileName}\" - Import completed in ${diff.toFormattedElapsedTime()}")
+                println("    > \"${file.fileName}\" - Import completed in ${diff.toFormattedElapsedTime()}")
             }
         }
     }
