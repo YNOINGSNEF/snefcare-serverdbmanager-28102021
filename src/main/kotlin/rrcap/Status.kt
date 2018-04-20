@@ -1,4 +1,4 @@
-package model
+package rrcap
 
 enum class Status(val label: String) {
     Reel("Réel"),

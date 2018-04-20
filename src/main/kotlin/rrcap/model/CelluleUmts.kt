@@ -1,21 +1,22 @@
-package model.files.rrcap
+package rrcap.model
 
-import model.DataFile
-import model.Region
 import org.apache.commons.csv.CSVRecord
+import rrcap.Region
+import rrcap.RrcapDatafile
 import java.sql.PreparedStatement
 
-class CelluleLte : DataFile() {
-    override val fileName = "Cellule-LTE"
+class CelluleUmts(region: Region) : RrcapDatafile(region) {
+    override val shortFileName = "Cellule-UMTS"
     override val fileHeader = Header::class.java
 
-    override val tableName = "CELL_4G"
-    override val tableHeader = listOf("eNodeB", "cell_name", "system", "carrier")
+    override val tableName = "CELL_3G"
+    override val tableHeader = listOf("nodeB", "cell_name", "alias1", "system", "carrier")
 
-    override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
+    override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
         var index = 0
-        stmt.setString(++index, record[Header.ENODEB])
+        stmt.setString(++index, record[Header.NODEB])
         stmt.setString(++index, record[Header.CELLULE])
+        stmt.setString(++index, record[Header.ALIAS1])
         stmt.setString(++index, record[Header.SYSTEM])
         stmt.setString(++index, record[Header.PROPRIETAIRE])
         stmt.addBatch()
@@ -27,7 +28,7 @@ class CelluleLte : DataFile() {
         SOUS_REGION,
         DEPARTEMENT,
         SITE,
-        ENODEB,
+        NODEB,
         CELLULE,
         ALIAS1,
         CREATEDDATE,
@@ -37,15 +38,15 @@ class CelluleLte : DataFile() {
         ETAT,
         CI,
         SECTORNUMBER,
-        NUMCELL,
-        ECI,
         SYSTEM,
         CELLTYPE,
-        TAC_PREV,
-        TAC_REEL,
+        LAC_PREV,
         LAC_REEL,
         STATUSCHANGEDATE,
         ID_INTERNE,
+        RAC_PREV,
+        RAC_REEL,
+        SAC,
         PLMN,
         ZP_CELL_CODE,
         PROPRIETAIRE

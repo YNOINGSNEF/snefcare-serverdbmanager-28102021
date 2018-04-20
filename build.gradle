@@ -1,5 +1,10 @@
 buildscript {
-    ext.kotlin_version = '1.2.21'
+    ext.kotlin_version = '1.2.40'
+    ext.retrofit_version = '2.0.0'
+    ext.apache_csv_version = '1.5'
+    ext.mysql_connector_version = '5.1.45'
+    ext.apache_compress_version = '1.16.1'
+    //ext.rxkotlin_version = '2.2.0'
 
     repositories {
         mavenCentral()
@@ -9,8 +14,8 @@ buildscript {
     }
 }
 
-group 'fr.snef.abysse'
-version '1.0.0'
+group = "fr.careapps.db"
+version = '1.0.0'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
@@ -23,8 +28,15 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile "org.apache.commons:commons-csv:1.5"
-    compile "mysql:mysql-connector-java:5.1.45"
+    compile "org.apache.commons:commons-csv:$apache_csv_version"
+    compile "mysql:mysql-connector-java:$mysql_connector_version"
+
+    //compile "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
+
+    compile "com.squareup.retrofit2:retrofit:$retrofit_version"
+    compile "com.squareup.retrofit2:converter-moshi:$retrofit_version"
+
+    compile "org.apache.commons:commons-compress:$apache_compress_version"
 }
 
 compileKotlin {

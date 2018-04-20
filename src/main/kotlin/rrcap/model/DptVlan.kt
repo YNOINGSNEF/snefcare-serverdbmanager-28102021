@@ -1,14 +1,14 @@
-package model.files.rrcap
+package rrcap.model
 
-import model.DataFile
-import model.Region
-import model.Status
-import model.TypeLien
 import org.apache.commons.csv.CSVRecord
+import rrcap.Region
+import rrcap.RrcapDatafile
+import rrcap.Status
+import rrcap.TypeLien
 import java.sql.PreparedStatement
 
-class DptVlan : DataFile() {
-    override val fileName = "DPT-VLAN"
+class DptVlan(region: Region) : RrcapDatafile(region) {
+    override val shortFileName = "DPT-VLAN"
     override val fileHeader = Header::class.java
 
     override val tableName = "DPT_VLAN"
@@ -27,7 +27,7 @@ class DptVlan : DataFile() {
             "status"
     )
 
-    override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
+    override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
         var index = 0
         try {
             val routeSequence = "T(\\d*)".toRegex()

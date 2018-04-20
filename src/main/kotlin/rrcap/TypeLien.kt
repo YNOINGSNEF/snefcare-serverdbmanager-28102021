@@ -1,4 +1,4 @@
-package model
+package rrcap
 
 enum class TypeLien(val label: String, val alternatives: List<String> = emptyList()) {
     Ethernet("Ethernet", listOf("Ethernet Bearer")),
