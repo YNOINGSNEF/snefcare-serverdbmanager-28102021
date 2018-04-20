@@ -1,9 +1,11 @@
+import anfr.AnfrDatabase
+import comsis.ComsisDatabase
 import rrcap.RrcapDatabase
 import java.util.concurrent.TimeUnit
 
 private val databases: List<Database> = listOf(
-//        ComsisDatabase,
-//        AnfrDatabase
+        ComsisDatabase,
+        AnfrDatabase,
         RrcapDatabase
 )
 
@@ -13,11 +15,21 @@ fun main(args: Array<String>) {
 
     databases.forEach { db ->
         println("> ${db::class.java.simpleName} - Starting update")
-        if (db.update()) {
-            println("> ${db::class.java.simpleName} - Finished update")
-        } else {
-            println("> ${db::class.java.simpleName} - Update ignored, no new dump available")
+
+        try {
+            val newDumpUpdated = db.update()
+
+            if (newDumpUpdated) {
+                println("> ${db::class.java.simpleName} - Finished update")
+            } else {
+                println("> ${db::class.java.simpleName} - Update ignored, no new dump available")
+            }
+        } catch (ex: Exception) {
+            println("> ${db::class.java.simpleName} - An error occurred while updating database")
+            println()
+            ex.printStackTrace(System.out)
         }
+
         println()
     }
 
