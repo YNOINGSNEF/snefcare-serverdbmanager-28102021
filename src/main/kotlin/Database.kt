@@ -9,7 +9,7 @@ import java.util.*
 import java.util.zip.ZipFile
 
 abstract class Database {
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+    protected val dateFormat = SimpleDateFormat("yyyy-MM-dd")
     protected val formattedDate: String get() = dateFormat.format(Date())
 
     private val rootPath = "D:\\dump\\"
