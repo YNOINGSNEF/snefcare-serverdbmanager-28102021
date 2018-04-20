@@ -1,18 +1,18 @@
 package rrcap.model
 
-import rrcap.DataFile
-import rrcap.Region
 import org.apache.commons.csv.CSVRecord
+import rrcap.Region
+import rrcap.RrcapDatafile
 import java.sql.PreparedStatement
 
-class S1Bearer : DataFile() {
-    override val fileName = "S1Bearer"
+class S1Bearer(region: Region) : RrcapDatafile(region) {
+    override val shortFileName = "S1Bearer"
     override val fileHeader = Header::class.java
 
     override val tableName = "S1BEARER"
     override val tableHeader = listOf("region_code", "s1_name", "eNodeB")
 
-    override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
+    override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
         var index = 0
         stmt.setString(++index, region.name)
         stmt.setString(++index, record[Header.S1_NAME])

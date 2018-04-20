@@ -1,13 +1,13 @@
 package rrcap.model
 
-import rrcap.DataFile
-import rrcap.Region
 import org.apache.commons.csv.CSVRecord
+import rrcap.Region
+import rrcap.RrcapDatafile
 import java.sql.PreparedStatement
 import kotlin.math.*
 
-class Site : DataFile() {
-    override val fileName = "Site"
+class Site(region: Region) : RrcapDatafile(region) {
+    override val shortFileName = "Site"
     override val fileHeader = Header::class.java
 
     override val tableName = "SITE"
@@ -19,7 +19,7 @@ class Site : DataFile() {
             "longitude"
     )
 
-    override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
+    override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
         var index = 0
         val siteName = record[Header.SITE].extractSiteName()
         if (siteName != null) {

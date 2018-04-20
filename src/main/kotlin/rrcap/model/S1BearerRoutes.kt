@@ -1,14 +1,14 @@
 package rrcap.model
 
-import rrcap.DataFile
+import org.apache.commons.csv.CSVRecord
 import rrcap.Region
+import rrcap.RrcapDatafile
 import rrcap.Status
 import rrcap.TypeLien
-import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 
-class S1BearerRoutes : DataFile() {
-    override val fileName = "S1Bearer-routes"
+class S1BearerRoutes(region: Region) : RrcapDatafile(region) {
+    override val shortFileName = "S1Bearer-routes"
     override val fileHeader = Header::class.java
 
     override val tableName = "S1BEARER_ROUTES"
@@ -30,7 +30,7 @@ class S1BearerRoutes : DataFile() {
 
     override val onDuplicateKeySql = "ON DUPLICATE KEY UPDATE duplicates_count = duplicates_count + 1"
 
-    override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
+    override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
         var index = 0
         try {
             stmt.setString(++index, region.name)

@@ -1,14 +1,14 @@
 package rrcap.model
 
-import rrcap.DataFile
+import org.apache.commons.csv.CSVRecord
 import rrcap.Region
+import rrcap.RrcapDatafile
 import rrcap.Status
 import rrcap.TypeLien
-import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 
-class DptMlppp : DataFile() {
-    override val fileName = "DPT-MLPPP"
+class DptMlppp(region: Region) : RrcapDatafile(region) {
+    override val shortFileName = "DPT-MLPPP"
     override val fileHeader = Header::class.java
 
     override val tableName = "DPT_MLPPP"
@@ -30,7 +30,7 @@ class DptMlppp : DataFile() {
             "status"
     )
 
-    override fun addBatch(stmt: PreparedStatement, record: CSVRecord, region: Region): Boolean {
+    override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
         var index = 0
         try {
             val routeGroups = "R(\\d*)T(\\d*)".toRegex()

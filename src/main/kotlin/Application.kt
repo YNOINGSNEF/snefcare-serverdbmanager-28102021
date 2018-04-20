@@ -1,10 +1,10 @@
-import anfr.AnfrDatabase
-import comsis.ComsisDatabase
+import rrcap.RrcapDatabase
 import java.util.concurrent.TimeUnit
 
 private val databases: List<Database> = listOf(
 //        ComsisDatabase,
-        AnfrDatabase
+//        AnfrDatabase
+        RrcapDatabase
 )
 
 fun main(args: Array<String>) {
