@@ -41,6 +41,7 @@ abstract class DataFile {
 
     open val delimiter = ';'
     open val lineSeparator = "\r\n"
+    open val quoteChar: Char? = null
     open val ignoreEmptyLines = true
     open val hasHeaderLine = true
 

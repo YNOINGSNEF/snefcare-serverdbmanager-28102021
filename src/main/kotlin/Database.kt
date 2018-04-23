@@ -163,6 +163,7 @@ abstract class Database {
                 .withRecordSeparator(file.lineSeparator)
                 .withIgnoreEmptyLines(file.ignoreEmptyLines)
                 .withSkipHeaderRecord(file.hasHeaderLine)
+                .withQuote(file.quoteChar)
 
         return CSVParser(reader, csvFormat)
     }
