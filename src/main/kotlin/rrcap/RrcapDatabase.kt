@@ -5,11 +5,10 @@ import rrcap.model.*
 import java.io.File
 
 object RrcapDatabase : Database() {
-
     override val dumpFolder = "sfr" + File.separator + "rrcap" + File.separator
-    override val dbName = "rrcap"
-    override val dbUser = "rrcap"
-    override val dbPassword = "9WBpJuDhRZ"
+    override val dbName = "rrcap_tmp"
+    override val dbUser = "admin"
+    override val dbPassword = "_023HUdu6yQar8n4P_1f"
 
     override val filesToProcess: List<RrcapDatafile> = mutableListOf<RrcapDatafile>()
             .plus(Region.values().map { Site(it) })

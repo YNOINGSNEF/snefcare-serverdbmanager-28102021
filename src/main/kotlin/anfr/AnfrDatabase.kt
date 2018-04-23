@@ -10,9 +10,9 @@ import java.util.*
 
 object AnfrDatabase : Database() {
     override val dumpFolder = "anfr" + File.separator + "france" + File.separator
-    override val dbName = "atoll"
-    override val dbUser = "atoll"
-    override val dbPassword = "Ye2sw49pxG"
+    override val dbName = "anfr_tmp"
+    override val dbUser = "admin"
+    override val dbPassword = "_023HUdu6yQar8n4P_1f"
 
     override val filesToProcess: List<AnfrDataFile> = listOf(
             Nature(),

@@ -5,7 +5,6 @@ import ocean.model.Antenne
 import java.io.File
 
 object OceanDatabase : Database() {
-
     override val dumpFolder = "sfr" + File.separator + "ocean" + File.separator
     override val dbName = "ocean_tmp"
     override val dbUser = "admin"

@@ -6,13 +6,13 @@ import java.io.File
 
 object ComsisDatabase : Database() {
     override val dumpFolder = "sfr" + File.separator + "comsis" + File.separator
-    override val dbName = "atoll"
-    override val dbUser = "atoll"
-    override val dbPassword = "Ye2sw49pxG"
+    override val dbName = "comsis_tmp"
+    override val dbUser = "admin"
+    override val dbPassword = "_023HUdu6yQar8n4P_1f"
 
     override val filesToProcess = listOf(LastComsis())
 
-    private const val dumpFilename = "last_comsis_15-03-2018_070001.csv"
+    private val dumpFilename = with(LastComsis()) { "$fileName.$fileExtension" }
 
     override fun retrieveNewDump(): Boolean = getLocalFile(dumpFilename).isFile
 
