@@ -21,7 +21,7 @@ abstract class Database {
     private val dumpFolderPath get() = rootPath + dumpFolder
     private val archiveFolderPath get() = rootPath + "archive" + File.separator + dumpFolder
 
-    private val dbUrl = "jdbc:mysql://v2068.phpnet.fr:3306"
+    private val dbUrl = "jdbc:mysql://db-admin.care-apps.fr:3306"
     protected abstract val dbName: String
     protected abstract val dbUser: String
     protected abstract val dbPassword: String
@@ -48,7 +48,11 @@ abstract class Database {
     protected abstract fun prepareDump()
 
     protected open fun importFilesToDatabase() {
-        DriverManager.getConnection("$dbUrl/$dbName?rewriteBatchedStatements=true", dbUser, dbPassword).use { dbConnection ->
+        DriverManager.getConnection("$dbUrl/$dbName?rewriteBatchedStatements=true" +
+                "&verifyServerCertificate=false" +
+                "&useSSL=true" +
+                "&requireSSL=true",
+                dbUser, dbPassword).use { dbConnection ->
             dbConnection.autoCommit = false
 
             dbConnection.createStatement().use { stmt ->
