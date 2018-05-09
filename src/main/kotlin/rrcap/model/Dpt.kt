@@ -14,6 +14,7 @@ class Dpt(region: Region) : RrcapDatafile(region) {
     override val tableName = "DPT"
     override val tableHeader = listOf(
             "region_code",
+            "site_g2r",
             "abis_iub_iur",
             "bts_nodeB_rnc2",
             "route_number",
@@ -40,6 +41,7 @@ class Dpt(region: Region) : RrcapDatafile(region) {
             val routeNum = record[Header.NB_ROUTE]
 
             stmt.setString(++index, region.name)
+            stmt.setString(++index, record[Header.SITE_BTS_NODEB_RNC2].extractSiteG2R() ?: throw TypeCastException("Invalid G2R"))
             stmt.setString(++index, record[Header.ABIS_IUB_IUR])
             stmt.setString(++index, record[Header.BTS_NODEB_RNC2])
             stmt.setInt(++index, routeNum.takeIf { it.isNotBlank() }?.toInt() ?: 1)
