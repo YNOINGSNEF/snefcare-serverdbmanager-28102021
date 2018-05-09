@@ -3,6 +3,7 @@ package rrcap
 import Database
 import rrcap.model.*
 import java.io.File
+import java.sql.Connection
 
 object RrcapDatabase : Database() {
     override val dumpFolder = "sfr" + File.separator + "rrcap" + File.separator
@@ -35,5 +36,9 @@ object RrcapDatabase : Database() {
 
     override fun prepareDump() {
         dumpFileNames.forEach { extractArchive(it) }
+    }
+
+    override fun executePostImportActions(dbConnection: Connection) {
+        // Nothing to do
     }
 }

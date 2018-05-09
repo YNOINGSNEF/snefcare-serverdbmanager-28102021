@@ -5,6 +5,7 @@ import anfr.api.RestApi
 import anfr.model.*
 import java.io.File
 import java.io.IOException
+import java.sql.Connection
 import java.text.ParseException
 import java.util.*
 
@@ -74,6 +75,10 @@ object AnfrDatabase : Database() {
     override fun prepareDump() {
         extractArchive(dumpReferencesArchiveFilename)
         extractArchive(dumpDataArchiveFilename)
+    }
+
+    override fun executePostImportActions(dbConnection: Connection) {
+        // Nothing to do
     }
 
     private fun getLastDumpUpdate(): Date? = getArchiveFile()

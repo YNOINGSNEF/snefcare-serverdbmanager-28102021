@@ -3,6 +3,7 @@ package ocean
 import Database
 import ocean.model.Antenne
 import java.io.File
+import java.sql.Connection
 
 object OceanDatabase : Database() {
     override val dumpFolder = "sfr" + File.separator + "ocean" + File.separator
@@ -111,5 +112,9 @@ object OceanDatabase : Database() {
 
     override fun prepareDump() {
         extractArchive(dumpFileName)
+    }
+
+    override fun executePostImportActions(dbConnection: Connection) {
+        // Nothing to do
     }
 }

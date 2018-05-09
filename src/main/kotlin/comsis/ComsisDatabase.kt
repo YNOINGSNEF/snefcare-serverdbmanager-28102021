@@ -3,6 +3,7 @@ package comsis
 import Database
 import comsis.model.LastComsis
 import java.io.File
+import java.sql.Connection
 
 object ComsisDatabase : Database() {
     override val dumpFolder = "sfr" + File.separator + "comsis" + File.separator
@@ -21,6 +22,10 @@ object ComsisDatabase : Database() {
     }
 
     override fun prepareDump() {
+        // Nothing to do
+    }
+
+    override fun executePostImportActions(dbConnection: Connection) {
         // Nothing to do
     }
 }

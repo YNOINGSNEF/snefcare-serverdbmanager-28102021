@@ -6,6 +6,7 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.nio.file.Files
 import java.sql.BatchUpdateException
+import java.sql.Connection
 import java.sql.DriverManager
 import java.text.SimpleDateFormat
 import java.util.*
@@ -36,8 +37,14 @@ abstract class Database {
         archiveDump()
         println("  > Preparing dump (unzipping, etc.)")
         prepareDump()
-        println("  > Starting import")
-        importFilesToDatabase()
+
+        getDatabaseConnection().use { dbConnection ->
+            println("  > Starting import")
+            importFilesToDatabase(dbConnection)
+            println("  > Running post import actions")
+            executePostImportActions(dbConnection)
+        }
+
         println("  > Cleaning dump")
         cleanDump()
         return true
@@ -47,53 +54,51 @@ abstract class Database {
     protected abstract fun archiveDump()
     protected abstract fun prepareDump()
 
-    protected open fun importFilesToDatabase() {
-        DriverManager.getConnection("$dbUrl/$dbName?rewriteBatchedStatements=true" +
-                "&verifyServerCertificate=false" +
-                "&useSSL=true" +
-                "&requireSSL=true",
-                dbUser, dbPassword).use { dbConnection ->
-            dbConnection.autoCommit = false
+    protected open fun importFilesToDatabase(dbConnection: Connection) {
+        dbConnection.autoCommit = false
 
-            dbConnection.createStatement().use { stmt ->
-                stmt.addBatch("SET FOREIGN_KEY_CHECKS = 0")
-                filesToProcess.asReversed().forEach { file -> stmt.addBatch(file.emptyTableSql) }
-                stmt.addBatch("SET FOREIGN_KEY_CHECKS = 1")
-                stmt.executeBatch()
-                println("    > Cleared all tables")
-            }
-
-            filesToProcess.forEach { file ->
-                val startTimeMillis = System.currentTimeMillis()
-                dbConnection.prepareStatement(file.insertSql).use { stmt ->
-                    createCsvParser(file).use { csvParser ->
-                        val records = csvParser.records
-                        var batchCount = 0
-                        records.forEachIndexed({ index, record ->
-                            if (file.addBatch(stmt, record)) {
-                                batchCount++
-                            } else {
-                                println("      > Ignored line : " + record.toList())
-                            }
-
-                            if ((batchCount > 0 && batchCount % batchSize == 0) || index == records.size - 1) {
-                                try {
-                                    stmt.executeBatch()
-                                    dbConnection.commit()
-                                } catch (ex: BatchUpdateException) {
-                                    dbConnection.rollback()
-                                    println("      > Error ${ex.errorCode} on batch between index ${index - batchSize} and $index : ${ex.message}")
-                                }
-                            }
-                        })
-                    }
-                }
-
-                val diff = System.currentTimeMillis() - startTimeMillis
-                println("    > \"${file.fileName}\" - Import completed in ${diff.toFormattedElapsedTime()}")
-            }
+        dbConnection.createStatement().use { stmt ->
+            stmt.addBatch("SET FOREIGN_KEY_CHECKS = 0")
+            filesToProcess.asReversed().forEach { file -> stmt.addBatch(file.emptyTableSql) }
+            stmt.addBatch("SET FOREIGN_KEY_CHECKS = 1")
+            stmt.executeBatch()
+            println("    > Cleared all tables")
         }
+
+        filesToProcess.forEach { file ->
+            val startTimeMillis = System.currentTimeMillis()
+            dbConnection.prepareStatement(file.insertSql).use { stmt ->
+                createCsvParser(file).use { csvParser ->
+                    val records = csvParser.records
+                    var batchCount = 0
+                    records.forEachIndexed({ index, record ->
+                        if (file.addBatch(stmt, record)) {
+                            batchCount++
+                        } else {
+                            println("      > Ignored line : " + record.toList())
+                        }
+
+                        if ((batchCount > 0 && batchCount % batchSize == 0) || index == records.size - 1) {
+                            try {
+                                stmt.executeBatch()
+                                dbConnection.commit()
+                            } catch (ex: BatchUpdateException) {
+                                dbConnection.rollback()
+                                println("      > Error ${ex.errorCode} on batch between index ${index - batchSize} and $index : ${ex.message}")
+                            }
+                        }
+                    })
+                }
+            }
+
+            val diff = System.currentTimeMillis() - startTimeMillis
+            println("    > \"${file.fileName}\" - Import completed in ${diff.toFormattedElapsedTime()}")
+        }
+
+        dbConnection.autoCommit = true
     }
+
+    protected abstract fun executePostImportActions(dbConnection: Connection)
 
     protected fun cleanDump() {
         getLocalFile().listFiles().forEach { it.deleteRecursively() }
@@ -167,4 +172,11 @@ abstract class Database {
 
         return CSVParser(reader, csvFormat)
     }
+
+    private fun getDatabaseConnection() = DriverManager.getConnection("$dbUrl/$dbName?" +
+            "rewriteBatchedStatements=true" +
+            "&verifyServerCertificate=false" +
+            "&useSSL=true" +
+            "&requireSSL=true",
+            dbUser, dbPassword)
 }
