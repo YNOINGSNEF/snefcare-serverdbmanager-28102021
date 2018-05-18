@@ -3,76 +3,59 @@ package ocean.model
 import ocean.OceanDataFile
 import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
-import java.text.ParseException
 
 class CatalAnt : OceanDataFile() {
     override val fileName = "OCEAN_CATALANT"
     override val fileHeader = Header::class.java
 
-    override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
+    override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) {
         var index = 0
-        return try {
-            stmt.setInt(++index, record[Header.CTA_ID].toInt())
-            stmt.setInt(++index, record[Header.MQA_ID].toInt())
-            stmt.setInt(++index, record[Header.BAN_ID].toInt())
-            stmt.setString(++index, record[Header.CTA_REFANT])
-            stmt.setString(++index, record[Header.CTA_REFSFR])
-            stmt.setString(++index, record[Header.CTA_BANDFQ])
-            stmt.setInt(++index, record[Header.CTA_OPLANH].toInt())
-            stmt.setInt(++index, record[Header.CTA_OPLANV].toInt())
-            stmt.setNullableFloat(++index, record[Header.CTA_ROS900].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_ROS1800].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_ROSUMTS].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_ROSU900].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_GAIN900].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_GAIN1800].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_GAINUMTS].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_GAINU900].toFloatOrNull())
-            stmt.setNullableInt(++index, record[Header.CTA_HANT].toIntOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_POIDSANT].toFloatOrNull())
-            stmt.setNullableString(++index, record[Header.CTA_SFR900].takeIf { it.isNotBlank() })
-            stmt.setNullableString(++index, record[Header.CTA_SFR1800].takeIf { it.isNotBlank() })
-            stmt.setNullableString(++index, record[Header.CTA_SFRUMTS].takeIf { it.isNotBlank() })
-            stmt.setNullableString(++index, record[Header.CTA_SFRU900].takeIf { it.isNotBlank() })
-            stmt.setBoolean(++index, record[Header.CTA_DEF].toBool())
-            stmt.setNullableString(++index, record[Header.CTA_DIRECT].takeIf { it.isNotBlank() })
-            stmt.setNullableFloat(++index, record[Header.CTA_ROSL800].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_ROSL1800].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_ROSL2600].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_GAINL800].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_GAINL1800].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_GAINL2600].toFloatOrNull())
-            stmt.setNullableString(++index, record[Header.CTA_SFRL800].takeIf { it.isNotBlank() })
-            stmt.setNullableString(++index, record[Header.CTA_SFRL1800].takeIf { it.isNotBlank() })
-            stmt.setNullableString(++index, record[Header.CTA_SFRL2600].takeIf { it.isNotBlank() })
-            stmt.setNullableFloat(++index, record[Header.CTA_GAINL3500].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_ROSL3500].toFloatOrNull())
-            stmt.setNullableString(++index, record[Header.CTA_SFRL3500].takeIf { it.isNotBlank() })
-            stmt.setNullableFloat(++index, record[Header.CTA_GAINL700].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_ROSL700].toFloatOrNull())
-            stmt.setNullableString(++index, record[Header.CTA_SFRL700].takeIf { it.isNotBlank() })
-            stmt.setNullableFloat(++index, record[Header.CTA_GAINL1500].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_ROSL1500].toFloatOrNull())
-            stmt.setNullableString(++index, record[Header.CTA_SFRL1500].takeIf { it.isNotBlank() })
-            stmt.setNullableFloat(++index, record[Header.CTA_GAINL2100].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.CTA_ROSL2100].toFloatOrNull())
-            stmt.setNullableString(++index, record[Header.CTA_SFRL2100].takeIf { it.isNotBlank() })
-            stmt.addBatch()
-            true
-        } catch (ex: NumberFormatException) {
-            stmt.clearParameters()
-            false
-        } catch (ex: ParseException) {
-            stmt.clearParameters()
-            false
-        } catch (ex: IllegalArgumentException) {
-            stmt.clearParameters()
-            false
-        } catch (ex: Exception) {
-            println("        > An error occurred : ${ex.message}")
-            stmt.clearParameters()
-            false
-        }
+
+        stmt.setInt(++index, record[Header.CTA_ID].toInt())
+        stmt.setInt(++index, record[Header.MQA_ID].toInt())
+        stmt.setInt(++index, record[Header.BAN_ID].toInt())
+        stmt.setString(++index, record[Header.CTA_REFANT])
+        stmt.setString(++index, record[Header.CTA_REFSFR])
+        stmt.setString(++index, record[Header.CTA_BANDFQ])
+        stmt.setInt(++index, record[Header.CTA_OPLANH].toInt())
+        stmt.setInt(++index, record[Header.CTA_OPLANV].toInt())
+        stmt.setNullableFloat(++index, record[Header.CTA_ROS900].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_ROS1800].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_ROSUMTS].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_ROSU900].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_GAIN900].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_GAIN1800].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_GAINUMTS].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_GAINU900].toFloatOrNull())
+        stmt.setNullableInt(++index, record[Header.CTA_HANT].toIntOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_POIDSANT].toFloatOrNull())
+        stmt.setNullableString(++index, record[Header.CTA_SFR900].takeIf { it.isNotBlank() })
+        stmt.setNullableString(++index, record[Header.CTA_SFR1800].takeIf { it.isNotBlank() })
+        stmt.setNullableString(++index, record[Header.CTA_SFRUMTS].takeIf { it.isNotBlank() })
+        stmt.setNullableString(++index, record[Header.CTA_SFRU900].takeIf { it.isNotBlank() })
+        stmt.setBoolean(++index, record[Header.CTA_DEF].toBool())
+        stmt.setNullableString(++index, record[Header.CTA_DIRECT].takeIf { it.isNotBlank() })
+        stmt.setNullableFloat(++index, record[Header.CTA_ROSL800].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_ROSL1800].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_ROSL2600].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_GAINL800].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_GAINL1800].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_GAINL2600].toFloatOrNull())
+        stmt.setNullableString(++index, record[Header.CTA_SFRL800].takeIf { it.isNotBlank() })
+        stmt.setNullableString(++index, record[Header.CTA_SFRL1800].takeIf { it.isNotBlank() })
+        stmt.setNullableString(++index, record[Header.CTA_SFRL2600].takeIf { it.isNotBlank() })
+        stmt.setNullableFloat(++index, record[Header.CTA_GAINL3500].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_ROSL3500].toFloatOrNull())
+        stmt.setNullableString(++index, record[Header.CTA_SFRL3500].takeIf { it.isNotBlank() })
+        stmt.setNullableFloat(++index, record[Header.CTA_GAINL700].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_ROSL700].toFloatOrNull())
+        stmt.setNullableString(++index, record[Header.CTA_SFRL700].takeIf { it.isNotBlank() })
+        stmt.setNullableFloat(++index, record[Header.CTA_GAINL1500].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_ROSL1500].toFloatOrNull())
+        stmt.setNullableString(++index, record[Header.CTA_SFRL1500].takeIf { it.isNotBlank() })
+        stmt.setNullableFloat(++index, record[Header.CTA_GAINL2100].toFloatOrNull())
+        stmt.setNullableFloat(++index, record[Header.CTA_ROSL2100].toFloatOrNull())
+        stmt.setNullableString(++index, record[Header.CTA_SFRL2100].takeIf { it.isNotBlank() })
     }
 
     enum class Header {
