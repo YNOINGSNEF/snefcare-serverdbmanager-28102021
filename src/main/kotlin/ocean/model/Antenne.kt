@@ -48,6 +48,10 @@ class Antenne : OceanDataFile() {
         } catch (ex: IllegalArgumentException) {
             stmt.clearParameters()
             false
+        } catch (ex: Exception) {
+            println("        > An error occurred : ${ex.message}")
+            stmt.clearParameters()
+            false
         }
     }
 
