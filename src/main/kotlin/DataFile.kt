@@ -6,6 +6,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.sql.Date
 import java.sql.PreparedStatement
+import java.sql.Timestamp
 import java.sql.Types
 
 abstract class DataFile {
@@ -77,6 +78,11 @@ abstract class DataFile {
     protected fun PreparedStatement.setNullableDate(parameterIndex: Int, x: Date?) {
         if (x != null) setDate(parameterIndex, x)
         else setNull(parameterIndex, Types.DATE)
+    }
+
+    protected fun PreparedStatement.setNullableTimestamp(parameterIndex: Int, x: Timestamp?) {
+        if (x != null) setTimestamp(parameterIndex, x)
+        else setNull(parameterIndex, Types.TIMESTAMP)
     }
 
     companion object {

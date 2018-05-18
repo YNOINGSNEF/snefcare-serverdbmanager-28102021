@@ -68,26 +68,22 @@ abstract class Database {
         filesToProcess.forEach { file ->
             val startTimeMillis = System.currentTimeMillis()
             dbConnection.prepareStatement(file.insertSql).use { stmt ->
+                var batchCount = 0
+                var index = 0
                 createCsvParser(file).use { csvParser ->
-                    val records = csvParser.records
-                    var batchCount = 0
-                    records.forEachIndexed({ index, record ->
+                    csvParser.forEach({ record ->
+                        index++
+
                         if (file.addBatch(stmt, record)) {
                             batchCount++
                         } else {
                             println("      > Ignored line : " + record.toList())
                         }
 
-                        if ((batchCount > 0 && batchCount % batchSize == 0) || index == records.size - 1) {
-                            try {
-                                stmt.executeBatch()
-                                dbConnection.commit()
-                            } catch (ex: BatchUpdateException) {
-                                dbConnection.rollback()
-                                println("      > Error ${ex.errorCode} on batch between index ${index - batchSize} and $index : ${ex.message}")
-                            }
-                        }
+                        if (batchCount > 0 && batchCount % batchSize == 0) executeBatch(stmt, dbConnection, index)
                     })
+
+                    executeBatch(stmt, dbConnection, index)
                 }
             }
 
@@ -96,6 +92,16 @@ abstract class Database {
         }
 
         dbConnection.autoCommit = true
+    }
+
+    private fun executeBatch(stmt: PreparedStatement, dbConnection: Connection, index: Int) {
+        try {
+            stmt.executeBatch()
+            dbConnection.commit()
+        } catch (ex: BatchUpdateException) {
+            dbConnection.rollback()
+            println("      > Error ${ex.errorCode} on batch between index ${index - batchSize} and $index : ${ex.message}")
+        }
     }
 
     protected abstract fun executePostImportActions(dbConnection: Connection)

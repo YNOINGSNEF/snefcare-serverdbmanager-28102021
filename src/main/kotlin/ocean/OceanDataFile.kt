@@ -21,16 +21,19 @@ abstract class OceanDataFile : DataFile() {
             stmt.addBatch()
             true
         } catch (ex: NumberFormatException) {
+            println("        > An error occurred : ${ex::class.java.simpleName} ${ex.message}")
             stmt.clearParameters()
             false
         } catch (ex: ParseException) {
+            println("        > An error occurred : ${ex::class.java.simpleName} ${ex.message}")
             stmt.clearParameters()
             false
         } catch (ex: IllegalArgumentException) {
+            println("        > An error occurred : ${ex::class.java.simpleName} ${ex.message}")
             stmt.clearParameters()
             false
         } catch (ex: Exception) {
-            println("        > An error occurred : ${ex.message}")
+            println("        > An error occurred : ${ex::class.java.simpleName} ${ex.message}")
             stmt.clearParameters()
             false
         }
