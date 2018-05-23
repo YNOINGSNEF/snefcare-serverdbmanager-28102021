@@ -3,6 +3,7 @@ import comsis.ComsisDatabase
 import ocean.OceanDatabase
 import rrcap.RrcapDatabase
 import java.util.concurrent.TimeUnit
+import kotlin.system.measureTimeMillis
 
 private val databases: List<Database> = listOf(
         ComsisDatabase,
@@ -13,30 +14,30 @@ private val databases: List<Database> = listOf(
 
 fun main(args: Array<String>) {
     println("> Initialising tasks\n")
-    val startTimeMillis = System.currentTimeMillis()
 
-    databases.forEach { db ->
-        println("> ${db::class.java.simpleName} - Starting update")
+    val timeMillis = measureTimeMillis {
+        databases.forEach { db ->
+            println("> ${db::class.java.simpleName} - Starting update")
 
-        try {
-            val newDumpUpdated = db.update()
+            try {
+                val newDumpUpdated = db.update()
 
-            if (newDumpUpdated) {
-                println("> ${db::class.java.simpleName} - Finished update")
-            } else {
-                println("> ${db::class.java.simpleName} - Update ignored, no new dump available")
+                if (newDumpUpdated) {
+                    println("> ${db::class.java.simpleName} - Finished update")
+                } else {
+                    println("> ${db::class.java.simpleName} - Update ignored, no new dump available")
+                }
+            } catch (ex: Exception) {
+                println("> ${db::class.java.simpleName} - An error occurred while updating database")
+                println()
+                ex.printStackTrace(System.out)
             }
-        } catch (ex: Exception) {
-            println("> ${db::class.java.simpleName} - An error occurred while updating database")
-            println()
-            ex.printStackTrace(System.out)
-        }
 
-        println()
+            println()
+        }
     }
 
-    val diffMillis = System.currentTimeMillis() - startTimeMillis
-    println("> All tasks completed in ${diffMillis.toFormattedElapsedTime()}")
+    println("> All tasks completed in ${timeMillis.toFormattedElapsedTime()}")
 }
 
 fun Long.toFormattedElapsedTime(): String {

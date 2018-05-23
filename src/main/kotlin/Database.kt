@@ -8,9 +8,11 @@ import java.nio.file.Files
 import java.sql.BatchUpdateException
 import java.sql.Connection
 import java.sql.DriverManager
+import java.sql.PreparedStatement
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.zip.ZipFile
+import kotlin.system.measureTimeMillis
 
 abstract class Database {
     protected val dateFormat = SimpleDateFormat("yyyy-MM-dd")
@@ -26,7 +28,7 @@ abstract class Database {
     protected abstract val dbName: String
     protected abstract val dbUser: String
     protected abstract val dbPassword: String
-    private val batchSize = 1000
+    private val batchSize = 10_000
 
     protected abstract val filesToProcess: List<DataFile>
 
@@ -39,7 +41,7 @@ abstract class Database {
         prepareDump()
 
         getDatabaseConnection().use { dbConnection ->
-            println("  > Starting import")
+            println("  > Starting import - ${Date()}")
             importFilesToDatabase(dbConnection)
             println("  > Running post import actions")
             executePostImportActions(dbConnection)
@@ -66,41 +68,46 @@ abstract class Database {
         }
 
         filesToProcess.forEach { file ->
-            val startTimeMillis = System.currentTimeMillis()
-            dbConnection.prepareStatement(file.insertSql).use { stmt ->
-                var batchCount = 0
-                var index = 0
-                createCsvParser(file).use { csvParser ->
-                    csvParser.forEach({ record ->
-                        index++
+            val timeMillis = measureTimeMillis {
+                dbConnection.prepareStatement(file.insertSql).use { stmt ->
+                    var batchCount = 0
+                    var index = 0
+                    var batchStartIndex = index
+                    createCsvParser(file).use { csvParser ->
+                        csvParser.forEach({ record ->
+                            index++
 
-                        if (file.addBatch(stmt, record)) {
-                            batchCount++
-                        } else {
-                            println("      > Ignored line : " + record.toList())
-                        }
+                            if (file.addBatch(stmt, record)) {
+                                batchCount++
+                            } else {
+                                println("      > Ignored line : " + record.toList())
+                            }
 
-                        if (batchCount > 0 && batchCount % batchSize == 0) executeBatch(stmt, dbConnection, index)
-                    })
+                            if (batchCount > 0 && batchCount % batchSize == 0) {
+                                executeBatch(stmt, dbConnection, batchStartIndex, index)
+                                batchStartIndex = index
+                            }
+                        })
 
-                    executeBatch(stmt, dbConnection, index)
+                        executeBatch(stmt, dbConnection, batchStartIndex, index)
+                    }
                 }
             }
 
-            val diff = System.currentTimeMillis() - startTimeMillis
-            println("    > \"${file.fileName}\" - Import completed in ${diff.toFormattedElapsedTime()}")
+            println("    > \"${file.fileName}\" - Import completed in ${timeMillis.toFormattedElapsedTime()}")
         }
 
         dbConnection.autoCommit = true
     }
 
-    private fun executeBatch(stmt: PreparedStatement, dbConnection: Connection, index: Int) {
+    private fun executeBatch(stmt: PreparedStatement, dbConnection: Connection, startIndex: Int, currIndex: Int) {
         try {
             stmt.executeBatch()
             dbConnection.commit()
+            println("      > ${SimpleDateFormat("HH:mm:ss.SSS").format(Date())} Successfully inserted lines between index $startIndex and $currIndex")
         } catch (ex: BatchUpdateException) {
             dbConnection.rollback()
-            println("      > Error ${ex.errorCode} on batch between index ${index - batchSize} and $index : ${ex.message}")
+            println("      > Error ${ex.errorCode} on batch between index $startIndex and $currIndex : ${ex.message}")
         }
     }
 

@@ -2,7 +2,6 @@ package ocean.model
 
 import ocean.OceanDataFile
 import org.apache.commons.csv.CSVRecord
-import java.math.BigInteger
 import java.sql.PreparedStatement
 
 class ModAnt : OceanDataFile() {

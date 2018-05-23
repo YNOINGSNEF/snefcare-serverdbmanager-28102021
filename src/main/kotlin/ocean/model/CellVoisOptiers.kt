@@ -41,7 +41,7 @@ class CellVoisOptiers : OceanDataFile() {
         stmt.setNullableInt(++index, record[Header.CELL_SAC].toIntOrNull())
         stmt.setInt(++index, record[Header.CELL_FSERV].toInt())
         stmt.setNullableInt(++index, record[Header.CELL_TCELL].toIntOrNull())
-        stmt.setNullableInt(++index, record[Header.CELL_AUTInt].toIntOrNull())
+        stmt.setNullableInt(++index, record[Header.CELL_AUTINT].toIntOrNull())
         stmt.setNullableTimestamp(++index, record[Header.CELL_DATINT].toTimestampOrNull())
         stmt.setNullableInt(++index, record[Header.CELL_PEM].toIntOrNull())
         stmt.setNullableTimestamp(++index, record[Header.CELL_DATMES].toTimestampOrNull())
@@ -105,7 +105,7 @@ class CellVoisOptiers : OceanDataFile() {
         CELL_SAC,
         CELL_FSERV,
         CELL_TCELL,
-        CELL_AUTInt,
+        CELL_AUTINT,
         CELL_DATINT,
         CELL_PEM,
         CELL_DATMES,
