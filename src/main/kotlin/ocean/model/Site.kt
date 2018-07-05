@@ -46,7 +46,7 @@ class Site : OceanDataFile() {
         stmt.setNullableInt(++index, record[Header.TYPE_SITE_RS_ID].toIntOrNull())
         stmt.setNullableInt(++index, record[Header.SIT_PHASE].toIntOrNull())
         stmt.setInt(++index, record[Header.OPP_ID].toInt())
-        stmt.setInt(++index, record[Header.SIT_RS].toInt())
+        stmt.setInt(++index, record[Header.SIT_RS].toIntOrNull() ?: 0)
         stmt.setNullableInt(++index, record[Header.SIT_ZONERS].toIntOrNull())
         stmt.setString(++index, record[Header.SIT_PLQEXPL])
         stmt.setNullableBoolean(++index, record[Header.SIT_SANTE].toBoolOrNull())
