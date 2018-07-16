@@ -15,6 +15,7 @@ class DptVlan(region: Region) : RrcapDatafile(region) {
     override val tableHeader = listOf(
             "region_code",
             "vlan",
+            "status_vlan",
             "route_sequence",
             "lien",
             "site1",
@@ -35,7 +36,8 @@ class DptVlan(region: Region) : RrcapDatafile(region) {
                     ?: throw NumberFormatException()
 
             stmt.setString(++index, region.name)
-            stmt.setString(++index, record[Header.VLAN].replace("Pré", "Prv"))
+            stmt.setString(++index, record[Header.VLAN])
+            stmt.setString(++index, Status.from(record[Header.STATUS]).label)
             stmt.setInt(++index, routeSequence.toInt())
             stmt.setString(++index, record[Header.LIEN])
             stmt.setString(++index, record[Header.SITE_1].extractSiteG2R())
@@ -45,7 +47,7 @@ class DptVlan(region: Region) : RrcapDatafile(region) {
             stmt.setString(++index, record[Header.NOEUD_2])
             stmt.setString(++index, record[Header.PORT_2])
             stmt.setString(++index, TypeLien.from(record[Header.TYPE]).label)
-            stmt.setString(++index, Status.from(record[Header.STATUS]).label)
+            stmt.setString(++index, Status.from(record[Header.ETAT]).label)
             stmt.addBatch()
             return true
         } catch (ex: NumberFormatException) {

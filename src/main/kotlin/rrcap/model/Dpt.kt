@@ -16,6 +16,10 @@ class Dpt(region: Region) : RrcapDatafile(region) {
             "region_code",
             "site_g2r",
             "abis_iub_iur",
+            "status_abis_iub_iur",
+            "site_bscbay_rnc",
+            "bscbay_rnc",
+            "site_bts_nodeb_rnc2",
             "bts_nodeB_rnc2",
             "route_number",
             "route_sequence",
@@ -43,6 +47,12 @@ class Dpt(region: Region) : RrcapDatafile(region) {
             stmt.setString(++index, region.name)
             stmt.setString(++index, record[Header.SITE_BTS_NODEB_RNC2].extractSiteG2R() ?: throw TypeCastException("Invalid G2R"))
             stmt.setString(++index, record[Header.ABIS_IUB_IUR])
+            stmt.setString(++index, Status.from(record[Header.ETAT_ABIS_IUB_IUR]).label)
+
+            stmt.setString(++index, record[Header.SITE_BSCBAY_RNC])
+            stmt.setString(++index, record[Header.BSCBAY_RNC])
+            stmt.setString(++index, record[Header.SITE_BTS_NODEB_RNC2])
+
             stmt.setString(++index, record[Header.BTS_NODEB_RNC2])
             stmt.setInt(++index, routeNum.takeIf { it.isNotBlank() }?.toInt() ?: 1)
             stmt.setInt(++index, routeSeq.takeIf { it != "?" }?.toInt() ?: -1)

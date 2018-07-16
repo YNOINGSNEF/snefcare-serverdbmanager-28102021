@@ -15,6 +15,7 @@ class DptMlppp(region: Region) : RrcapDatafile(region) {
     override val tableHeader = listOf(
             "region_code",
             "mlppp",
+            "status_mlppp",
             "route_number",
             "route_sequence",
             "lien",
@@ -39,6 +40,7 @@ class DptMlppp(region: Region) : RrcapDatafile(region) {
 
             stmt.setString(++index, region.name)
             stmt.setString(++index, record[Header.MLPPP])
+            stmt.setString(++index, Status.from(record[Header.STATUS]).label)
             stmt.setInt(++index, routeGroups[1].toInt())
             stmt.setInt(++index, routeGroups[2].toInt())
             stmt.setString(++index, record[Header.LIEN])

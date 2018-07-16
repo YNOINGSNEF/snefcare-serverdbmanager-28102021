@@ -10,12 +10,15 @@ class NodeB(region: Region) : RrcapDatafile(region) {
     override val fileHeader = Header::class.java
 
     override val tableName = "NODEB"
-    override val tableHeader = listOf("nodeB", "zpt")
+    override val tableHeader = listOf("nodeB", "zpt", "type", "status", "system")
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
         var index = 0
         stmt.setString(++index, record[Header.NODEB])
         stmt.setString(++index, record[Header.ZPT])
+        stmt.setString(++index, record[Header.TYPE])
+        stmt.setString(++index, record[Header.STATUS])
+        stmt.setString(++index, record[Header.SYSTEM])
         stmt.addBatch()
         return true
     }

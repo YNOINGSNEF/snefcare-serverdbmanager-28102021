@@ -15,9 +15,6 @@ object RrcapDatabase : Database() {
             .plus(Region.values().map { Site(it) })
             .plus(Region.values().map { NodeB(it) })
             .plus(Region.values().map { Bts(it) })
-            .plus(Region.values().map { CelluleGsmDcs(it) })
-            .plus(Region.values().map { CelluleUmts(it) })
-            .plus(Region.values().map { CelluleLte(it) })
             .plus(Region.values().map { S1Bearer(it) })
             .plus(Region.values().map { S1BearerRoutes(it) })
             .plus(Region.values().map { Dpt(it) })
@@ -39,36 +36,6 @@ object RrcapDatabase : Database() {
     }
 
     override fun executePostImportActions(dbConnection: Connection) {
-        val truncateBtsCarrierSysTable = "TRUNCATE TABLE BTS_CARRIER_SYS"
-        val populateBtsCarrierSysTable = "INSERT INTO BTS_CARRIER_SYS (bts, carrier, system)\n" +
-                "SELECT BTS.bts, CELL_2G.carrier, CELL_2G.system\n" +
-                "FROM BTS\n" +
-                "JOIN CELL_2G ON CELL_2G.bts_nodeB = BTS.bts\n" +
-                "GROUP BY BTS.bts, CELL_2G.carrier, CELL_2G.system"
-
-        val truncateNodeBCarrierSysTable = "TRUNCATE TABLE NODEB_CARRIER_SYS"
-        val populateNodeBCarrierSysTable = "INSERT INTO NODEB_CARRIER_SYS (nodeB, carrier, system)\n" +
-                "SELECT NODEB.nodeB, CELL_2G.carrier, CELL_2G.system\n" +
-                "FROM NODEB\n" +
-                "JOIN CELL_2G ON CELL_2G.bts_nodeB = NODEB.nodeB\n" +
-                "GROUP BY NODEB.nodeB, CELL_2G.carrier, CELL_2G.system\n" +
-                "UNION DISTINCT\n" +
-                "SELECT NODEB.nodeB, CELL_3G.carrier, CELL_3G.system\n" +
-                "FROM NODEB\n" +
-                "JOIN CELL_3G ON CELL_3G.nodeB = NODEB.nodeB\n" +
-                "GROUP BY NODEB.nodeB, CELL_3G.carrier, CELL_3G.system\n" +
-                "UNION DISTINCT\n" +
-                "SELECT NODEB.nodeB, CELL_4G.carrier, CELL_4G.system\n" +
-                "FROM NODEB\n" +
-                "JOIN CELL_4G ON CELL_4G.eNodeB = NODEB.nodeB\n" +
-                "GROUP BY NODEB.nodeB, CELL_4G.carrier, CELL_4G.system"
-
-        dbConnection.createStatement().use { stmt ->
-            stmt.executeUpdate(truncateBtsCarrierSysTable)
-            stmt.executeUpdate(populateBtsCarrierSysTable)
-
-            stmt.executeUpdate(truncateNodeBCarrierSysTable)
-            stmt.executeUpdate(populateNodeBCarrierSysTable)
-        }
+        // Nothing to do
     }
 }

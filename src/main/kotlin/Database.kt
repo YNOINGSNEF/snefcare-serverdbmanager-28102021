@@ -57,15 +57,16 @@ abstract class Database {
     protected abstract fun prepareDump()
 
     protected open fun importFilesToDatabase(dbConnection: Connection) {
-        dbConnection.autoCommit = false
+        dbConnection.setUniqueChecksEnabled(false)
+        dbConnection.setForeignKeyChecksEnabled(false)
 
         dbConnection.createStatement().use { stmt ->
-            stmt.addBatch("SET FOREIGN_KEY_CHECKS = 0")
             filesToProcess.asReversed().forEach { file -> stmt.addBatch(file.emptyTableSql) }
-            stmt.addBatch("SET FOREIGN_KEY_CHECKS = 1")
             stmt.executeBatch()
             println("    > Cleared all tables")
         }
+
+        dbConnection.autoCommit = false
 
         filesToProcess.forEach { file ->
             val timeMillis = measureTimeMillis {
@@ -98,6 +99,8 @@ abstract class Database {
         }
 
         dbConnection.autoCommit = true
+        dbConnection.setUniqueChecksEnabled(true)
+        dbConnection.setForeignKeyChecksEnabled(true)
     }
 
     private fun executeBatch(stmt: PreparedStatement, dbConnection: Connection, startIndex: Int, currIndex: Int) {
