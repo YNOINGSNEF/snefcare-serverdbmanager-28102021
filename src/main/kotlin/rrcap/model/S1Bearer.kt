@@ -3,6 +3,7 @@ package rrcap.model
 import org.apache.commons.csv.CSVRecord
 import rrcap.Region
 import rrcap.RrcapDatafile
+import rrcap.Status
 import java.sql.PreparedStatement
 
 class S1Bearer(region: Region) : RrcapDatafile(region) {
@@ -10,7 +11,7 @@ class S1Bearer(region: Region) : RrcapDatafile(region) {
     override val fileHeader = Header::class.java
 
     override val tableName = "S1BEARER"
-    override val tableHeader = listOf("region_code", "s1_name", "site_g2r", "eNodeB")
+    override val tableHeader = listOf("region_code", "s1_name", "site_g2r", "eNodeB", "status")
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
         var index = 0
@@ -19,6 +20,7 @@ class S1Bearer(region: Region) : RrcapDatafile(region) {
             stmt.setString(++index, record[Header.S1_NAME])
             stmt.setString(++index, record[Header.SITE_ENODEB].extractSiteG2R() ?: throw TypeCastException("Invalid G2R"))
             stmt.setString(++index, record[Header.ENODEB_NAME])
+            stmt.setString(++index, Status.from(record[Header.PROVISION_STATUS]).label)
             stmt.addBatch()
             true
         } catch (ex: TypeCastException) {

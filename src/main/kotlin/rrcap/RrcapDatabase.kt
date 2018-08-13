@@ -7,7 +7,7 @@ import java.sql.Connection
 
 object RrcapDatabase : Database() {
     override val dumpFolder = "sfr" + File.separator + "rrcap" + File.separator
-    override val dbName = "rrcap_tmp"
+    override val dbName = "rrcap_prod"
     override val dbUser = "admin"
     override val dbPassword = "_023HUdu6yQar8n4P_1f"
 
@@ -15,6 +15,7 @@ object RrcapDatabase : Database() {
             .plus(Region.values().map { Site(it) })
             .plus(Region.values().map { NodeB(it) })
             .plus(Region.values().map { Bts(it) })
+            .plus(Region.values().map { ENodeB(it) })
             .plus(Region.values().map { S1Bearer(it) })
             .plus(Region.values().map { S1BearerRoutes(it) })
             .plus(Region.values().map { Dpt(it) })

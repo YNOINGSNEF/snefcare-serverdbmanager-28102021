@@ -7,7 +7,7 @@ import java.sql.Connection
 
 object OceanDatabase : Database() {
     override val dumpFolder = "sfr" + File.separator + "ocean" + File.separator
-    override val dbName = "ocean_tmp"
+    override val dbName = "ocean_prod"
     override val dbUser = "admin"
     override val dbPassword = "_023HUdu6yQar8n4P_1f"
 

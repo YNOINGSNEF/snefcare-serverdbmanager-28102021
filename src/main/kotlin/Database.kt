@@ -24,7 +24,7 @@ abstract class Database {
     private val dumpFolderPath get() = rootPath + dumpFolder
     private val archiveFolderPath get() = rootPath + "archive" + File.separator + dumpFolder
 
-    private val dbUrl = "jdbc:mysql://db-admin.care-apps.fr:3306"
+    private val dbUrl = "jdbc:mysql://mysql-admin.care-apps.fr:3306"
     protected abstract val dbName: String
     protected abstract val dbUser: String
     protected abstract val dbPassword: String
@@ -75,7 +75,7 @@ abstract class Database {
                     var index = 0
                     var batchStartIndex = index
                     createCsvParser(file).use { csvParser ->
-                        csvParser.forEach({ record ->
+                        csvParser.forEach { record ->
                             index++
 
                             if (file.addBatch(stmt, record)) {
@@ -88,7 +88,7 @@ abstract class Database {
                                 executeBatch(stmt, dbConnection, batchStartIndex, index)
                                 batchStartIndex = index
                             }
-                        })
+                        }
 
                         executeBatch(stmt, dbConnection, batchStartIndex, index)
                     }
@@ -107,7 +107,9 @@ abstract class Database {
         try {
             stmt.executeBatch()
             dbConnection.commit()
-            println("      > ${SimpleDateFormat("HH:mm:ss.SSS").format(Date())} Successfully inserted lines between index $startIndex and $currIndex")
+            if (startIndex % 100_000 == 0) {
+                println("      > ${SimpleDateFormat("HH:mm:ss.SSS").format(Date())} Successfully inserted lines between index $startIndex and $currIndex")
+            }
         } catch (ex: BatchUpdateException) {
             dbConnection.rollback()
             println("      > Error ${ex.errorCode} on batch between index $startIndex and $currIndex : ${ex.message}")
@@ -195,4 +197,12 @@ abstract class Database {
             "&useSSL=true" +
             "&requireSSL=true",
             dbUser, dbPassword)
+
+    private fun Connection.setUniqueChecksEnabled(enable: Boolean) {
+        createStatement().use { it.executeUpdate("SET UNIQUE_CHECKS = " + (if (enable) "1" else "0")) }
+    }
+
+    private fun Connection.setForeignKeyChecksEnabled(enable: Boolean) {
+        createStatement().use { it.executeUpdate("SET FOREIGN_KEY_CHECKS = " + (if (enable) "1" else "0")) }
+    }
 }

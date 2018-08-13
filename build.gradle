@@ -1,14 +1,14 @@
 buildscript {
-    ext.kotlin_version = '1.2.41'
+    ext.kotlin_version = '1.2.60'
     ext.retrofit_version = '2.0.0'
     ext.apache_csv_version = '1.5'
     ext.mysql_connector_version = '5.1.45'
     ext.apache_compress_version = '1.16.1'
-    //ext.rxkotlin_version = '2.2.0'
 
     repositories {
         mavenCentral()
     }
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -39,7 +39,3 @@ dependencies {
 }
 
 mainClassName = "ApplicationKt"
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
