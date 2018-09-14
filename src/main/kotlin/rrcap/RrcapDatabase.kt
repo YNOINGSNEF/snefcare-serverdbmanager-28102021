@@ -21,6 +21,7 @@ object RrcapDatabase : Database() {
             .plus(Region.values().map { Dpt(it) })
             .plus(Region.values().map { DptMlppp(it) })
             .plus(Region.values().map { DptVlan(it) })
+            .plus(Region.values().map { DptIma(it) })
 
     private val dumpFileNames = Region.values().map { it.name + ".taz" }
 
