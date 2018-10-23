@@ -1,20 +1,22 @@
 buildscript {
-    ext.kotlin_version = '1.2.70'
-    ext.retrofit_version = '2.0.0'
-    ext.apache_csv_version = '1.5'
-    ext.mysql_connector_version = '5.1.45'
-    ext.apache_compress_version = '1.16.1'
+    ext {
+        apacheCompressVersion = '1.18'
+        apacheCsvVersion = '1.6'
+        kotlinVersion = '1.2.71'
+        mysqlConnectorVersion = '8.0.13'
+        retrofitVersion = '2.4.0'
+    }
 
     repositories {
         mavenCentral()
     }
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
-group = "fr.careapps.db"
+group = "fr.careapps.dbmanager"
 version = '1.0.0'
 
 apply plugin: 'kotlin'
@@ -27,18 +29,15 @@ repositories {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-
-    implementation "mysql:mysql-connector-java:$mysql_connector_version"
-
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
-
-    implementation "org.apache.commons:commons-csv:$apache_csv_version"
-    implementation "org.apache.commons:commons-compress:$apache_compress_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "mysql:mysql-connector-java:$mysqlConnectorVersion"
+    implementation "org.apache.commons:commons-compress:$apacheCompressVersion"
+    implementation "org.apache.commons:commons-csv:$apacheCsvVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 }
 
-mainClassName = "ApplicationKt"
+mainClassName = "fr.snef.dbmanager.ApplicationKt"
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"

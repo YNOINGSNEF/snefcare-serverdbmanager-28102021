@@ -1,0 +1,43 @@
+package fr.snef.dbmanager.rrcap
+
+import fr.snef.dbmanager.Database
+import fr.snef.dbmanager.rrcap.model.*
+import java.io.File
+import java.sql.Connection
+
+object RrcapDatabase : Database() {
+    override val dumpFolder = "sfr" + File.separator + "rrcap" + File.separator
+    override val dbName = "rrcap_prod"
+
+    override val filesToProcess: List<RrcapDatafile> = mutableListOf<RrcapDatafile>()
+            .asSequence()
+            .plus(Region.values().map { Site(it) })
+            .plus(Region.values().map { NodeB(it) })
+            .plus(Region.values().map { Bts(it) })
+            .plus(Region.values().map { ENodeB(it) })
+            .plus(Region.values().map { S1Bearer(it) })
+            .plus(Region.values().map { S1BearerRoutes(it) })
+            .plus(Region.values().map { Dpt(it) })
+            .plus(Region.values().map { DptMlppp(it) })
+            .plus(Region.values().map { DptVlan(it) })
+            .plus(Region.values().map { DptIma(it) })
+            .toList()
+
+    private val dumpFileNames = Region.values().map { it.name + ".taz" }
+
+    override fun retrieveNewDump(): Boolean = dumpFileNames.map { getLocalFile(it).isFile }.all { it }
+
+    override fun archiveDump() {
+        dumpFileNames.forEach {
+            getLocalFile(it).copyTo(getArchiveFile("$formattedDate - $it"), true)
+        }
+    }
+
+    override fun prepareDump() {
+        dumpFileNames.forEach { extractArchive(it) }
+    }
+
+    override fun executePostImportActions(dbConnection: Connection) {
+        // Nothing to do
+    }
+}
