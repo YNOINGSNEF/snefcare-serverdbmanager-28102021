@@ -5,7 +5,7 @@ import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 
 class LastComsis : DataFile() {
-    override val fileName = "dump"
+    override val fileName = "last_comsis"
     override val fileHeader = Header::class.java
     override val fileCharset = DataFile.CHARSET_ANSI
     override val fileExtension = "csv"

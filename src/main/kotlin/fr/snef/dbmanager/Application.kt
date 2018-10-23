@@ -1,6 +1,9 @@
 package fr.snef.dbmanager
 
+import fr.snef.dbmanager.anfr.AnfrDatabase
+import fr.snef.dbmanager.comsis.ComsisDatabase
 import fr.snef.dbmanager.ocean.OceanDatabase
+import fr.snef.dbmanager.rrcap.RrcapDatabase
 import java.io.File
 import java.io.PrintStream
 import java.util.concurrent.TimeUnit
@@ -8,16 +11,16 @@ import kotlin.system.measureTimeMillis
 
 private val logFolderPath = File.separator + "dump" + File.separator + "tools" + File.separator + "log" + File.separator
 private val databases: List<Database> = listOf(
-//        ComsisDatabase
-//        AnfrDatabase
-//        RrcapDatabase
+        ComsisDatabase,
+        AnfrDatabase,
+        RrcapDatabase,
         OceanDatabase
 )
 
 fun main(args: Array<String>) {
-//    val output = PrintStream(File(logFolderPath + "log.txt"))
-//    System.setOut(output)
-//    System.setErr(output)
+    val output = PrintStream(File(logFolderPath + "log.txt"))
+    System.setOut(output)
+    System.setErr(output)
 
     println("> Initialising tasks\n")
 
