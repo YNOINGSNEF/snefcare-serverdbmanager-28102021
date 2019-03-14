@@ -20,16 +20,19 @@ abstract class Database {
     protected val dateFormat = SimpleDateFormat("yyyy-MM-dd")
     protected val formattedDate: String get() = dateFormat.format(Date())
 
-//    private val rootPath = "D:" + File.separator + "dump" + File.separator
-    private val rootPath = File.separator + "dump" + File.separator
+    private val rootPath
+        get() = if (isDebugEnabled) "D:" + File.separator + "dump" + File.separator
+        else File.separator + "dump" + File.separator
     protected abstract val dumpFolder: String
 
     private val dumpFolderPath get() = rootPath + dumpFolder
-//    private val archiveFolderPath get() = rootPath + "archive" + File.separator + dumpFolder
-    private val archiveFolderPath get() = File.separator + "dump_archives" + File.separator + dumpFolder
+    private val archiveFolderPath
+        get() = if (isDebugEnabled) rootPath + "archive" + File.separator + dumpFolder
+        else File.separator + "dump_archives" + File.separator + dumpFolder
 
-//    private val dbUrl = "jdbc:mysql://mysql-admin.care-apps.fr:3306"
-    private val dbUrl = "jdbc:mysql://mysql"
+    private val dbUrl
+        get() = if (isDebugEnabled) "jdbc:mysql://mysql-admin.care-apps.fr:3306"
+        else "jdbc:mysql://mysql"
     protected abstract val dbName: String
     open val dbUser = "admin"
     open val dbPassword = "_023HUdu6yQar8n4P_1f"

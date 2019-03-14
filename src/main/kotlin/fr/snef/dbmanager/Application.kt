@@ -11,8 +11,12 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
 
+var isDebugEnabled = true
+
 private val formattedDate: String = SimpleDateFormat("yyyy-MM-dd").format(Date())
-private val logFolderPath = File.separator + "dump" + File.separator + "tools" + File.separator + "log" + File.separator
+private val logFolderPath
+    get() = if (isDebugEnabled) "D:" + File.separator + "dump" + File.separator + "tools" + File.separator + "log" + File.separator
+    else File.separator + "dump" + File.separator + "tools" + File.separator + "log" + File.separator
 private val logFilename = "$logFolderPath$formattedDate.log"
 private val databases: List<Database> = listOf(
         ComsisDatabase,
@@ -22,10 +26,12 @@ private val databases: List<Database> = listOf(
 )
 
 fun main() {
-    File(logFolderPath).mkdirs()
-    val output = PrintStream(File(logFilename))
-    System.setOut(output)
-    System.setErr(output)
+    if (!isDebugEnabled) {
+        File(logFolderPath).mkdirs()
+        val output = PrintStream(File(logFilename))
+        System.setOut(output)
+        System.setErr(output)
+    }
 
     println("> Initialising tasks\n")
 
