@@ -37,7 +37,7 @@ abstract class DataFile {
                         separator = ",",
                         prefix = "(",
                         postfix = ")",
-                        transform = { _ -> "?" }
+                        transform = { "?" }
                 ) +
                 onDuplicateKeySql
     val emptyTableSql get() = "TRUNCATE $tableName"

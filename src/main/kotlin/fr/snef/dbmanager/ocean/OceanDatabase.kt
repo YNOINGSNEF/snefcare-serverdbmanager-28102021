@@ -102,10 +102,10 @@ object OceanDatabase : Database() {
 
     private const val dumpFileName = "dump.zip"
 
-    override fun retrieveNewDump(): Boolean = getLocalFile(dumpFileName).isFile
+    override fun retrieveNewDump(): Boolean = getDumpFile(dumpFileName).isFile
 
     override fun archiveDump() {
-        getLocalFile(dumpFileName).copyTo(getArchiveFile("$formattedDate.zip"), true)
+        getDumpFile(dumpFileName).copyTo(getBackupFile("$formattedDate.zip"), true)
     }
 
     override fun prepareDump() {

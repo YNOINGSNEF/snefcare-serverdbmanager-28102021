@@ -25,11 +25,11 @@ object RrcapDatabase : Database() {
 
     private val dumpFileNames = Region.values().map { it.name + ".taz" }
 
-    override fun retrieveNewDump(): Boolean = dumpFileNames.map { getLocalFile(it).isFile }.all { it }
+    override fun retrieveNewDump(): Boolean = dumpFileNames.map { getDumpFile(it).isFile }.all { it }
 
     override fun archiveDump() {
         dumpFileNames.forEach {
-            getLocalFile(it).copyTo(getArchiveFile("$formattedDate - $it"), true)
+            getDumpFile(it).copyTo(getBackupFile("$formattedDate - $it"), true)
         }
     }
 

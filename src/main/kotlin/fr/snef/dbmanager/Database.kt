@@ -127,11 +127,11 @@ abstract class Database {
     protected abstract fun executePostImportActions(dbConnection: Connection)
 
     protected fun cleanDump() {
-        getLocalFile().listFiles().forEach { it.deleteRecursively() }
+        getDumpFile().listFiles().forEach { it.deleteRecursively() }
     }
 
-    protected fun getLocalFile(filename: String = "") = File(dumpFolderPath + filename)
-    protected fun getArchiveFile(filename: String = "") = File(archiveFolderPath + filename)
+    protected fun getDumpFile(filename: String = "") = File(dumpFolderPath + filename)
+    protected fun getBackupFile(filename: String = "") = File(archiveFolderPath + filename)
 
     protected fun extractArchive(archiveFilename: String) {
         when (archiveFilename.substringAfterLast(".").toLowerCase()) {
@@ -143,10 +143,10 @@ abstract class Database {
     }
 
     private fun extractZip(archiveFilename: String) {
-        ZipFile(getLocalFile(archiveFilename)).use { zipFile ->
+        ZipFile(getDumpFile(archiveFilename)).use { zipFile ->
             zipFile.entries().asSequence().forEach { zipEntry ->
                 zipFile.getInputStream(zipEntry).use { inputStream ->
-                    getLocalFile(zipEntry.name).outputStream().use { outputStream ->
+                    getDumpFile(zipEntry.name).outputStream().use { outputStream ->
                         inputStream.copyTo(outputStream)
                     }
                 }
@@ -155,13 +155,13 @@ abstract class Database {
     }
 
     private fun extractTar(archiveFilename: String) {
-        val archiveFile = getLocalFile(archiveFilename)
+        val archiveFile = getDumpFile(archiveFilename)
         TarArchiveInputStream(archiveFile.inputStream()).use { tarArchiveInputStream ->
             while (true) {
                 val tarEntry = tarArchiveInputStream.nextTarEntry ?: break
                 if (tarEntry.isDirectory) continue
 
-                val outputFile = getLocalFile(archiveFile.nameWithoutExtension + File.separator + tarEntry.name)
+                val outputFile = getDumpFile(archiveFile.nameWithoutExtension + File.separator + tarEntry.name)
                 outputFile.parentFile?.let { parentFile ->
                     if (!parentFile.exists()) parentFile.mkdirs()
                 }
@@ -174,8 +174,8 @@ abstract class Database {
     }
 
     private fun extractTaz(archiveFilename: String) {
-        val inputFile = getLocalFile(archiveFilename)
-        val outputFile = getLocalFile(archiveFilename.substringBeforeLast(".") + ".tar")
+        val inputFile = getDumpFile(archiveFilename)
+        val outputFile = getDumpFile(archiveFilename.substringBeforeLast(".") + ".tar")
 
         ZCompressorInputStream(BufferedInputStream(inputFile.inputStream())).use { inputStream ->
             outputFile.outputStream().use { outputStream ->

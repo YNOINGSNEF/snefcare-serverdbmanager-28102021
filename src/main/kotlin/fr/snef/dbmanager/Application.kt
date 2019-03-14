@@ -6,10 +6,14 @@ import fr.snef.dbmanager.ocean.OceanDatabase
 import fr.snef.dbmanager.rrcap.RrcapDatabase
 import java.io.File
 import java.io.PrintStream
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
 
+private val formattedDate: String = SimpleDateFormat("yyyy-MM-dd").format(Date())
 private val logFolderPath = File.separator + "dump" + File.separator + "tools" + File.separator + "log" + File.separator
+private val logFilename = "$logFolderPath$formattedDate.log"
 private val databases: List<Database> = listOf(
         ComsisDatabase,
         AnfrDatabase,
@@ -17,8 +21,9 @@ private val databases: List<Database> = listOf(
         OceanDatabase
 )
 
-fun main(args: Array<String>) {
-    val output = PrintStream(File(logFolderPath + "log.txt"))
+fun main() {
+    File(logFolderPath).mkdirs()
+    val output = PrintStream(File(logFilename))
     System.setOut(output)
     System.setErr(output)
 

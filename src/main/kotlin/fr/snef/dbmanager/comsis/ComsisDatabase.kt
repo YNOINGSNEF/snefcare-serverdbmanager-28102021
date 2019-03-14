@@ -13,10 +13,10 @@ object ComsisDatabase : Database() {
 
     private val dumpFilename = with(LastComsis()) { "$fileName.$fileExtension" }
 
-    override fun retrieveNewDump(): Boolean = getLocalFile(dumpFilename).isFile
+    override fun retrieveNewDump(): Boolean = getDumpFile(dumpFilename).isFile
 
     override fun archiveDump() {
-        getLocalFile(dumpFilename).copyTo(getArchiveFile("$formattedDate.csv"), true)
+        getDumpFile(dumpFilename).copyTo(getBackupFile("$formattedDate.csv"), true)
     }
 
     override fun prepareDump() {

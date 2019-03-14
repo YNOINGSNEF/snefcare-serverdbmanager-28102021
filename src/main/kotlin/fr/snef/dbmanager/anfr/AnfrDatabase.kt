@@ -47,8 +47,8 @@ object AnfrDatabase : Database() {
                     && dataResource != null
                     && (lastDumpDate == null || lastDumpDate.before(dataResource.lastModifiedDate))) {
 
-                RestApi.downloadResourceFile(referenceResource, getLocalFile(dumpReferencesArchiveFilename))
-                RestApi.downloadResourceFile(dataResource, getLocalFile(dumpDataArchiveFilename))
+                RestApi.downloadResourceFile(referenceResource, getDumpFile(dumpReferencesArchiveFilename))
+                RestApi.downloadResourceFile(dataResource, getDumpFile(dumpDataArchiveFilename))
                 true
             } else {
                 false
@@ -66,8 +66,8 @@ object AnfrDatabase : Database() {
     }
 
     override fun archiveDump() {
-        getLocalFile(dumpReferencesArchiveFilename).copyTo(getArchiveFile("$formattedDate - REF.zip"), true)
-        getLocalFile(dumpDataArchiveFilename).copyTo(getArchiveFile("$formattedDate - DATA.zip"), true)
+        getDumpFile(dumpReferencesArchiveFilename).copyTo(getBackupFile("$formattedDate - REF.zip"), true)
+        getDumpFile(dumpDataArchiveFilename).copyTo(getBackupFile("$formattedDate - DATA.zip"), true)
     }
 
     override fun prepareDump() {
@@ -79,7 +79,7 @@ object AnfrDatabase : Database() {
         // Nothing to do
     }
 
-    private fun getLastDumpUpdate(): Date? = getArchiveFile()
+    private fun getLastDumpUpdate(): Date? = getBackupFile()
             .listFiles()
             ?.mapNotNull {
                 try {
