@@ -11,7 +11,7 @@ import java.util.*
 
 object AnfrDatabase : Database() {
     override val dumpFolder = "anfr" + File.separator + "france" + File.separator
-    override val dbName = "anfr_tmp"
+    override val dbName = "anfr_prod"
 
     override val filesToProcess: List<AnfrDataFile> = listOf(
             Nature(),

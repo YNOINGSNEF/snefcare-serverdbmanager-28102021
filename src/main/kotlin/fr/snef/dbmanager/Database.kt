@@ -44,10 +44,12 @@ abstract class Database {
     fun update(): Boolean {
         if (!retrieveNewDump()) return false
 
-        println("  > New dump available, backing it up")
-        archiveDump()
-        println("  > Preparing dump (unzipping, etc.)")
-        prepareDump()
+        if (!isDebugEnabled) {
+            println("  > New dump available, backing it up")
+            archiveDump()
+            println("  > Preparing dump (unzipping, etc.)")
+            prepareDump()
+        }
 
         getDatabaseConnection().use { dbConnection ->
             println("  > Starting import - ${Date()}")
@@ -56,8 +58,10 @@ abstract class Database {
             executePostImportActions(dbConnection)
         }
 
-        println("  > Cleaning dump")
-        cleanDump()
+        if (!isDebugEnabled) {
+            println("  > Cleaning dump")
+            cleanDump()
+        }
         return true
     }
 

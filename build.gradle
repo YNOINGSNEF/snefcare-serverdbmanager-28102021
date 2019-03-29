@@ -16,6 +16,17 @@ buildscript {
     }
 }
 
+/**
+ * Pour créer l'exécutable à placer sur le serveur de production :
+ * 1. Vérifier que [isDebugEnabled] est à false dans Application.kt
+ * 2. Ouvrir un invité de commande (cmd, powershell) dans le dossier du projet
+ * 3. Exécuter la commande "./gradlew clean" (nettoyage)
+ * 4. Exécuter la commande "./gradlew installDist" (compiler l'exécutable)
+ * 5. Récupérer le dossier build/install/dbManager/* et le placer sur le serveur
+ * 6. Vérifier que les fichiers dans le dossier /dbManager/bin/* aient les droits en exécution
+ * 7. Done! L'application sera lancée automatiquement toutes les nuits via une tâche CRON
+ */
+
 group = "fr.careapps.dbmanager"
 version = '1.0.0'
 
@@ -36,9 +47,6 @@ dependencies {
     implementation "org.apache.commons:commons-csv:$apacheCsvVersion"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 }
-
-// gradlew clean
-// gradlew installDist
 
 mainClassName = "fr.snef.dbmanager.ApplicationKt"
 

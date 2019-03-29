@@ -7,7 +7,7 @@ import java.sql.Connection
 
 object ComsisDatabase : Database() {
     override val dumpFolder = "sfr" + File.separator + "comsis" + File.separator
-    override val dbName = "comsis"
+    override val dbName = "comsis_prod"
 
     override val filesToProcess = listOf(LastComsis())
 
