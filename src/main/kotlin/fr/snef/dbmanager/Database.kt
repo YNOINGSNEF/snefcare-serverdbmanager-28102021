@@ -42,9 +42,9 @@ abstract class Database {
     protected abstract val filesToProcess: List<DataFile>
 
     fun update(): Boolean {
-        if (!retrieveNewDump()) return false
-
         if (!isDebugEnabled) {
+            if (!retrieveNewDump()) return false
+
             println("  > New dump available, backing it up")
             archiveDump()
             println("  > Preparing dump (unzipping, etc.)")
