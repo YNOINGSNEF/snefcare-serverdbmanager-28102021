@@ -1,13 +1,12 @@
 package fr.snef.dbmanager.anfr.model
 
-import fr.snef.dbmanager.DataFile
 import fr.snef.dbmanager.anfr.AnfrDataFile
 import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 
 class Support : AnfrDataFile() {
     override val fileHeader = Header::class.java
-    override val fileCharset = DataFile.CHARSET_ANSI
+    override val fileCharset = CHARSET_ANSI
     override val ignoreInsertErrors = true
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
@@ -24,7 +23,7 @@ class Support : AnfrDataFile() {
             stmt.setInt(++index, record[Header.COR_NB_MN_LON].toInt())
             stmt.setInt(++index, record[Header.COR_NB_SC_LON].toInt())
             stmt.setString(++index, record[Header.COR_CD_EW_LON].take(1))
-            stmt.setNullableFloat(++index, record[Header.SUP_NM_HAUT].toFloatOrNull())
+            stmt.setNullableFloat(++index, record[Header.SUP_NM_HAUT].replace(',','.').toFloatOrNull())
             stmt.setNullableInt(++index, record[Header.TPO_ID].toIntOrNull())
             stmt.setString(++index, record[Header.ADR_LB_LIEU])
             stmt.setString(++index, record[Header.ADR_LB_ADD1])

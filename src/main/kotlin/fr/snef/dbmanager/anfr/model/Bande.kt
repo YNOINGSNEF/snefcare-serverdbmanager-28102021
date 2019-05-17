@@ -14,8 +14,8 @@ class Bande : AnfrDataFile() {
             stmt.setString(++index, record[Header.STA_NM_ANFR])
             stmt.setInt(++index, record[Header.BAN_ID].toInt())
             stmt.setInt(++index, record[Header.EMR_ID].toInt())
-            stmt.setNullableInt(++index, record[Header.BAN_NB_F_DEB].toIntOrNull())
-            stmt.setNullableInt(++index, record[Header.BAN_NB_F_FIN].toIntOrNull())
+            stmt.setNullableFloat(++index, record[Header.BAN_NB_F_DEB].replace(',','.').toFloatOrNull())
+            stmt.setNullableFloat(++index, record[Header.BAN_NB_F_FIN].replace(',','.').toFloatOrNull())
             stmt.setString(++index, record[Header.BAN_FG_UNITE].take(1))
             stmt.addBatch()
             true

@@ -14,10 +14,10 @@ class Antenne : AnfrDataFile() {
             stmt.setString(++index, record[Header.STA_NM_ANFR])
             stmt.setInt(++index, record[Header.AER_ID].toInt())
             stmt.setInt(++index, record[Header.TAE_ID].toInt())
-            stmt.setNullableFloat(++index, record[Header.AER_NB_DIMENSION].toFloatOrNull())
+            stmt.setNullableFloat(++index, record[Header.AER_NB_DIMENSION].replace(',','.').toFloatOrNull())
             stmt.setNullableString(++index, record[Header.AER_FG_RAYON].take(1).takeIf { it.isNotBlank() })
-            stmt.setNullableFloat(++index, record[Header.AER_NB_AZIMUT].toFloatOrNull())
-            stmt.setNullableFloat(++index, record[Header.AER_NB_ALT_BAS].toFloatOrNull())
+            stmt.setNullableFloat(++index, record[Header.AER_NB_AZIMUT].replace(',','.').toFloatOrNull())
+            stmt.setNullableFloat(++index, record[Header.AER_NB_ALT_BAS].replace(',','.').toFloatOrNull())
             stmt.addBatch()
             true
         } catch (ex: NumberFormatException) {
