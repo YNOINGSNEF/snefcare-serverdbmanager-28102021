@@ -25,7 +25,7 @@ private val databases: List<Database> = listOf(
         OceanDatabase
 )
 
-fun main() {
+fun main(args: Array<String>) {
     if (!isDebugEnabled) {
         File(logFolderPath).mkdirs()
         val output = PrintStream(File(logFilename))
