@@ -23,6 +23,7 @@ abstract class DataFile {
     protected abstract val tableName: String
     protected abstract val tableHeader: List<String>
     protected open val onDuplicateKeySql = ""
+    protected open val insertSelectSql: String? = null
     protected open val ignoreInsertErrors = false
 
     val insertSql
@@ -31,15 +32,19 @@ abstract class DataFile {
                         separator = ",",
                         prefix = "(",
                         postfix = ")"
-                ) +
-                "VALUES" +
-                tableHeader.joinToString(
-                        separator = ",",
-                        prefix = "(",
-                        postfix = ")",
-                        transform = { "?" }
-                ) +
-                onDuplicateKeySql
+                ) + (
+                if (insertSelectSql != null) {
+                    insertSelectSql
+                } else {
+                    "VALUES" +
+                            tableHeader.joinToString(
+                                    separator = ",",
+                                    prefix = "(",
+                                    postfix = ")",
+                                    transform = { "?" }
+                            )
+                }
+                ) + onDuplicateKeySql
     val emptyTableSql get() = "TRUNCATE $tableName"
 
     open val delimiter = ';'

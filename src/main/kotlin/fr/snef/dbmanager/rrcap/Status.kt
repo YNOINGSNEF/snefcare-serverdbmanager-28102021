@@ -13,7 +13,7 @@ enum class Status(val label: String) {
         fun from(str: String) = if (str.isBlank()) {
             Unknown
         } else {
-            Status.values().firstOrNull { status ->
+            values().firstOrNull { status ->
                 str.contains(status.label, true)
             } ?: throw TypeCastException()
         }

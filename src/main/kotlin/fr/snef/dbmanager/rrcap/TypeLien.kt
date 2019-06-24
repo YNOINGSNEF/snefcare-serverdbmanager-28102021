@@ -21,7 +21,7 @@ enum class TypeLien(val label: String, val alternatives: List<String> = emptyLis
         fun from(str: String) = if (str.isBlank()) {
             Jarretiere
         } else {
-            TypeLien.values().firstOrNull { type ->
+            values().firstOrNull { type ->
                 type.alternatives.plus(type.label).containsIgnoreCase(str)
             } ?: throw TypeCastException()
         }

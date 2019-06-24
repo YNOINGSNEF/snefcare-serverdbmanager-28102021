@@ -7,7 +7,7 @@ import java.sql.PreparedStatement
 class LastComsis : DataFile() {
     override val fileName = "last_comsis"
     override val fileHeader = Header::class.java
-    override val fileCharset = DataFile.CHARSET_ANSI
+    override val fileCharset = CHARSET_ANSI
     override val fileExtension = "csv"
 
     override val tableName = "LAST_COMSIS"

@@ -82,7 +82,7 @@ abstract class Database {
         dbConnection.autoCommit = false
 
         filesToProcess.forEach { file ->
-            println("    > \"${file.fileName}\" - Starting import")
+            println("    > ${file::class.java.simpleName} : \"${file.fileName}\" - Starting import")
 
             val timeMillis = measureTimeMillis {
                 dbConnection.prepareStatement(file.insertSql).use { stmt ->
@@ -110,7 +110,7 @@ abstract class Database {
                 }
             }
 
-            println("    > \"${file.fileName}\" - Import completed in ${timeMillis.toFormattedElapsedTime()}")
+            println("    > ${file::class.java.simpleName} : \"${file.fileName}\" - Import completed in ${timeMillis.toFormattedElapsedTime()}")
         }
 
         dbConnection.autoCommit = true
@@ -134,7 +134,7 @@ abstract class Database {
     protected abstract fun executePostImportActions(dbConnection: Connection)
 
     protected fun cleanDump() {
-        getDumpFile().listFiles().forEach { it.deleteRecursively() }
+        getDumpFile().listFiles()?.forEach { it.deleteRecursively() }
     }
 
     protected fun getDumpFile(filename: String = "") = File(dumpFolderPath + filename)

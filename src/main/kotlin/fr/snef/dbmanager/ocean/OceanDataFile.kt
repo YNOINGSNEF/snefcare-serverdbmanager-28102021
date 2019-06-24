@@ -7,7 +7,7 @@ import java.sql.Timestamp
 import java.text.ParseException
 
 abstract class OceanDataFile : DataFile() {
-    override val fileCharset = DataFile.CHARSET_ANSI
+    override val fileCharset = CHARSET_ANSI
     override val fileExtension = "csv"
 
     override val tableName get() = fileName

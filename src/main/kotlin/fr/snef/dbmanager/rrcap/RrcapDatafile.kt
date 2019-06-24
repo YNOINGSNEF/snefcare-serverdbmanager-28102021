@@ -6,7 +6,7 @@ import java.io.File
 abstract class RrcapDatafile(protected val region: Region) : DataFile() {
     abstract val shortFileName: String
     override val fileName get() = region.name + File.separatorChar + region.name + "-" + shortFileName
-    override val fileCharset = DataFile.CHARSET_ANSI
+    override val fileCharset = CHARSET_ANSI
     override val fileExtension = "csv"
 
     protected fun String.extractSiteName() = "(\\d*)\\s*-\\s*(.*)".toRegex().matchEntire(this)?.groupValues?.get(2)?.takeIf { it.isNotBlank() }
