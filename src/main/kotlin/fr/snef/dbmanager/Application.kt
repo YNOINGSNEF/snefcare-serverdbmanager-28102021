@@ -2,6 +2,7 @@ package fr.snef.dbmanager
 
 import fr.snef.dbmanager.anfr.AnfrDatabase
 import fr.snef.dbmanager.comsis.ComsisDatabase
+import fr.snef.dbmanager.free.FreeDatabase
 import fr.snef.dbmanager.ocean.OceanDatabase
 import fr.snef.dbmanager.rrcap.RrcapDatabase
 import java.io.File
@@ -22,7 +23,8 @@ private val databases: List<Database> = listOf(
         ComsisDatabase,
         AnfrDatabase,
         RrcapDatabase,
-        OceanDatabase
+        OceanDatabase,
+        FreeDatabase
 )
 
 fun main() {
