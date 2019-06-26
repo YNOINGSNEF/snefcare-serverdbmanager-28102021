@@ -13,6 +13,7 @@ class S1IpAddresses(region: Region) : RrcapDatafile(region) {
     override val tableHeader = listOf(
             "region_code",
             "s1_name",
+            "enodeb",
             "ip_om_enodeb",
             "subnet_interco",
             "ip_control_plan",
@@ -24,6 +25,7 @@ class S1IpAddresses(region: Region) : RrcapDatafile(region) {
         try {
             stmt.setString(++index, region.name)
             stmt.setString(++index, record[Header.S1])
+            stmt.setString(++index, record[Header.ENODEB])
             stmt.setString(++index, record[Header.IP_O_M_ENODEB])
             stmt.setString(++index, record[Header.SUBNET_INTERCO])
             stmt.setString(++index, record[Header.IP_S1_X2_CP])
