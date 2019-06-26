@@ -6,6 +6,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
 
 object RestApi {
+    // https://www.data.gouv.fr/fr/datasets/donnees-sur-les-installations-radioelectriques-de-plus-de-5-watts-1/
     private val gouvDataApi: GouvDataApi = Retrofit.Builder()
             .baseUrl("https://www.data.gouv.fr/api/1/")
             .addConverterFactory(MoshiConverterFactory.create())
