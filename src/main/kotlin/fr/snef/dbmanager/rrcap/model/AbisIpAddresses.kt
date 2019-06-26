@@ -6,7 +6,7 @@ import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 
 class AbisIpAddresses(region: Region) : RrcapDatafile(region) {
-    override val shortFileName = "Abis-IP-Addresses"
+    override val shortFileName = "ABIS-IP-Addresses"
     override val fileHeader = Header::class.java
 
     override val tableName = "ABIS_IP_ADDRESSES"
