@@ -6,6 +6,7 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.BufferedInputStream
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 import java.sql.BatchUpdateException
 import java.sql.Connection
@@ -89,23 +90,27 @@ abstract class Database {
                     var batchCount = 0
                     var index = 0
                     var batchStartIndex = index
-                    createCsvParser(file).use { csvParser ->
-                        csvParser.forEach { record ->
-                            index++
+                    try {
+                        createCsvParser(file).use { csvParser ->
+                            csvParser.forEach { record ->
+                                index++
 
-                            if (file.addBatch(stmt, record)) {
-                                batchCount++
-                            } else {
-                                println("      > Ignored line : " + record.toList())
+                                if (file.addBatch(stmt, record)) {
+                                    batchCount++
+                                } else {
+                                    println("      > Ignored line : " + record.toList())
+                                }
+
+                                if (batchCount > 0 && batchCount % batchSize == 0) {
+                                    executeBatch(stmt, dbConnection, batchStartIndex, index, batchStartIndex % maxRowCountBetweenBatchLog == 0)
+                                    batchStartIndex = index
+                                }
                             }
 
-                            if (batchCount > 0 && batchCount % batchSize == 0) {
-                                executeBatch(stmt, dbConnection, batchStartIndex, index, batchStartIndex % maxRowCountBetweenBatchLog == 0)
-                                batchStartIndex = index
-                            }
+                            executeBatch(stmt, dbConnection, batchStartIndex, index, true)
                         }
-
-                        executeBatch(stmt, dbConnection, batchStartIndex, index, true)
+                    } catch (e: IOException) {
+                        println("      > Ignored file that doesn't exist : ${file.fileName}")
                     }
                 }
             }

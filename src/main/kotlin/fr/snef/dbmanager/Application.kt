@@ -27,7 +27,7 @@ private val databases: List<Database> = listOf(
         FreeDatabase
 )
 
-fun main(args: Array<String>) {
+fun main() {
     if (!isDebugEnabled) {
         File(logFolderPath).mkdirs()
         val output = PrintStream(File(logFilename))

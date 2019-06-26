@@ -24,6 +24,11 @@ object RrcapDatabase : Database() {
             .plus(Region.values().map { Fh(it) })
             .plus(Region.values().map { DummyVlan(it) })
             .plus(Region.values().map { PdhLink(it) })
+            .plus(Region.values().map { AbisOverIpNsnAlu(it) })
+            .plus(Region.values().map { AbisIpAddresses(it) })
+            .plus(Region.values().map { Dpt3gIpHuawei(it) })
+            .plus(Region.values().map { Dpt3gIpNokia(it) })
+            .plus(Region.values().map { S1IpAddresses(it) })
             .toList()
 
     private val dumpFileNames = Region.values().map { it.name + ".taz" }
