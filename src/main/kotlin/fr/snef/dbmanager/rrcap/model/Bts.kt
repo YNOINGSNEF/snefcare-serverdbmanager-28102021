@@ -1,8 +1,8 @@
 package fr.snef.dbmanager.rrcap.model
 
-import org.apache.commons.csv.CSVRecord
 import fr.snef.dbmanager.rrcap.Region
 import fr.snef.dbmanager.rrcap.RrcapDatafile
+import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 
 class Bts(region: Region) : RrcapDatafile(region) {
@@ -10,13 +10,14 @@ class Bts(region: Region) : RrcapDatafile(region) {
     override val fileHeader = Header::class.java
 
     override val tableName = "BTS"
-    override val tableHeader = listOf("bts", "zpt", "type", "status", "system")
+    override val tableHeader = listOf("bts", "zpt", "type", "manufacturer", "status", "system")
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
         var index = 0
         stmt.setString(++index, record[Header.BTS])
         stmt.setString(++index, record[Header.ZPT])
         stmt.setString(++index, record[Header.TYPE])
+        stmt.setString(++index, record[Header.CONSTRUCTEUR])
         stmt.setString(++index, record[Header.STATUS])
         stmt.setString(++index, record[Header.SYSTEM])
         stmt.addBatch()

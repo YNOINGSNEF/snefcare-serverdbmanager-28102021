@@ -1,8 +1,8 @@
 package fr.snef.dbmanager.rrcap.model
 
-import org.apache.commons.csv.CSVRecord
 import fr.snef.dbmanager.rrcap.Region
 import fr.snef.dbmanager.rrcap.RrcapDatafile
+import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 
 class ENodeB(region: Region) : RrcapDatafile(region) {
@@ -10,7 +10,7 @@ class ENodeB(region: Region) : RrcapDatafile(region) {
     override val fileHeader = Header::class.java
 
     override val tableName = "ENODEB"
-    override val tableHeader = listOf("nodeB", "zpt", "nodeB_alias_4g", "site", "type", "system", "baie_type", "modele", "emplacement")
+    override val tableHeader = listOf("nodeB", "zpt", "nodeB_alias_4g", "site", "type", "manufacturer", "system", "baie_type", "modele", "emplacement")
 
     override fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean {
         var index = 0
@@ -20,6 +20,7 @@ class ENodeB(region: Region) : RrcapDatafile(region) {
             stmt.setString(++index, record[Header.NODEB_ALIAS4G])
             stmt.setString(++index, record[Header.SITE_G2R])
             stmt.setString(++index, record[Header.TYPE])
+            stmt.setString(++index, record[Header.TYPE].removePrefix("NodeB "))
             stmt.setString(++index, record[Header.SYSTEM])
             stmt.setString(++index, record[Header.BAIETYPE])
             stmt.setString(++index, record[Header.MODELE])
