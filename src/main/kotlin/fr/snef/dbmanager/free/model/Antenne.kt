@@ -3,6 +3,7 @@ package fr.snef.dbmanager.free.model
 import fr.snef.dbmanager.free.FreeDataFile
 import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
+import kotlin.math.roundToInt
 
 class Antenne(filename: String) : FreeDataFile(filename) {
     override val tableName = "ANTENNA"
@@ -35,7 +36,7 @@ class Antenne(filename: String) : FreeDataFile(filename) {
         fun populateStatement(stmt: PreparedStatement, record: CSVRecord, index: Int = 0) {
             var idx = index
             stmt.setInt(++idx, record[Header.NUMERO_SECTEUR].toInt())
-            stmt.setInt(++idx, record[Header.AZIMUT].toInt())
+            stmt.setInt(++idx, record[Header.AZIMUT].toFloat().roundToInt())
             stmt.setString(++idx, record[Header.REFERENCE].extractAntennaReference())
             stmt.setString(++idx, record[Header.CONSTRUCTEUR])
             stmt.setBoolean(++idx, true)

@@ -19,10 +19,15 @@ class Site(filename: String) : FreeDataFile(filename) {
     override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) {
         var index = 0
 
+        val altitude = record[Header.ALTITUDE_MSL].replace("\\s".toRegex(), "").toIntOrNull()
+        if (altitude == null) {
+            println("      > Warning, empty altitude on line : " + record.toList())
+        }
+
         stmt.setString(++index, record[Header.NOM_SITE])
         stmt.setString(++index, record[Header.NOM_SITE])
         stmt.setFloat(++index, record[Header.LATITUDE].toFloat())
         stmt.setFloat(++index, record[Header.LONGITUDE].toFloat())
-        stmt.setInt(++index, record[Header.ALTITUDE_MSL].toInt())
+        stmt.setInt(++index, altitude ?: 0)
     }
 }

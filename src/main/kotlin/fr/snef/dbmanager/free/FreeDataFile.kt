@@ -33,6 +33,7 @@ abstract class FreeDataFile(
             return false
         } catch (ex: InvalidParameterException) {
             // Ex: on a essayé de créer une cellule 3G sur une ligne contenant une cellule 4G, on ignore donc l'erreur
+            // Ex: aucun tilt n'a été renseigné pour la cellule
             stmt.clearParameters()
             true
         } catch (ex: IllegalArgumentException) {
@@ -46,8 +47,7 @@ abstract class FreeDataFile(
         }
     }
 
-
-    protected fun String.extractCarrierId(): Int = if (this == "FM") Carrier.FRM.id else TODO("Unsupported carrier")
+    protected fun String.extractCarrierId(): Int = if (this == "FRM") Carrier.FRM.id else TODO("Unsupported carrier")
 
     abstract fun populateStatement(stmt: PreparedStatement, record: CSVRecord)
 
@@ -71,7 +71,6 @@ abstract class FreeDataFile(
         NUM_CI,
         LAC,
         SCRAMBLING_CODE,
-        RAC,
         ECI,
         TAC,
         PCI,

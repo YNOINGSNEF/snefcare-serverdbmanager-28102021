@@ -2,6 +2,7 @@ package fr.snef.dbmanager.free.model
 
 import fr.snef.dbmanager.free.FreeDataFile
 import org.apache.commons.csv.CSVRecord
+import java.security.InvalidParameterException
 import java.sql.PreparedStatement
 
 class AntenneTilt(filename: String) : FreeDataFile(filename) {
@@ -26,7 +27,7 @@ class AntenneTilt(filename: String) : FreeDataFile(filename) {
             record[Header.TILT_L800].isNotBlank() -> System.L800 to record[Header.TILT_L800]
             record[Header.TILT_L1800].isNotBlank() -> System.L1800 to record[Header.TILT_L1800]
             record[Header.TILT_L2600].isNotBlank() -> System.L2600 to record[Header.TILT_L2600]
-            else -> throw IllegalArgumentException("Tilt has not been set")
+            else -> throw InvalidParameterException("Tilt has not been set")
         }
 
         stmt.setInt(++index, system.id)

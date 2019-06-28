@@ -32,13 +32,23 @@ class Cell3G(filename: String) : FreeDataFile(filename) {
         val numCi = record[Header.NUM_CI].toIntOrNull()
                 ?: throw InvalidParameterException("Line doesn't contain 3G cell")
 
+        val power = record[Header.PW].toFloatOrNull()
+        if (power == null) {
+            println("      > Warning, empty PW on line : " + record.toList())
+        }
+
+        val frequency = record[Header.FREQUENCE_DL].toFloatOrNull()
+        if (frequency == null) {
+            println("      > Warning, empty frequency on line : " + record.toList())
+        }
+
         stmt.setInt(++index, numCi)
         stmt.setInt(++index, record[Header.LAC].toInt())
-        stmt.setInt(++index, record[Header.RAC].toIntOrNull() ?: 1)
+        stmt.setInt(++index, 1)
         stmt.setInt(++index, record[Header.SCRAMBLING_CODE].toInt())
         stmt.setBoolean(++index, record[Header.TYPE] == "INDOOR")
-        stmt.setFloat(++index, record[Header.FREQUENCE_DL].toFloat())
-        stmt.setFloat(++index, record[Header.PW].toFloat())
+        stmt.setFloat(++index, frequency ?: 0f)
+        stmt.setFloat(++index, power ?: 0f)
         stmt.setBoolean(++index, true)
         stmt.setInt(++index, System.valueOf(record[Header.SYSTEME]).id)
         stmt.setInt(++index, record[Header.OPERATEUR].extractCarrierId())
