@@ -22,8 +22,11 @@ abstract class Database {
     protected val formattedDate: String get() = dateFormat.format(Date())
 
     private val rootPath
-        get() = if (isDebugEnabled) "C:" + File.separator + "Users" + File.separator + "Cockpit" + File.separator + "IdeaProjects" + File.separator + "dump" + File.separator
-        else File.separator + "dump" + File.separator
+        get() = if (isDebugEnabled) {
+            "C:" + File.separator + "Users" + File.separator + "Cockpit" + File.separator + "IdeaProjects" + File.separator + "dump" + File.separator
+        } else {
+            File.separator + "dump" + File.separator
+        }
     protected abstract val dumpFolder: String
 
     private val dumpFolderPath get() = rootPath + dumpFolder
