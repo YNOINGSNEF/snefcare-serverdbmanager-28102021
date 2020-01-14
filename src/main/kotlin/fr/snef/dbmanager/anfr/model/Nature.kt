@@ -14,7 +14,7 @@ class Nature : AnfrDataFile() {
             stmt.setString(++index, record[Header.NAT_LB_NOM])
             stmt.addBatch()
             true
-        } catch (ex: NumberFormatException) {
+        } catch (ex: Exception) {
             stmt.clearParameters()
             false
         } catch (ex: TypeCastException) {
