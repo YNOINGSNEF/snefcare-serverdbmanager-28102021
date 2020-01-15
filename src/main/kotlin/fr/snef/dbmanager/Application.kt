@@ -12,7 +12,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
 
-var isDebugEnabled = true
+var isDebugEnabled = false
 
 private val formattedDate: String = SimpleDateFormat("yyyy-MM-dd").format(Date())
 private val logFolderPath
