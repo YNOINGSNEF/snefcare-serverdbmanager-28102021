@@ -13,11 +13,12 @@ import kotlin.system.measureTimeMillis
 var config: Config = Config.Debug
 
 private val databases: List<Database> = listOf(
-        ComsisDatabase,
-        AnfrDatabase,
-        RrcapDatabase,
-        OceanDatabase,
-        FreeDatabase
+//        ComsisDatabase,
+//        AnfrDatabase,
+//        RrcapDatabase,
+//        OceanDatabase,
+//        FreeDatabase,
+        OrangeDatabase
 )
 
 fun main() {

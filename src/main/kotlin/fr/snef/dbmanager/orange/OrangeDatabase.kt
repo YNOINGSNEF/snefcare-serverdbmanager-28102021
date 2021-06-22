@@ -1,11 +1,9 @@
 package fr.snef.dbmanager.orange
 
+import fr.snef.dbmanager.DataFile
 import fr.snef.dbmanager.Database
 import fr.snef.dbmanager.config
-import fr.snef.dbmanager.orange.model.Antenna
-import fr.snef.dbmanager.orange.model.AntennaCell
-import fr.snef.dbmanager.orange.model.AntennaDetails
-import fr.snef.dbmanager.orange.model.Site
+import fr.snef.dbmanager.orange.model.AntennaTilt
 import java.io.File
 import java.sql.Connection
 
@@ -20,10 +18,11 @@ object OrangeDatabase : Database() {
             ?.map { it.nameWithoutExtension }
             ?: emptyList()
 
-    override val filesToProcess = dumpFileNames.mapNotNull { Site.from(it) }
-            .plus(dumpFileNames.mapNotNull { Antenna.from(it) })
-            .plus(dumpFileNames.mapNotNull { AntennaCell.from(it) })
-            .plus(dumpFileNames.mapNotNull { AntennaDetails.from(it) })
+    override val filesToProcess = emptyList<DataFile>() // TODO dumpFileNames.mapNotNull { Site.from(it) }
+//            .plus(dumpFileNames.mapNotNull { Antenna.from(it) })
+//            .plus(dumpFileNames.mapNotNull { AntennaCell.from(it) })
+//            .plus(dumpFileNames.mapNotNull { AntennaDetails.from(it) })
+            .plus(dumpFileNames.mapNotNull { AntennaTilt.from(it) })
 
     override fun retrieveNewDump(): Boolean = dumpFileNames.isNotEmpty()
 

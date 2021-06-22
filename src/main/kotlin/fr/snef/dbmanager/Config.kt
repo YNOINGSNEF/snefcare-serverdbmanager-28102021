@@ -27,11 +27,11 @@ abstract class Config {
     object Debug : Config() {
         override val isDebug = true
 
-        override val dumpsRootPath = "C:\\Users\\Cockpit\\IdeaProjects\\dump\\"
-        override val archiveFolderPath = dumpsRootPath + "archives\\"
+        override val dumpsRootPath = "/Users/sebastien/Downloads/snef/dump/"
+        override val archiveFolderPath = dumpsRootPath + "archives/"
 
         override val shouldLogInFile = false
-        override val logFolderPath = dumpsRootPath + "logs\\"
+        override val logFolderPath = dumpsRootPath + "logs/"
 
         override val databaseUrl = "jdbc:mysql://mysql-admin.care-apps.fr:3306"
     }

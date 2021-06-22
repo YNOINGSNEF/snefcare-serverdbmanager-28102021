@@ -1,7 +1,6 @@
 package fr.snef.dbmanager.orange.model
 
 import fr.snef.dbmanager.orange.OrangeDataFile
-import fr.snef.dbmanager.orange.model.Antenna.Header
 import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 
@@ -18,7 +17,7 @@ class AntennaCell(filename: String) : OrangeDataFile(filename) {
         }
     }
 
-    override val fileHeader = Header::class.java
+    override val fileHeader = Antenna.Header::class.java
 
     override val tableName = AntennaCell.tableName
     override val tableHeader = listOf("antenna_id", "cell_id")
@@ -27,7 +26,7 @@ class AntennaCell(filename: String) : OrangeDataFile(filename) {
 
     override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) {
         var index = 0
-        stmt.setInt(++index, record[Header.ID].toInt())
-        stmt.setInt(++index, record[Header.CELLULAR_NODE_ID].toInt())
+        stmt.setInt(++index, record[Antenna.Header.ID].toInt())
+        stmt.setInt(++index, record[Antenna.Header.CELLULAR_NODE_ID].toInt())
     }
 }

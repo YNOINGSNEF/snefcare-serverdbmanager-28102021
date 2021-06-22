@@ -30,6 +30,8 @@ class Antenna(private val isPrev: Boolean, filename: String) : OrangeDataFile(fi
             }
             return null
         }
+
+        fun isValid(deviceType: String) = deviceType.toLowerCase().contains("antenne")
     }
 
     override val fileHeader = Header::class.java
@@ -40,13 +42,12 @@ class Antenna(private val isPrev: Boolean, filename: String) : OrangeDataFile(fi
     override val onDuplicateKeySql = "ON DUPLICATE KEY UPDATE id = id"
 
     override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) {
-        var index = 0
-
-        if (!record[Header.DEVICE_TYPE].toLowerCase().contains("antenne")) {
+        if (!isValid(record[Header.DEVICE_TYPE])) {
             // Equipment file also contains bays & other RF equipments, but we only need antennas
             throw InvalidParameterException("Ignoring entry as not containing an antenna")
         }
 
+        var index = 0
         stmt.setInt(++index, record[Header.ID].toInt())
         stmt.setInt(++index, 0) // Set by AntennaDetails (sector number)
         stmt.setInt(++index, -1) // Set by AntennaDetails (antenna azimuth)
