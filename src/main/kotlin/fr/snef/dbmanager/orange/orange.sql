@@ -12,7 +12,7 @@ create table dump_orf_dev.CELL_2G
     num_ci     mediumint unsigned not null,
     lac        smallint unsigned  not null,
     rac        tinyint unsigned   not null,
-    BCCH       smallint unsigned  not null,
+    bcch       smallint unsigned  not null,
     is_indoor  tinyint(3)         not null,
     frequency  float(6, 1)        not null,
     pw         float(3, 1)        not null,
@@ -82,15 +82,15 @@ create table dump_orf_dev.ANTENNA
         primary key,
     sector_number tinyint unsigned           not null,
     azimuth       smallint                   not null,
-    reference     varchar(30)                not null,
+    reference     varchar(50)                not null,
     manufacturer  varchar(20)                not null,
     is_installed  tinyint unsigned default 1 not null,
     hba           float(8, 3)                not null,
-    site_code     varchar(10)                not null,
+    site_id     varchar(10)                not null,
     constraint antenna_UNIQUE
-        unique (site_code, sector_number, azimuth, reference, manufacturer, hba, is_installed),
+        unique (id, site_id, sector_number, azimuth, reference, manufacturer, hba, is_installed),
     constraint fk_ANTENNA_SITE1
-        foreign key (site_code) references dump_orf_dev.SITE (code)
+        foreign key (site_id) references dump_orf_dev.SITE (id)
             on update cascade on delete cascade
 );
 

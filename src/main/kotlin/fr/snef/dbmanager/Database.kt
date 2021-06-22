@@ -77,7 +77,7 @@ abstract class Database {
             println("    > ${file::class.java.simpleName} : \"${file.fileName}\" - Starting import")
 
             val timeMillis = measureTimeMillis {
-                dbConnection.prepareStatement(file.insertSql).use { stmt ->
+                dbConnection.prepareStatement(file.sqlQuery).use { stmt ->
                     var batchCount = 0
                     var index = 0
                     var batchStartIndex = index

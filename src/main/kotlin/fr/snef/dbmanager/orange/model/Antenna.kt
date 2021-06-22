@@ -1,18 +1,30 @@
 package fr.snef.dbmanager.orange.model
 
-import fr.snef.dbmanager.free.FreeDataFile
 import fr.snef.dbmanager.orange.OrangeDataFile
 import org.apache.commons.csv.CSVRecord
+import java.security.InvalidParameterException
 import java.sql.PreparedStatement
 
 class Antenna(private val isPrev: Boolean, filename: String) : OrangeDataFile(filename) {
 
     companion object {
-        private const val filePrefix = "NORIA_FLUX_GENERIQUE_EQPT"
+        const val tableName = "ANTENNA"
+        val tableHeader = listOf(
+                "id",
+                "sector_number",
+                "azimuth",
+                "reference",
+                "manufacturer",
+                "is_installed",
+                "hba",
+                "site_id"
+        )
+
+        const val filePrefix = "NORIA_FLUX_GENERIQUE_EQPT"
         private const val prevString = "PREV"
 
         fun from(fileName: String): Antenna? {
-            if (fileName.contains(filePrefix)) {
+            if (fileName.startsWith(filePrefix)) {
                 val isPrev = fileName.contains(prevString)
                 return Antenna(isPrev, fileName)
             }
@@ -20,32 +32,28 @@ class Antenna(private val isPrev: Boolean, filename: String) : OrangeDataFile(fi
         }
     }
 
-    override val fileHeader = FreeDataFile.Header::class.java
+    override val fileHeader = Header::class.java
 
-    override val tableName = "ANTENNA"
-    override val tableHeader = listOf(
-            "id",
-            "sector_number",
-            "azimuth",
-            "reference",
-            "manufacturer",
-            "is_installed",
-            "hba",
-            "site_id"
-    )
+    override val tableName = Antenna.tableName
+    override val tableHeader = Antenna.tableHeader
 
     override val onDuplicateKeySql = "ON DUPLICATE KEY UPDATE id = id"
 
     override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) {
         var index = 0
 
+        if (!record[Header.DEVICE_TYPE].toLowerCase().contains("antenne")) {
+            // Equipment file also contains bays & other RF equipments, but we only need antennas
+            throw InvalidParameterException("Ignoring entry as not containing an antenna")
+        }
+
         stmt.setInt(++index, record[Header.ID].toInt())
-        stmt.setInt(++index, -1) // Sector number
-        stmt.setInt(++index, -1) // Antenna azimuth
+        stmt.setInt(++index, 0) // Set by AntennaDetails (sector number)
+        stmt.setInt(++index, -1) // Set by AntennaDetails (antenna azimuth)
         stmt.setString(++index, record[Header.EQPT_CATALOG])
         stmt.setString(++index, record[Header.MANUFACTURER])
-        stmt.setBoolean(++index, isPrev)
-        stmt.setFloat(++index, record[Header.HAUTEUR_MM].toFloatOrNull() ?: 0f / 1000)
+        stmt.setBoolean(++index, !isPrev)
+        stmt.setFloat(++index, 0f) // Set by AntennaDetails (antenna base height)
         stmt.setString(++index, record[Header.SITE_ID])
     }
 

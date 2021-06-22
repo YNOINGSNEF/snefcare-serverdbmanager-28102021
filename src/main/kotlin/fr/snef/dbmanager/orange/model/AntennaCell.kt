@@ -1,0 +1,33 @@
+package fr.snef.dbmanager.orange.model
+
+import fr.snef.dbmanager.orange.OrangeDataFile
+import fr.snef.dbmanager.orange.model.Antenna.Header
+import org.apache.commons.csv.CSVRecord
+import java.sql.PreparedStatement
+
+class AntennaCell(filename: String) : OrangeDataFile(filename) {
+
+    companion object {
+        const val tableName = "ANTENNA_CELL"
+
+        fun from(fileName: String): AntennaCell? {
+            if (fileName.startsWith(Antenna.filePrefix)) {
+                return AntennaCell(fileName)
+            }
+            return null
+        }
+    }
+
+    override val fileHeader = Header::class.java
+
+    override val tableName = AntennaCell.tableName
+    override val tableHeader = listOf("antenna_id", "cell_id")
+
+    override val onDuplicateKeySql = "ON DUPLICATE KEY UPDATE antenna_id = antenna_id"
+
+    override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) {
+        var index = 0
+        stmt.setInt(++index, record[Header.ID].toInt())
+        stmt.setInt(++index, record[Header.CELLULAR_NODE_ID].toInt())
+    }
+}

@@ -12,7 +12,7 @@ class Site(private val isPrev: Boolean, fileName: String) : OrangeDataFile(fileN
         private const val prevString = "PREV"
 
         fun from(fileName: String): Site? {
-            if (fileName.contains(filePrefix)) {
+            if (fileName.startsWith(filePrefix)) {
                 val isPrev = fileName.contains(prevString)
                 return Site(isPrev, fileName)
             }
@@ -21,6 +21,7 @@ class Site(private val isPrev: Boolean, fileName: String) : OrangeDataFile(fileN
     }
 
     override val fileHeader = Header::class.java
+
     override val tableName = "SITE"
     override val tableHeader = listOf(
             "id",

@@ -44,5 +44,4 @@ abstract class OrangeDataFile(override val fileName: String) : DataFile() {
     }
 
     abstract fun populateStatement(stmt: PreparedStatement, record: CSVRecord)
-
 }
