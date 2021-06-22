@@ -1,0 +1,14 @@
+package fr.snef.dbmanager.orange.model
+
+enum class System(val id: Int) {
+    G900(1),
+    G1800(2),
+    U900(3),
+    U2100(4),
+    L700(5),
+    L800(6),
+    L1800(7),
+    L2100(8),
+    L2600(9),
+    L3500(10)
+}
