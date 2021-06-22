@@ -36,11 +36,13 @@ object AnfrDatabase : Database() {
             val anfrResourceInfo = RestApi.getAnfrResources()
 
             val referenceResource = anfrResourceInfo.resources
-                    .filter { it.title.contains("Tables de référence") }
+                    // .filter { it.title.contains("Table de référence") }
+                    .filter { it.title.contains("référence") }
                     .maxBy { it.lastModifiedDateTime }
 
             val dataResource = anfrResourceInfo.resources
-                    .filter { it.title.contains("Tables supports antennes émetteurs bandes") }
+                    // .filter { it.title.contains("Tables supports antennes emetteurs bandes") }
+                    .filter { it.title.contains("supports antennes") }
                     .maxBy { it.lastModifiedDateTime }
 
             return if (referenceResource != null
