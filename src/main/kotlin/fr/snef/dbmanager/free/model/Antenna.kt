@@ -5,7 +5,7 @@ import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 import kotlin.math.roundToInt
 
-class Antenne(filename: String) : FreeDataFile(filename) {
+class Antenna(filename: String) : FreeDataFile(filename) {
     override val tableName = "ANTENNA"
     override val tableHeader = listOf(
             // "id",
@@ -20,7 +20,7 @@ class Antenne(filename: String) : FreeDataFile(filename) {
 
     override val onDuplicateKeySql = "ON DUPLICATE KEY UPDATE site_code = site_code"
 
-    override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) = Antenne.populateStatement(stmt, record)
+    override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) = Antenna.populateStatement(stmt, record)
 
     companion object {
         const val INSERT_SELECT_SQL = " FROM ANTENNA" +

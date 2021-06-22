@@ -11,13 +11,6 @@ class Site : OceanDataFile() {
     override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) {
         var index = 0
 
-//        val x = record[Header.SIT_COOXSIM].toDouble() * 1000
-//        val y = record[Header.SIT_COOYSIM].toDouble() * 1000
-//
-//        val (lat, lng) = lambert2toWgs84(x, y)
-//
-//        println("($x; $y) -> ($lat, $lng)")
-
         stmt.setInt(++index, record[Header.SIT_ID].toInt())
         stmt.setInt(++index, record[Header.DEP_NUM].toInt())
         stmt.setInt(++index, record[Header.REG_NUM].toInt())

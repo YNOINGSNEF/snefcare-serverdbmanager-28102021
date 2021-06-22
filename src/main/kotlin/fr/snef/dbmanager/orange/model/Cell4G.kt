@@ -1,7 +1,7 @@
 package fr.snef.dbmanager.orange.model
 
 import fr.snef.dbmanager.free.FreeDataFile
-import fr.snef.dbmanager.free.model.Antenne
+import fr.snef.dbmanager.free.model.Antenna
 import org.apache.commons.csv.CSVRecord
 import java.security.InvalidParameterException
 import java.sql.PreparedStatement
@@ -24,7 +24,7 @@ class Cell4G(filename: String) : FreeDataFile(filename) {
             "antenna_id"
     )
 
-    override val insertSelectSql = "SELECT null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, id" + Antenne.INSERT_SELECT_SQL
+    override val insertSelectSql = "SELECT null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, id" + Antenna.INSERT_SELECT_SQL
 
     override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) {
         var index = 0
@@ -42,6 +42,6 @@ class Cell4G(filename: String) : FreeDataFile(filename) {
         stmt.setInt(++index, record[Header.OPERATEUR].extractCarrierId())
         stmt.setInt(++index, 208)
         stmt.setInt(++index, 15)
-        Antenne.populateStatement(stmt, record, index)
+        Antenna.populateStatement(stmt, record, index)
     }
 }

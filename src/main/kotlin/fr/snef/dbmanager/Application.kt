@@ -1,24 +1,17 @@
 package fr.snef.dbmanager
 
-import fr.snef.dbmanager.anfr.AnfrDatabase
-import fr.snef.dbmanager.comsis.ComsisDatabase
-import fr.snef.dbmanager.free.FreeDatabase
-import fr.snef.dbmanager.ocean.OceanDatabase
-import fr.snef.dbmanager.rrcap.RrcapDatabase
-import java.io.File
+import fr.snef.dbmanager.orange.OrangeDatabase
 import java.io.PrintStream
-import java.text.SimpleDateFormat
-import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
 
-var isDebugEnabled = false
+/**
+ * Possible values are:
+ * - Config.Debug --> will use development settings (folder paths, databases, etc.)
+ * - Config.Release --> will use production settings
+ */
+var config: Config = Config.Debug
 
-private val formattedDate: String = SimpleDateFormat("yyyy-MM-dd").format(Date())
-private val logFolderPath
-    get() = if (isDebugEnabled) "D:" + File.separator + "dump" + File.separator + "tools" + File.separator + "log" + File.separator
-    else File.separator + "dump" + File.separator + "tools" + File.separator + "log" + File.separator
-private val logFilename = "$logFolderPath$formattedDate.log"
 private val databases: List<Database> = listOf(
         ComsisDatabase,
         AnfrDatabase,
@@ -28,9 +21,9 @@ private val databases: List<Database> = listOf(
 )
 
 fun main() {
-    if (!isDebugEnabled) {
-        File(logFolderPath).mkdirs()
-        val output = PrintStream(File(logFilename))
+    if (config.shouldLogInFile) {
+        config.logFolder.mkdirs()
+        val output = PrintStream(config.logFile)
         System.setOut(output)
         System.setErr(output)
     }

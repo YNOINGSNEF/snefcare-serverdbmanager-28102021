@@ -1,12 +1,12 @@
 package fr.snef.dbmanager.orange.model
 
 import fr.snef.dbmanager.free.FreeDataFile
-import fr.snef.dbmanager.free.model.Antenne
+import fr.snef.dbmanager.free.model.Antenna
 import org.apache.commons.csv.CSVRecord
 import java.security.InvalidParameterException
 import java.sql.PreparedStatement
 
-class AntenneTilt(filename: String) : FreeDataFile(filename) {
+class AntennaTilt(filename: String) : FreeDataFile(filename) {
     override val tableName = "ANTENNA_TILT"
     override val tableHeader = listOf(
             "antenna_id",
@@ -14,7 +14,7 @@ class AntenneTilt(filename: String) : FreeDataFile(filename) {
             "tilt"
     )
 
-    override val insertSelectSql = "SELECT id, ?, ?" + Antenne.INSERT_SELECT_SQL
+    override val insertSelectSql = "SELECT id, ?, ?" + Antenna.INSERT_SELECT_SQL
 
     override val onDuplicateKeySql = "ON DUPLICATE KEY UPDATE tilt = tilt"
 
@@ -33,6 +33,6 @@ class AntenneTilt(filename: String) : FreeDataFile(filename) {
 
         stmt.setInt(++index, system.id)
         stmt.setInt(++index, tilt.filter { it.isDigit() }.toInt())
-        Antenne.populateStatement(stmt, record, index)
+        Antenna.populateStatement(stmt, record, index)
     }
 }

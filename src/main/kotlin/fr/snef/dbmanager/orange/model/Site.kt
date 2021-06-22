@@ -5,13 +5,13 @@ import fr.snef.dbmanager.orange.OrangeDataFile
 import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
 
-class Site(val isPrev: Boolean, fileName : String) : OrangeDataFile(fileName) {
+class Site(private val isPrev: Boolean, fileName: String) : OrangeDataFile(fileName) {
 
     companion object {
-        const val filePrefix = "NORIA_FLUX_GENERIQUE_SITE"
-        const val prevString = "PREV"
+        private const val filePrefix = "NORIA_FLUX_GENERIQUE_SITE"
+        private const val prevString = "PREV"
 
-        fun fromFileName(fileName: String) : Site? {
+        fun from(fileName: String): Site? {
             if (fileName.contains(filePrefix)) {
                 val isPrev = fileName.contains(prevString)
                 return Site(isPrev, fileName)
@@ -31,8 +31,6 @@ class Site(val isPrev: Boolean, fileName : String) : OrangeDataFile(fileName) {
             "altitude",
             "is_prev"
     )
-
-    override val onDuplicateKeySql = "ON DUPLICATE KEY UPDATE code = code"
 
     override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) {
         var index = 0

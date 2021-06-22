@@ -24,7 +24,7 @@ class Cell3G(filename: String) : FreeDataFile(filename) {
             "antenna_id"
     )
 
-    override val insertSelectSql = "SELECT null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, id" + Antenne.INSERT_SELECT_SQL
+    override val insertSelectSql = "SELECT null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, id" + Antenna.INSERT_SELECT_SQL
 
     override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) {
         var index = 0
@@ -54,6 +54,6 @@ class Cell3G(filename: String) : FreeDataFile(filename) {
         stmt.setInt(++index, record[Header.OPERATEUR].extractCarrierId())
         stmt.setInt(++index, 208)
         stmt.setInt(++index, 15)
-        Antenne.populateStatement(stmt, record, index)
+        Antenna.populateStatement(stmt, record, index)
     }
 }

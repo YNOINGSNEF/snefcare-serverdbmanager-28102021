@@ -1,27 +1,26 @@
 package fr.snef.dbmanager.orange.model
 
-import fr.snef.dbmanager.Utils
 import fr.snef.dbmanager.free.FreeDataFile
-import fr.snef.dbmanager.free.model.Antenne.Companion.extractAntennaReference
 import fr.snef.dbmanager.orange.OrangeDataFile
 import org.apache.commons.csv.CSVRecord
 import java.sql.PreparedStatement
-import kotlin.math.roundToInt
 
-class Antenne(val isPrev: Boolean, filename: String) : OrangeDataFile(filename) {
+class Antenna(private val isPrev: Boolean, filename: String) : OrangeDataFile(filename) {
 
     companion object {
-        const val filePrefix = "NORIA_FLUX_GENERIQUE_SITE"
-        const val prevString = "PREV"
+        private const val filePrefix = "NORIA_FLUX_GENERIQUE_EQPT"
+        private const val prevString = "PREV"
 
-        fun fromFileName(fileName: String) : Antenne? {
+        fun from(fileName: String): Antenna? {
             if (fileName.contains(filePrefix)) {
                 val isPrev = fileName.contains(prevString)
-                return Antenne(isPrev, fileName)
+                return Antenna(isPrev, fileName)
             }
             return null
         }
     }
+
+    override val fileHeader = FreeDataFile.Header::class.java
 
     override val tableName = "ANTENNA"
     override val tableHeader = listOf(
@@ -35,17 +34,19 @@ class Antenne(val isPrev: Boolean, filename: String) : OrangeDataFile(filename) 
             "site_id"
     )
 
+    override val onDuplicateKeySql = "ON DUPLICATE KEY UPDATE id = id"
+
     override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) {
         var index = 0
 
         stmt.setInt(++index, record[Header.ID].toInt())
-        stmt.setInt(++index, record[Header.NUMERO_SECTEUR].toInt())
-        stmt.setInt(++index, record[Header.AZIMUT].toFloat().roundToInt())
-        stmt.setString(++index, record[Header.REFERENCE].extractAntennaReference())
-        stmt.setString(++index, record[Header.CONSTRUCTEUR])
+        stmt.setInt(++index, -1) // Sector number
+        stmt.setInt(++index, -1) // Antenna azimuth
+        stmt.setString(++index, record[Header.EQPT_CATALOG])
+        stmt.setString(++index, record[Header.MANUFACTURER])
         stmt.setBoolean(++index, isPrev)
-        stmt.setFloat(++index, record[Header.HAUTEUR_BASE].toFloat())
-        stmt.setString(++index, record[Header.NOM_SITE])
+        stmt.setFloat(++index, record[Header.HAUTEUR_MM].toFloatOrNull() ?: 0f / 1000)
+        stmt.setString(++index, record[Header.SITE_ID])
     }
 
     enum class Header {
