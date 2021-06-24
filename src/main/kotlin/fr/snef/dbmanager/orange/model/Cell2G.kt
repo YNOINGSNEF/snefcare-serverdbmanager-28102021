@@ -4,28 +4,28 @@ import org.apache.commons.csv.CSVRecord
 import java.security.InvalidParameterException
 import java.sql.PreparedStatement
 
-class Cell3G(filename: String) : Cell(filename) {
+class Cell2G(filename: String) : Cell(filename) {
 
     companion object {
-        fun from(fileName: String) = fileName.takeIf { isValid(it) }?.let { Cell3G(it) }
+        fun from(fileName: String) = fileName.takeIf { isValid(it) }?.let { Cell2G(it) }
     }
 
-    override val tableName = "CELL_3G"
+    override val tableName = "CELL_2G"
     override val tableHeader = listOf(
         "id",
         "num_ci",
         "lac",
         "rac",
-        "scrambling_code",
+        "bcch",
         "is_indoor",
         "frequency",
-            "pw",
-            "in_service",
-            "system_id",
-            "carrier_id",
-            "mcc",
-            "mnc",
-            "antenna_id"
+        "pw",
+        "in_service",
+        "system_id",
+        "carrier_id",
+        "mcc",
+        "mnc",
+        "antenna_id"
     )
 
     override fun populateStatement(stmt: PreparedStatement, record: CSVRecord) {
@@ -36,36 +36,41 @@ class Cell3G(filename: String) : Cell(filename) {
             Carrier.from(mcc, mnc) ?: throw InvalidParameterException("Unsupported carrier for MCC=$mcc, MNC=$mnc")
 
         val numCI =
-            record[Header.CID].toIntOrNull() ?: throw InvalidParameterException("Ignoring non-3G cell (missing CI)")
+            record[Header.ID].toIntOrNull() ?: throw InvalidParameterException("Ignoring non-2G cell (missing CI)")
         val lac =
-            record[Header.LAC].toIntOrNull() ?: throw InvalidParameterException("Ignoring non-3G cell (missing LAC)")
+            record[Header.LAC].toIntOrNull() ?: throw InvalidParameterException("Ignoring non-2G cell (missing LAC)")
         val rac =
-            record[Header.RAC].toIntOrNull() ?: throw InvalidParameterException("Ignoring non-3G cell (missing RAC)")
-        val scramblingCode = record[Header.SCRAMBLING_CODE].toIntOrNull()
-            ?: throw InvalidParameterException("Ignoring non-3G cell (missing scrambling code)")
+            record[Header.RAC].toIntOrNull() ?: throw InvalidParameterException("Ignoring non-2G cell (missing RAC)")
+        val bcch =
+            0// TODO record[Header.BCCH].toIntOrNull() ?: throw InvalidParameterException("Ignoring non-2G cell (missing scrambling code)")
 
         val system = record[Header.BAND]
-            .takeIf { it.contains("UMTS") }
+            .takeIf { it.contains("GSM") }
             ?.let { band ->
                 when (band) {
-                    "UMTS 900 MHz" -> System.U900
-                    "UMTS 2200 MHz" -> System.U2200
+                    "GSM 900 MHz" -> System.G900
+                    "GSM 1800 MHz" -> System.G1800
                     else -> {
-                        println("      > ERROR: Unsupported 3G cell band=$band")
+                        println("      > ERROR: Unsupported 2G cell band=$band")
                         null
                     }
                 }
             }
-            ?: throw InvalidParameterException("Ignoring non-3G cell (wrong band)")
+            ?: throw InvalidParameterException("Ignoring non-2G cell (wrong band)")
+
+//            "LTE 800 MHz" -> System.L800
+//            "LTE 1800 MHz" -> System.L1800
+//            "LTE 2100 MHz" -> System.L2100
+//            "LTE 2600 MHz" -> System.L2600
 
         var index = 0
         stmt.setInt(++index, cellId)
         stmt.setInt(++index, numCI)
         stmt.setInt(++index, lac)
         stmt.setInt(++index, rac)
-        stmt.setInt(++index, scramblingCode)
+        stmt.setInt(++index, bcch)
         stmt.setBoolean(++index, record[Header.COUV].toLowerCase().contains("indoor"))
-        stmt.setFloat(++index, record[Header.UARFCN_DL].toFloatOrNull() ?: 0f)
+        stmt.setFloat(++index, 0f) // TODO record[Header.UARFCN_DL].toFloatOrNull() ?: 0f)
         stmt.setFloat(++index, 0f) // pw
         stmt.setBoolean(++index, record[Header.NET_STATUS].toLowerCase().contains("service"))
         stmt.setInt(++index, system.id)

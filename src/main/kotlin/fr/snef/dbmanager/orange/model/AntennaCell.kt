@@ -9,12 +9,9 @@ class AntennaCell(filename: String) : OrangeDataFile(filename) {
     companion object {
         const val tableName = "ANTENNA_CELL"
 
-        fun from(fileName: String): AntennaCell? {
-            if (fileName.startsWith(Antenna.filePrefix)) {
-                return AntennaCell(fileName)
-            }
-            return null
-        }
+        fun from(fileName: String) = fileName
+            .takeIf { it.startsWith(Antenna.filePrefix) }
+            ?.let { AntennaCell(it) }
     }
 
     override val fileHeader = Antenna.Header::class.java

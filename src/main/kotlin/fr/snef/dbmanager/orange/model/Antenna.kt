@@ -10,26 +10,22 @@ class Antenna(private val isPrev: Boolean, filename: String) : OrangeDataFile(fi
     companion object {
         const val tableName = "ANTENNA"
         val tableHeader = listOf(
-                "id",
-                "sector_number",
-                "azimuth",
-                "reference",
-                "manufacturer",
-                "is_installed",
-                "hba",
-                "site_id"
+            "id",
+            "sector_number",
+            "azimuth",
+            "reference",
+            "manufacturer",
+            "is_installed",
+            "hba",
+            "site_id"
         )
 
         const val filePrefix = "NORIA_FLUX_GENERIQUE_EQPT"
         private const val prevString = "PREV"
 
-        fun from(fileName: String): Antenna? {
-            if (fileName.startsWith(filePrefix)) {
-                val isPrev = fileName.contains(prevString)
-                return Antenna(isPrev, fileName)
-            }
-            return null
-        }
+        fun from(fileName: String) = fileName
+            .takeIf { it.startsWith(filePrefix) }
+            ?.let { Antenna(it.contains(prevString), it) }
 
         fun isValid(deviceType: String) = deviceType.toLowerCase().contains("antenne")
     }
@@ -174,7 +170,7 @@ class Antenna(private val isPrev: Boolean, filename: String) : OrangeDataFile(fi
         OUVERTURE_VERTICALE_NR3500,
         PUISSANCE_MAX_1800_DBM,
         RAPPORT_AV_AR_900_DB,
-        COUPLAGE_A95_2200,
+        COUPLAGE_A_95_2200,
         GAIN_NR3500_DBI,
         GAIN_800_DB,
         ISOLATION_ENTRE_BANDE_900_2200_DB,
@@ -182,7 +178,7 @@ class Antenna(private val isPrev: Boolean, filename: String) : OrangeDataFile(fi
         PERTE_EMISSION_2600_DB,
         PERTE_RECEPTION_2200_DB,
         SENSIBILITE_1800_DBM,
-        COUPLAGE_A95_1800,
+        COUPLAGE_A_95_1800,
         ISOLATION_ENTRE_BANDE_1800_2200_DB,
         PERTE_A_VERS_B_2200_DB,
         PRISE_AU_VENT_M2,
@@ -209,7 +205,7 @@ class Antenna(private val isPrev: Boolean, filename: String) : OrangeDataFile(fi
         PERTE_A_VERS_B_2600_DB,
         PERTE_PAR_100_M_800_DB,
         TILT_ELECTRIQUE_NR3500,
-        BANDE_DE_FREQUENCE_NR3500_MHZ,
+        BANDE_DE_FREQUENCE_NR3500_MHZ_1,
         PERTE_RECEPTION_700_DB,
         TYPE_DE_COUPLAGE,
         UTILISATION,
@@ -217,7 +213,7 @@ class Antenna(private val isPrev: Boolean, filename: String) : OrangeDataFile(fi
         PERTE_INSERTION_900_DB,
         PUISSANCE_2600_W,
         X_1_X,
-        A1_X,
+        X1_X,
         BANDE_DE_FREQUENCE_800_MHZ,
         OUVERTURE_HORIZONTALE_1800,
         PERTE_INSERTION_700_DB,
@@ -289,6 +285,19 @@ class Antenna(private val isPrev: Boolean, filename: String) : OrangeDataFile(fi
         ISOLATION_ENTRE_ACCES_3500_DB,
         RAPPORT_AV_AR_3500_DB,
         ROS_3500,
-        GAIN_NR2100_DBI
+        GAIN_NR2100_DBI,
+        PERTE_DUPLEXEUR_2100_DB,
+        PERTE_D_INSERTION_DB,
+        PUISSANCE_NR2100_W,
+        PUISSANCE_LTE2100_W,
+        BANDE_DE_FREQUENCE_NR3500_MHZ,
+        PUISSANCE_LTE1800_W,
+        TILT_ELECTRIQUE_RN3500_,
+        RAPPORT_AV_AR_NR3500_DB,
+        BANDE_PASSANTE_MHZ,
+        GAIN_2100_DB,
+        ROS_NR3500,
+        PUISSANCE_UMTS2200_W
     }
 }
+
