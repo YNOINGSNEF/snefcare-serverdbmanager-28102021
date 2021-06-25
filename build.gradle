@@ -1,24 +1,37 @@
 buildscript {
-    ext.kotlin_version = '1.2.40'
-    ext.retrofit_version = '2.0.0'
-    ext.apache_csv_version = '1.5'
-    ext.mysql_connector_version = '5.1.45'
-    ext.apache_compress_version = '1.16.1'
-    //ext.rxkotlin_version = '2.2.0'
+    ext {
+        apacheCompressVersion = '1.18'
+        apacheCsvVersion = '1.6'
+        kotlinVersion = '1.3.40'
+        mysqlConnectorVersion = '8.0.13'
+        retrofitVersion = '2.4.0'
+    }
 
     repositories {
         mavenCentral()
     }
+
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
-group = "fr.careapps.db"
+/**
+ * Pour créer l'exécutable à placer sur le serveur de production :
+ * 1. Vérifier que [isDebugEnabled] est à false dans Application.kt
+ * 2. Ouvrir un invité de commande (cmd, powershell) dans le dossier du projet
+ * 3. Exécuter la commande "./gradlew clean" (nettoyage)
+ * 4. Exécuter la commande "./gradlew installDist" (compiler l'exécutable)
+ * 5. Récupérer le dossier build/install/dbManager/* et le placer sur le serveur : /home/sftp/dump/tools/dbManager/*
+ * 6. ATTENTION : Vérifier que les fichiers dans le dossier /dbManager/bin/* aient les droits en exécution et /log/* en écriture
+ * 7. Done! L'application sera lancée automatiquement toutes les nuits (00h00) via une tâche CRON
+ */
+
+group = "fr.careapps.dbmanager"
 version = '1.0.0'
 
-apply plugin: 'java'
 apply plugin: 'kotlin'
+apply plugin: 'application'
 
 sourceCompatibility = 1.8
 
@@ -27,17 +40,15 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    compile "org.apache.commons:commons-csv:$apache_csv_version"
-    compile "mysql:mysql-connector-java:$mysql_connector_version"
-
-    //compile "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
-
-    compile "com.squareup.retrofit2:retrofit:$retrofit_version"
-    compile "com.squareup.retrofit2:converter-moshi:$retrofit_version"
-
-    compile "org.apache.commons:commons-compress:$apache_compress_version"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "mysql:mysql-connector-java:$mysqlConnectorVersion"
+    implementation "org.apache.commons:commons-compress:$apacheCompressVersion"
+    implementation "org.apache.commons:commons-csv:$apacheCsvVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion"
 }
+
+mainClassName = "fr.snef.dbmanager.ApplicationKt"
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
