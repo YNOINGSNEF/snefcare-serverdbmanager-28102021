@@ -24,7 +24,7 @@ abstract class DataFile {
     abstract val fileCharset: Charset
     abstract val fileExtension: String
 
-    protected abstract val tableName: String
+    abstract val tableName: String
     protected abstract val tableHeader: List<String>
     protected open val onDuplicateKeySql = ""
     protected open val insertSelectSql: String? = null

@@ -18,8 +18,8 @@ abstract class Config {
     val logFile get() = File("$logFolderPath$formattedDate.log")
 
     abstract val databaseUrl: String
-    open val databaseUser = "admin"
-    open val databasePassword = "_023HUdu6yQar8n4P_1f"
+    abstract val databaseUser: String
+    abstract val databasePassword: String
 
     /**
      * Debug configuration, used for development from local machine
@@ -34,6 +34,8 @@ abstract class Config {
         override val logFolderPath = dumpsRootPath + "logs/"
 
         override val databaseUrl = "jdbc:mysql://mysql-admin.care-apps.fr:3306"
+        override val databaseUser = Release.databaseUser
+        override val databasePassword = Release.databasePassword
     }
 
     /**
@@ -48,5 +50,7 @@ abstract class Config {
         override val logFolderPath = dumpsRootPath + "tools" + File.separator + "log" + File.separator
 
         override val databaseUrl = "jdbc:mysql://mysql"
+        override val databaseUser = "admin"
+        override val databasePassword = "_023HUdu6yQar8n4P_1f"
     }
 }
