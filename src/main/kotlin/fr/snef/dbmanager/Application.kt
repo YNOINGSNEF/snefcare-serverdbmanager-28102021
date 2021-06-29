@@ -1,6 +1,11 @@
 package fr.snef.dbmanager
 
+import fr.snef.dbmanager.anfr.AnfrDatabase
+import fr.snef.dbmanager.comsis.ComsisDatabase
+import fr.snef.dbmanager.free.FreeDatabase
+import fr.snef.dbmanager.ocean.OceanDatabase
 import fr.snef.dbmanager.orange.OrangeDatabase
+import fr.snef.dbmanager.rrcap.RrcapDatabase
 import java.io.PrintStream
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
@@ -12,13 +17,17 @@ import kotlin.system.measureTimeMillis
  */
 var config: Config = Config.Debug
 
-private val databases: List<Database> = listOf(
-//        ComsisDatabase,
-//        AnfrDatabase,
-//        RrcapDatabase,
-//        OceanDatabase,
-//        FreeDatabase,
-        OrangeDatabase
+private val databases get() = if (config.isDebug) debugDatabases else releaseDatabases
+private val debugDatabases = listOf(
+    OrangeDatabase
+)
+private val releaseDatabases = listOf(
+    ComsisDatabase,
+    AnfrDatabase,
+    RrcapDatabase,
+    OceanDatabase,
+    FreeDatabase,
+    OrangeDatabase
 )
 
 fun main() {
@@ -50,6 +59,7 @@ private fun processDatabaseUpdate(db: Database) {
             println("> ${db::class.java.simpleName} - Update ignored, no new dump available")
         }
     } catch (ex: Exception) {
+        println()
         println("> ${db::class.java.simpleName} - An error occurred while updating database")
         println()
         ex.printStackTrace(System.out)

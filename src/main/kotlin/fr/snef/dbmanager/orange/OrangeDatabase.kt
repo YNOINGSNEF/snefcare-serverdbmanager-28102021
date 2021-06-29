@@ -1,9 +1,9 @@
 package fr.snef.dbmanager.orange
 
-import fr.snef.dbmanager.DataFile
 import fr.snef.dbmanager.Database
 import fr.snef.dbmanager.config
 import fr.snef.dbmanager.orange.import.*
+import fr.snef.dbmanager.orange.procedures.*
 import fr.snef.dbmanager.toFormattedElapsedTime
 import java.io.File
 import java.sql.Connection
@@ -30,7 +30,14 @@ object OrangeDatabase : Database() {
             TmpCellComplements.from(dumpFileNames, dumpFolderPath)
         )
 
-    override val filesToProcess = emptyList<DataFile>() // TODO
+    override val filesToProcess = listOf(
+        ProcedureSites,
+        ProcedureAntennas,
+        ProcedureCells2G,
+        ProcedureCells3G,
+        ProcedureCells4G,
+        ProcedureAntennaTilts
+    )
 
     override fun retrieveNewDump(): Boolean = dumpFileNames.isNotEmpty()
 
@@ -47,34 +54,47 @@ object OrangeDatabase : Database() {
         dbConnection.setForeignKeyChecksEnabled(false)
 
         // Drop TMP tables
-        println("    > Dropping temporary tables...")
+        print("    > Dropping temporary tables...")
         importFiles.asReversed().forEach { file ->
             dbConnection.execute(file.dropTemporaryTableQuery)
         }
-        println("    > Dropped all temporary tables")
+        println(" done!")
 
         // Create TMP tables
-        println("    > (Re)creating temporary tables...")
+        print("    > (Re)creating temporary tables...")
         importFiles.forEach { file ->
             dbConnection.execute(file.createTemporaryTableQuery)
         }
-        println("    > (Re)created all temporary tables")
+        println(" done!")
 
         // Populate TMP tables
         importFiles.forEach { file ->
             file.populateTemporaryTableQueries.forEach { query ->
-                println("    > Populating table ${file.tableName}...")
+                print("    > Populating table ${file.tableName}...")
                 var updateCount = -1
                 val timeMillis = measureTimeMillis {
                     dbConnection.execute(query) { stmt -> updateCount = stmt.updateCount }
                 }
-                println("    > Table ${file.tableName}: $updateCount lines updated in ${timeMillis.toFormattedElapsedTime()}")
+                println(" $updateCount lines updated in ${timeMillis.toFormattedElapsedTime()}")
             }
         }
 
-        // TODO Truncate ORF tables
+        // Truncate ORF tables
+        filesToProcess.asReversed().forEach { file ->
+            print("    > Truncating table ${file.tableName}...")
+            dbConnection.execute(file.emptyTableSql)
+            println(" done!")
+        }
 
-        // TODO Populate ORF tables
+        // Populate ORF tables
+        filesToProcess.forEach { file ->
+            print("    > Populating table ${file.tableName}...")
+            var updateCount = -1
+            val timeMillis = measureTimeMillis {
+                dbConnection.execute(file.procedureQuery) { stmt -> updateCount = stmt.updateCount }
+            }
+            println(" $updateCount lines updated in ${timeMillis.toFormattedElapsedTime()}")
+        }
 
         dbConnection.setUniqueChecksEnabled(true)
         dbConnection.setForeignKeyChecksEnabled(true)
