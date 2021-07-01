@@ -150,6 +150,10 @@ class TmpCells(fileNames: List<String>, dumpFolderPath: String) : OrangeImportDa
         );
     """
 
+    override val createIndexesQueries = listOf(
+        "ALTER TABLE $tableName ADD INDEX index2 (SECTEUR(10), AZM_SYNOP(10), HBA(10));"
+    )
+
     override val populateTemporaryTableQueries = fileNames.map { fileName ->
         val isPrev = fileName.contains(prevString)
         return@map """

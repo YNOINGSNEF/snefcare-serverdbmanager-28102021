@@ -6,7 +6,7 @@ object ProcedureSites : OrangeProcedureDataFile() {
     override val tableName = "SITE"
     override val procedureQuery = """
         INSERT INTO SITE(id, code, name, latitude, longitude, altitude, is_prev)
-        SELECT DISTINCT
+        SELECT
         	MIN(S.ID),
             S.GEO_CODE,
             S.SITE_NAME,

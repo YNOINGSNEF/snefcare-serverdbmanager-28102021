@@ -30,6 +30,10 @@ class TmpCellComplements(fileNames: List<String>, dumpFolderPath: String) : Oran
         );
     """
 
+    override val createIndexesQueries = listOf(
+        "ALTER TABLE $tableName ADD INDEX index2 (CELL_IDENTIFIER);"
+    )
+
     override val populateTemporaryTableQueries = fileNames.map { fileName ->
         val isPrev = fileName.contains(prevString)
         return@map """

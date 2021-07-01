@@ -11,6 +11,7 @@ abstract class OrangeImportDataFile(private val dumpFolderPath: String) : Orange
     val dropTemporaryTableQuery get() = "DROP TABLE IF EXISTS $tableName"
 
     abstract val createTemporaryTableQuery: String
+    open val createIndexesQueries = emptyList<String>()
     abstract val populateTemporaryTableQueries: List<String>
 
     protected fun fullPath(fileName: String) = dumpFolderPath + File.separatorChar + fileName + "." + fileExtension

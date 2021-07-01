@@ -2,6 +2,17 @@
 DROP FUNCTION IF EXISTS LAMBERT_IIe_TO_WGS84_LAT;
 DROP FUNCTION IF EXISTS LAMBERT_IIe_TO_WGS84_LNG;
 
+DROP TABLE IF EXISTS CELL_2G;
+DROP TABLE IF EXISTS CELL_3G;
+DROP TABLE IF EXISTS CELL_4G;
+DROP TABLE IF EXISTS CELL_5G;
+DROP TABLE IF EXISTS ANTENNA_TILT;
+DROP TABLE IF EXISTS ANTENNA;
+DROP TABLE IF EXISTS SITE;
+DROP TABLE IF EXISTS CARRIER;
+DROP TABLE IF EXISTS TECHNO;
+DROP TABLE IF EXISTS SYSTEM;
+
 /*
 ' |---------------------------------------------------------------------------------------------------------------|
 ' | Const | 1 'Lambert I | 2 'Lambert II | 3 'Lambert III | 4 'Lambert IV | 5 'Lambert II Etendue | 6 'Lambert 93 |
@@ -160,13 +171,14 @@ CREATE TABLE ANTENNA (
     is_installed TINYINT UNSIGNED DEFAULT 1 NOT NULL,
     hba FLOAT NOT NULL,
     site_id INT NOT NULL,
-    CONSTRAINT antenna_UNIQUE UNIQUE (id , eqpt_id, site_id , sector_number , azimuth , reference , manufacturer , hba , is_installed),
+    CONSTRAINT antenna_UNIQUE UNIQUE (id , id_orf, site_id , sector_number , azimuth , reference , manufacturer , hba , is_installed),
     CONSTRAINT fk_ANTENNA_SITE1 FOREIGN KEY (site_id)
         REFERENCES SITE (id)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 create index fk_ANTENNA_SITE1_idx on ANTENNA (site_id);
+create index  index4 on ANTENNA (id_orf, sector_number, azimuth, hba);
 
 CREATE TABLE TECHNO (
     id TINYINT NOT NULL PRIMARY KEY,

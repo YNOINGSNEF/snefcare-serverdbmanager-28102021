@@ -106,6 +106,11 @@ class TmpEquipments(fileNames: List<String>, dumpFolderPath: String) : OrangeImp
         );
     """
 
+    override val createIndexesQueries = listOf(
+        "ALTER TABLE $tableName ADD INDEX index2 (CELLULAR_NODE_ID, EQPT_ID);",
+        "ALTER TABLE $tableName ADD INDEX index3 (DEVICE_TYPE, CELLULAR_NODE_ID);"
+    )
+
     override val populateTemporaryTableQueries = fileNames.map { fileName ->
         val isPrev = fileName.contains(prevString)
         return@map """

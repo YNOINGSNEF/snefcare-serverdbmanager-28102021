@@ -6,21 +6,17 @@ object ProcedureCells2G : ProcedureCells() {
         INSERT INTO CELL_2G(
         	id, num_ci, lac, rac, bcch, is_indoor, frequency, pw, in_service, system_id, carrier_id, mcc, mnc, antenna_id
         )
-        SELECT DISTINCT
+        SELECT
         	C.ID,
             C.CI,
             C.LAC,
-            IFNULL(C.RAC, 0) AS C_RAC, -- MISSING FOR 2G CELLS ?
-            IFNULL(N.BCCH, 0) AS C_BCCH, -- MISSING FOR SOME CELLS...
-            C.COUV = 'INDOOR' AS IS_INDOOR,
-            0 AS FREQUENCY, -- UNKNOWN FOR 2G
-            0 AS PW, -- UNKNOWN FOR 2G
-            C.NET_STATUS = 'OPERATIONAL' AS IN_SERVICE,
-            CASE C.BAND
-        		WHEN 'GSM900' THEN 1
-                WHEN 'GSM1800' THEN 2
-                ELSE -1 -- UNSUPPORTED SYSTEM
-        	END AS SYSTEM_ID,
+            IFNULL(C.RAC, 0) AS C_RAC,
+            IFNULL(N.BCCH, 0) AS C_BCCH,
+            $selectFieldIsIndoor,
+            0 AS FREQUENCY, /* UNKNOWN FOR 2G */
+            0 AS PW, /* UNKNOWN FOR 2G */
+            $selectFieldInService,
+            $selectFieldSystemId,
             $selectFieldCarrier,
             $selectFieldMcc,
             $selectFieldMnc,

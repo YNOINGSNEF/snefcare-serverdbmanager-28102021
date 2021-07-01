@@ -64,13 +64,16 @@ object OrangeDatabase : Database() {
         print("    > (Re)creating temporary tables...")
         importFiles.forEach { file ->
             dbConnection.execute(file.createTemporaryTableQuery)
+            file.createIndexesQueries.forEach { query -> dbConnection.execute(query) }
         }
         println(" done!")
+        println()
 
         // Populate TMP tables
         importFiles.forEach { file ->
-            file.populateTemporaryTableQueries.forEach { query ->
-                print("    > Populating table ${file.tableName}...")
+            val count = file.populateTemporaryTableQueries.count()
+            file.populateTemporaryTableQueries.forEachIndexed { index, query ->
+                print("    > Populating table ${file.tableName} (${index + 1}/$count)...")
                 var updateCount = -1
                 val timeMillis = measureTimeMillis {
                     dbConnection.execute(query) { stmt -> updateCount = stmt.updateCount }
@@ -79,12 +82,16 @@ object OrangeDatabase : Database() {
             }
         }
 
+        println()
+
         // Truncate ORF tables
         filesToProcess.asReversed().forEach { file ->
             print("    > Truncating table ${file.tableName}...")
             dbConnection.execute(file.emptyTableSql)
             println(" done!")
         }
+
+        println()
 
         // Populate ORF tables
         filesToProcess.forEach { file ->
