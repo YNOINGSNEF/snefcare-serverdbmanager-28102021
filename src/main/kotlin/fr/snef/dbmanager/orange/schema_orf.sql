@@ -152,6 +152,7 @@ create index fk_CELL_ANTENNA1_idx on CELL_5G (antenna_id);
 
 CREATE TABLE SITE (
     id INT NOT NULL PRIMARY KEY,
+    id_orf INT NOT NULL,
     code VARCHAR(10) NOT NULL,
     name VARCHAR(50) NOT NULL,
     latitude FLOAT NOT NULL,
@@ -160,6 +161,8 @@ CREATE TABLE SITE (
     is_prev TINYINT NOT NULL,
     CONSTRAINT SITE_code_uindex UNIQUE (code)
 );
+
+create index id_orf_idx on SITE (id_orf);
 
 CREATE TABLE ANTENNA (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -178,7 +181,7 @@ CREATE TABLE ANTENNA (
 );
 
 create index fk_ANTENNA_SITE1_idx on ANTENNA (site_id);
-create index  index4 on ANTENNA (id_orf, sector_number, azimuth, hba);
+create index index4 on ANTENNA (id_orf, sector_number, azimuth, hba);
 
 CREATE TABLE TECHNO (
     id TINYINT NOT NULL PRIMARY KEY,
