@@ -12,6 +12,10 @@ import java.sql.Timestamp
 import java.sql.Types
 
 abstract class DataFile {
+    protected enum class QueryType {
+        INSERT, UPDATE
+    }
+
     /**
      * Name of the file (without extension)
      */
@@ -20,14 +24,21 @@ abstract class DataFile {
     abstract val fileCharset: Charset
     abstract val fileExtension: String
 
-    protected abstract val tableName: String
+    abstract val tableName: String
     protected abstract val tableHeader: List<String>
     protected open val onDuplicateKeySql = ""
     protected open val insertSelectSql: String? = null
     protected open val ignoreInsertErrors = false
 
-    val insertSql
-        get() = "INSERT " + (if (ignoreInsertErrors) "IGNORE " else "") + "INTO $tableName" +
+    protected open val queryType = QueryType.INSERT
+    val sqlQuery
+        get() = when (queryType) {
+            QueryType.INSERT -> insertSql
+            QueryType.UPDATE -> updateSql
+        }
+
+    private val insertSql
+        get() = "INSERT " + (if (ignoreInsertErrors) "IGNORE " else "") + "INTO $tableName " +
                 tableHeader.joinToString(
                         separator = ",",
                         prefix = "(",
@@ -36,7 +47,7 @@ abstract class DataFile {
                 if (insertSelectSql != null) {
                     insertSelectSql
                 } else {
-                    "VALUES" +
+                    " VALUES " +
                             tableHeader.joinToString(
                                     separator = ",",
                                     prefix = "(",
@@ -45,6 +56,16 @@ abstract class DataFile {
                             )
                 }
                 ) + onDuplicateKeySql
+
+    protected open val tableUpdateFields = listOf<String>()
+    protected open val tableUpdateWhereFields = listOf<String>()
+
+    protected open val updateSql
+        get() = "UPDATE $tableName SET " +
+                tableUpdateFields.joinToString(separator = ",", transform = { "$it=?" }) +
+                " WHERE " +
+                tableUpdateWhereFields.joinToString(separator = ",", transform = { "$it=?" })
+
     val emptyTableSql get() = "TRUNCATE $tableName"
 
     open val delimiter = ';'

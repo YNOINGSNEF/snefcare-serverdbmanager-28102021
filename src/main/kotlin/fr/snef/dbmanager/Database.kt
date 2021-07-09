@@ -21,32 +21,19 @@ abstract class Database {
     protected val dateFormat = SimpleDateFormat("yyyy-MM-dd")
     protected val formattedDate: String get() = dateFormat.format(Date())
 
-    private val rootPath
-        get() = if (isDebugEnabled) {
-            "C:" + File.separator + "Users" + File.separator + "Cockpit" + File.separator + "IdeaProjects" + File.separator + "dump" + File.separator
-        } else {
-            File.separator + "dump" + File.separator
-        }
     protected abstract val dumpFolder: String
 
-    private val dumpFolderPath get() = rootPath + dumpFolder
-    private val archiveFolderPath
-        get() = if (isDebugEnabled) rootPath + "archive" + File.separator + dumpFolder
-        else File.separator + "dump_archives" + File.separator + dumpFolder
+    protected val dumpFolderPath get() = config.dumpsRootPath + dumpFolder
+    private val archiveFolderPath get() = config.archiveFolderPath + dumpFolder
 
-    private val dbUrl
-        get() = if (isDebugEnabled) "jdbc:mysql://mysql-admin.care-apps.fr:3306"
-        else "jdbc:mysql://mysql"
     protected abstract val dbName: String
-    open val dbUser = "admin"
-    open val dbPassword = "_023HUdu6yQar8n4P_1f"
     private val batchSize = 10_000
     private val maxRowCountBetweenBatchLog = 100_000
 
     protected abstract val filesToProcess: List<DataFile>
 
     fun update(): Boolean {
-        if (!isDebugEnabled) {
+        if (!config.isDebug) {
             if (!retrieveNewDump()) return false
 
             println("  > New dump available, backing it up")
@@ -62,10 +49,11 @@ abstract class Database {
             executePostImportActions(dbConnection)
         }
 
-        if (!isDebugEnabled) {
+        if (!config.isDebug) {
             println("  > Cleaning dump")
             cleanDump()
         }
+
         return true
     }
 
@@ -89,33 +77,7 @@ abstract class Database {
             println("    > ${file::class.java.simpleName} : \"${file.fileName}\" - Starting import")
 
             val timeMillis = measureTimeMillis {
-                dbConnection.prepareStatement(file.insertSql).use { stmt ->
-                    var batchCount = 0
-                    var index = 0
-                    var batchStartIndex = index
-                    try {
-                        createCsvParser(file).use { csvParser ->
-                            csvParser.forEach { record ->
-                                index++
-
-                                if (file.addBatch(stmt, record)) {
-                                    batchCount++
-                                } else {
-                                    println("      > Ignored line : " + record.toList())
-                                }
-
-                                if (batchCount > 0 && batchCount % batchSize == 0) {
-                                    executeBatch(stmt, dbConnection, batchStartIndex, index, batchStartIndex % maxRowCountBetweenBatchLog == 0)
-                                    batchStartIndex = index
-                                }
-                            }
-
-                            executeBatch(stmt, dbConnection, batchStartIndex, index, true)
-                        }
-                    } catch (e: IOException) {
-                        println("      > Ignored file that doesn't exist : ${file.fileName}")
-                    }
-                }
+                processFileImport(dbConnection, file)
             }
 
             println("    > ${file::class.java.simpleName} : \"${file.fileName}\" - Import completed in ${timeMillis.toFormattedElapsedTime()}")
@@ -124,6 +86,42 @@ abstract class Database {
         dbConnection.autoCommit = true
         dbConnection.setUniqueChecksEnabled(true)
         dbConnection.setForeignKeyChecksEnabled(true)
+    }
+
+    private fun processFileImport(dbConnection: Connection, file: DataFile) {
+        dbConnection.prepareStatement(file.sqlQuery).use { stmt ->
+            var batchCount = 0
+            var index = 0
+            var batchStartIndex = index
+            try {
+                createCsvParser(file).use { csvParser ->
+                    csvParser.forEach { record ->
+                        index++
+
+                        if (file.addBatch(stmt, record)) {
+                            batchCount++
+                        } else {
+                            println("      > Ignored line : " + record.toList())
+                        }
+
+                        if (batchCount > 0 && batchCount % batchSize == 0) {
+                            executeBatch(
+                                stmt,
+                                dbConnection,
+                                batchStartIndex,
+                                index,
+                                batchStartIndex % maxRowCountBetweenBatchLog == 0
+                            )
+                            batchStartIndex = index
+                        }
+                    }
+
+                    executeBatch(stmt, dbConnection, batchStartIndex, index, true)
+                }
+            } catch (e: IOException) {
+                println("      > Ignored file that doesn't exist : ${file.fileName}")
+            }
+        }
     }
 
     private fun executeBatch(stmt: PreparedStatement, dbConnection: Connection, startIndex: Int, currIndex: Int, logInsert: Boolean) {
@@ -214,19 +212,19 @@ abstract class Database {
         return CSVParser(reader, csvFormat)
     }
 
-    private fun getDatabaseConnection() = DriverManager.getConnection("$dbUrl/$dbName?" +
+    private fun getDatabaseConnection() = DriverManager.getConnection("${config.databaseUrl}/$dbName?" +
             "rewriteBatchedStatements=true" +
             "&verifyServerCertificate=false" +
-            "&useSSL=true" +
-            "&requireSSL=true" +
+            "&useSSL=" + (if (config.isDebug) "false" else "true") +
+            "&requireSSL=" + (if (config.isDebug) "false" else "true") +
             "&serverTimezone=Europe/Paris",
-            dbUser, dbPassword)
+            config.databaseUser, config.databasePassword)
 
-    private fun Connection.setUniqueChecksEnabled(enable: Boolean) {
+    protected fun Connection.setUniqueChecksEnabled(enable: Boolean) {
         createStatement().use { it.executeUpdate("SET UNIQUE_CHECKS = " + (if (enable) "1" else "0")) }
     }
 
-    private fun Connection.setForeignKeyChecksEnabled(enable: Boolean) {
+    protected fun Connection.setForeignKeyChecksEnabled(enable: Boolean) {
         createStatement().use { it.executeUpdate("SET FOREIGN_KEY_CHECKS = " + (if (enable) "1" else "0")) }
     }
 }

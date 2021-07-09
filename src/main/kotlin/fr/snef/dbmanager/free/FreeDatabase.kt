@@ -16,8 +16,8 @@ object FreeDatabase : Database() {
             ?: emptyList()
 
     override val filesToProcess = dumpFileNames.map { Site(it) }
-            .plus(dumpFileNames.map { Antenne(it) })
-            .plus(dumpFileNames.map { AntenneTilt(it) })
+            .plus(dumpFileNames.map { Antenna(it) })
+            .plus(dumpFileNames.map { AntennaTilt(it) })
             .plus(dumpFileNames.map { Cell3G(it) })
             .plus(dumpFileNames.map { Cell4G(it) })
 

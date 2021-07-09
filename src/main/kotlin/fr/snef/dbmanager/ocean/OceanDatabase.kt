@@ -105,7 +105,7 @@ object OceanDatabase : Database() {
     override fun retrieveNewDump(): Boolean = getDumpFile(dumpFileName).isFile
 
     override fun archiveDump() {
-        getDumpFile(dumpFileName).copyTo(getBackupFile("$formattedDate.zip"), true)
+        getDumpFile(dumpFileName).copyTo(getBackupFile("SFR $formattedDate.zip"), true)
     }
 
     override fun prepareDump() {
