@@ -27,72 +27,257 @@ DROP TABLE IF EXISTS SYSTEM;
 ' |---------------------------------------------------------------------------------------------------------------|
 */
 DELIMITER $$
-CREATE FUNCTION LAMBERT_IIe_TO_WGS84_LAT(X FLOAT, Y FLOAT)
+CREATE FUNCTION LAMBERT_IIe_TO_WGS84_LAT(XLambert FLOAT, YLambert FLOAT)
 RETURNS DOUBLE
 DETERMINISTIC
 BEGIN
-    DECLARE n DOUBLE;
-    DECLARE c DOUBLE;
-    DECLARE xs DOUBLE;
-    DECLARE ys DOUBLE;
-    DECLARE e DOUBLE;
-    DECLARE epsilon DOUBLE;
-    DECLARE gamma DOUBLE;
-    DECLARE latitude DOUBLE;
-    DECLARE r DOUBLE;
-    DECLARE isometricLatitude DOUBLE;
-    DECLARE phi0 DOUBLE;
-    DECLARE prevPhi DOUBLE;
-    DECLARE tmpPhi DOUBLE;
+	DECLARE a FLOAT;
+	DECLARE f FLOAT;
+	DECLARE b FLOAT;
+	DECLARE e FLOAT;
+	DECLARE he FLOAT;
+	DECLARE n FLOAT;
+	DECLARE c FLOAT;
+	DECLARE Xs FLOAT;
+	DECLARE Ys FloAT;
+	DECLARE LambdaC FLOAT;
+	DECLARE Lambda FLOAT;
+	DECLARE Gamma FLOAT;
+	DECLARE Phi FLOAT;
+	DECLARE NN FLOAT;
+	DECLARE NHeCosPhi FLOAT;
+	DECLARE X FLOAT;
+	DECLARE Y FLOAT;
+	DECLARE Z FLOAT;
+	DECLARE FX FLOAT;
+	DECLARE FY FLOAT;
+	DECLARE FZ FLOAT;
+	DECLARE D FLOAT;
+	DECLARE Rx FLOAT;
+	DECLARE Ry FLOAT;
+	DECLARE Rz FLOAT;
+	DECLARE Tx FLOAT;
+	DECLARE Ty FLOAT;
 
-    SET n = 0.7289686274;
-    SET c = 11745793.39;
-    SET xs = 600000.0;
-    SET ys = 8199695.768;
-    SET e = 0.08248325676;
-    SET epsilon = 10e-11;
+	DECLARE Tz FLOAT;
+	DECLARE Dp1 FLOAT;
+	DECLARE R2 FLOAT;
+	DECLARE R3 FLOAT;
+	DECLARE ae2 FLOAT;
+	DECLARE Phi0 FLOAT;
+	DECLARE Phi1 FLOAT;
+	DECLARE R FLOAT;
+	DECLARE L FLOAT;
 
-	SET r = SQRT(POWER(X - xs, 2) + POWER(Y - ys, 2));
-	SET isometricLatitude = (-1 / n) * LOG(ABS(r / c));
+	DECLARE ExpLi FLOAT;
+	DECLARE Phiim1 FLOAT;
+	DECLARE ESinP FLOAT;
+	DECLARE Miaou FLOAT;
+	DECLARE Phiip1 FLOAT;
 
-	SET phi0 = 2 * ATAN(EXP(isometricLatitude)) - PI() / 2.0;
+	SET a = 6378249.2;
+	SET f = 1 / 293.466021;
+	SET b = a * (1 - f);
+	SET e = SQRT((a * a - b * b) / (a * a));
 
-	SET prevPhi = phi0;
-	SET latitude = phi0;
+	SET he = 0.0;
 
-	SET tmpPhi = latitude;
-	SET latitude = 2.0 * ATAN(POWER((1 + e * SIN(prevPhi)) / (1 - e * SIN(prevPhi)), e / 2) * EXP(isometriclatitude)) - PI() / 2.0;
-	SET prevPhi = tmpPhi;
+	SET n = 0.7289686274;
+	SET c = 11745793.39;
+	SET Xs = 600000.0;
+	SET Ys = 8199695.768;
 
-    WHILE ABS(latitude - prevPhi) < epsilon DO
-		SET tmpPhi = latitude;
-		SET latitude = 2.0 * ATAN(POWER((1 + e * SIN(prevPhi)) / (1 - e * SIN(prevPhi)), e / 2) * EXP(isometriclatitude)) - PI() / 2.0;
-		SET prevPhi = tmpPhi;
-    END WHILE;
+	SET LambdaC = 2.337229167 * PI() / 180.0;
+	SET Gamma = ATAN ((XLambert - Xs) / (Ys - YLambert));
+	SET Lambda = LambdaC + Gamma / n;
 
-    RETURN latitude * 180.00 / PI();
+	SET R = SQRT((POWER(XLambert - Xs, 2) + POWER(YLambert - Ys, 2)));
+	SET L = ( -1.0 / n) * LOG(ABS(R / c));
+
+	SET ExpLi = EXP(L);
+	SET Phiim1 = 2.0 * ATAN(ExpLi) - PI() / 2.0;
+	SET ESinP = e * SIN(Phiim1);
+	SET Miaou = (1.0 +ESinP) / (1.0 - ESinP);
+	SET Miaou = POWER (Miaou, e / 2);
+	SET Phi = 2.0 * ATAN(Miaou * ExpLi) - PI() / 2.0;
+
+	WHILE(ABS(Phi - Phiim1)>=0.0000000001) DO
+		SET ESinP = e * SIN(Phi);
+		SET Miaou = (1.0 + ESinP) / (1.0 - ESinP);
+		SET Miaou = POWER(Miaou, e / 2.0);
+		SET Phiip1 = 2.0 * ATAN((Miaou) * ExpLi) - PI() / 2.0;
+		SET Phiim1 = Phi;
+		SET Phi = Phiip1;
+	END WHILE;
+
+	SET NN= a / SQRT(1.0 - POWER(e * SIN(Phi),2.0));
+
+	SET NHeCosPhi = (NN +he) * COS(Phi);
+	SET X = NHeCosPhi * COS(Lambda);
+	SET Y = NHeCosPhi * SIN(Lambda);
+	SET Z = (NN * (1.0 - e * e) +he) * SIN(Phi);
+
+	SET D = 0.0;
+	SET Rx = 0.0;
+	SET Ry= 0.0;
+	SET Rz = 0.0;
+	SET Tx = -168.0;
+	SET Ty = -060.0;
+	SET Tz =  320.0;
+
+	SET Dp1 = 1.0 + D;
+	SET FX = Tx +X * Dp1 +Z * Ry - Y * Rz;
+	SET FY =Ty +Y * Dp1 +X * Rz - Z * Rx;
+	SET FZ =Tz +Z * Dp1 +Y * Rx - X * Ry;
+
+	SET a = 6378137.0;
+	SET f = 1.0 / 298.257223563;
+	SET b = a * (1.0 - f);
+	SET e = SQRT((a * a - b * b) / (a * a));
+
+	SET Lambda = ATAN(FY / FX);
+	SET R2 = SQRT((FX * FX) +(FY * FY));
+	SET R3 = SQRT((R2 * R2) +(FZ * FZ));
+	SET ae2 = a * e * e;
+
+	SET Phi0 = ATAN(FZ / (R2 * (1.0 - ae2 / R3)));
+	SET Phi1 = ATAN((FZ / R2) * 1.0 / (1.0 - ae2 * COS(Phi0) / (R2 * SQRT(1.0 - (e * SIN(Phi0)) * (e * SIN(Phi0))))));
+
+	WHILE(ABS(Phi1 - Phi0)>0.0000000001) DO
+		SET Phi1 = ATAN((FZ / R2) * 1 / (1 - ae2 * COS(Phi0) / (R2 * SQRT(1 - (e * SIN(Phi0)) * (e * SIN(Phi0))))));
+		SET Phi0 = Phi1;
+	END WHILE;
+
+	SET Phi = Phi1;
+
+	RETURN Phi * 180.0 / PI();
 END$$
 
-CREATE FUNCTION LAMBERT_IIe_TO_WGS84_LNG(X FLOAT, Y FLOAT)
+DELIMITER $$
+CREATE FUNCTION LAMBERT_IIe_TO_WGS84_LNG(XLambert FLOAT, YLambert FLOAT)
 RETURNS DOUBLE
 DETERMINISTIC
 BEGIN
-	DECLARE lambda0 DOUBLE;
-    DECLARE n DOUBLE;
-    DECLARE xs DOUBLE;
-    DECLARE ys DOUBLE;
-    DECLARE gamma DOUBLE;
-    DECLARE longitude DOUBLE;
+	DECLARE a FLOAT;
+	DECLARE f FLOAT;
+	DECLARE b FLOAT;
+	DECLARE e FLOAT;
+	DECLARE he FLOAT;
+	DECLARE n FLOAT;
+	DECLARE c FLOAT;
+	DECLARE Xs FLOAT;
+	DECLARE Ys FloAT;
+	DECLARE LambdaC FLOAT;
+	DECLARE Lambda FLOAT;
+	DECLARE Gamma FLOAT;
+	DECLARE Phi FLOAT;
+	DECLARE NN FLOAT;
+	DECLARE NHeCosPhi FLOAT;
+	DECLARE X FLOAT;
+	DECLARE Y FLOAT;
+	DECLARE Z FLOAT;
+	DECLARE FX FLOAT;
+	DECLARE FY FLOAT;
+	DECLARE FZ FLOAT;
+	DECLARE D FLOAT;
+	DECLARE Rx FLOAT;
+	DECLARE Ry FLOAT;
+	DECLARE Rz FLOAT;
+	DECLARE Tx FLOAT;
+	DECLARE Ty FLOAT;
 
-    SET lambda0 = 2.337229167 * PI() / 180.00;
-    SET n = 0.7289686274;
-    SET xs = 600000.0;
-    SET ys = 8199695.768;
+	DECLARE Tz FLOAT;
+	DECLARE Dp1 FLOAT;
+	DECLARE R2 FLOAT;
+	DECLARE R3 FLOAT;
+	DECLARE ae2 FLOAT;
+	DECLARE Phi0 FLOAT;
+	DECLARE Phi1 FLOAT;
+	DECLARE R FLOAT;
+	DECLARE L FLOAT;
 
-	SET gamma = ATAN((X - xs) / (ys - Y));
-	SET longitude = lambda0 + (gamma / n);
+	DECLARE ExpLi FLOAT;
+	DECLARE Phiim1 FLOAT;
+	DECLARE ESinP FLOAT;
+	DECLARE Miaou FLOAT;
+	DECLARE Phiip1 FLOAT;
 
-    RETURN longitude * 180.00 / PI();
+	SET a = 6378249.2;
+	SET f = 1 / 293.466021;
+	SET b = a * (1 - f);
+	SET e = SQRT((a * a - b * b) / (a * a));
+
+	SET he = 0.0;
+
+	SET n = 0.7289686274;
+	SET c = 11745793.39;
+	SET Xs = 600000.0;
+	SET Ys = 8199695.768;
+
+	SET LambdaC = 2.337229167 * PI() / 180.0;
+	SET Gamma = ATAN ((XLambert - Xs) / (Ys - YLambert));
+	SET Lambda = LambdaC + Gamma / n;
+
+	SET R = SQRT((POWER(XLambert - Xs, 2) + POWER(YLambert - Ys, 2)));
+	SET L = ( -1.0 / n) * LOG(ABS(R / c));
+
+	SET ExpLi = EXP(L);
+	SET Phiim1 = 2.0 * ATAN(ExpLi) - PI() / 2.0;
+	SET ESinP = e * SIN(Phiim1);
+	SET Miaou = (1.0 +ESinP) / (1.0 - ESinP);
+	SET Miaou = POWER (Miaou, e / 2);
+	SET Phi = 2.0 * ATAN(Miaou * ExpLi) - PI() / 2.0;
+
+	WHILE(ABS(Phi - Phiim1)>=0.0000000001) DO
+		SET ESinP = e * SIN(Phi);
+		SET Miaou = (1.0 + ESinP) / (1.0 - ESinP);
+		SET Miaou = POWER(Miaou, e / 2.0);
+		SET Phiip1 = 2.0 * ATAN((Miaou) * ExpLi) - PI() / 2.0;
+		SET Phiim1 = Phi;
+		SET Phi = Phiip1;
+	END WHILE;
+
+	SET NN= a / SQRT(1.0 - POWER(e * SIN(Phi),2.0));
+
+	SET NHeCosPhi = (NN +he) * COS(Phi);
+	SET X = NHeCosPhi * COS(Lambda);
+	SET Y = NHeCosPhi * SIN(Lambda);
+	SET Z = (NN * (1.0 - e * e) +he) * SIN(Phi);
+
+	SET D = 0.0;
+	SET Rx = 0.0;
+	SET Ry= 0.0;
+	SET Rz = 0.0;
+	SET Tx = -168.0;
+	SET Ty = -060.0;
+	SET Tz =  320.0;
+
+	SET Dp1 = 1.0 + D;
+	SET FX = Tx +X * Dp1 +Z * Ry - Y * Rz;
+	SET FY =Ty +Y * Dp1 +X * Rz - Z * Rx;
+	SET FZ =Tz +Z * Dp1 +Y * Rx - X * Ry;
+
+	SET a = 6378137.0;
+	SET f = 1.0 / 298.257223563;
+	SET b = a * (1.0 - f);
+	SET e = SQRT((a * a - b * b) / (a * a));
+
+	SET Lambda = ATAN(FY / FX);
+	SET R2 = SQRT((FX * FX) +(FY * FY));
+	SET R3 = SQRT((R2 * R2) +(FZ * FZ));
+	SET ae2 = a * e * e;
+
+	SET Phi0 = ATAN(FZ / (R2 * (1.0 - ae2 / R3)));
+	SET Phi1 = ATAN((FZ / R2) * 1.0 / (1.0 - ae2 * COS(Phi0) / (R2 * SQRT(1.0 - (e * SIN(Phi0)) * (e * SIN(Phi0))))));
+
+	WHILE(ABS(Phi1 - Phi0)>0.0000000001) DO
+		SET Phi1 = ATAN((FZ / R2) * 1 / (1 - ae2 * COS(Phi0) / (R2 * SQRT(1 - (e * SIN(Phi0)) * (e * SIN(Phi0))))));
+		SET Phi0 = Phi1;
+	END WHILE;
+
+	SET Phi = Phi1;
+
+	RETURN Lambda * 180.00 / PI();
 END$$
 DELIMITER ;
 
