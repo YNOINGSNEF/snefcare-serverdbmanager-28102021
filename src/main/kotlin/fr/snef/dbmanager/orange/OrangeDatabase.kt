@@ -15,20 +15,7 @@ object OrangeDatabase : Database() {
 
     override val dbName get() = if (config.isDebug) "dump_orf_dev" else "dump_orf"
 
-    private val dumpFileNames = getDumpFile()
-        .takeIf { it.isDirectory }
-        ?.listFiles { _, name -> name.endsWith(".csv", true) }
-        ?.map { it.nameWithoutExtension }
-        ?: emptyList()
-
-    private val importFiles
-        get() = listOf(
-            TmpSites.from(dumpFileNames, dumpFolderPath),
-            TmpNetworkElements.from(dumpFileNames, dumpFolderPath),
-            TmpEquipments.from(dumpFileNames, dumpFolderPath),
-            TmpCells.from(dumpFileNames, dumpFolderPath),
-            TmpCellComplements.from(dumpFileNames, dumpFolderPath)
-        )
+    private const val dumpFileName = "dump.zip"
 
     override val filesToProcess = listOf(
         ProcedureSites,
@@ -39,17 +26,33 @@ object OrangeDatabase : Database() {
         ProcedureAntennaTilts
     )
 
-    override fun retrieveNewDump(): Boolean = dumpFileNames.isNotEmpty()
+    override fun retrieveNewDump(): Boolean = getDumpFile(dumpFileName).isFile
 
     override fun archiveDump() {
-        // TODO Implement dump archive
+        getDumpFile(dumpFileName).copyTo(getBackupFile("ORF $formattedDate.zip"), true)
     }
 
     override fun prepareDump() {
-        // TODO Implement zip file extraction
+        extractArchive(dumpFileName)
     }
 
     override fun importFilesToDatabase(dbConnection: Connection) {
+        // Setup import files
+        val dumpFileNames = getDumpFile()
+            .takeIf { it.isDirectory }
+            ?.listFiles { _, name -> name.endsWith(".csv", true) }
+            ?.map { it.nameWithoutExtension }
+            ?: emptyList()
+
+        val importFiles = listOf(
+            TmpSites.from(dumpFileNames, dumpFolderPath),
+            TmpNetworkElements.from(dumpFileNames, dumpFolderPath),
+            TmpEquipments.from(dumpFileNames, dumpFolderPath),
+            TmpCells.from(dumpFileNames, dumpFolderPath),
+            TmpCellComplements.from(dumpFileNames, dumpFolderPath)
+        )
+
+        // Setup DB
         dbConnection.setUniqueChecksEnabled(false)
         dbConnection.setForeignKeyChecksEnabled(false)
 
