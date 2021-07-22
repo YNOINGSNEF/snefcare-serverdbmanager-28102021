@@ -20,7 +20,7 @@ class TmpCellComplements(fileNames: List<String>, dumpFolderPath: String) : Oran
     override val createTemporaryTableQuery = """
         CREATE TABLE $tableName (
             ID INT AUTO_INCREMENT PRIMARY KEY,
-            CELL_IDENTIFIER INT,
+            ID_ORF INT,
             CELL_TYPE VARCHAR(20),
             NETWORK_ELEMENT_ID INT,
             NODE_ID INT,
@@ -31,7 +31,7 @@ class TmpCellComplements(fileNames: List<String>, dumpFolderPath: String) : Oran
     """
 
     override val createIndexesQueries = listOf(
-        "ALTER TABLE $tableName ADD INDEX index2 (CELL_IDENTIFIER);"
+        "ALTER TABLE $tableName ADD INDEX index2 (ID_ORF);"
     )
 
     override val populateTemporaryTableQueries = fileNames.map { fileName ->
@@ -325,7 +325,7 @@ class TmpCellComplements(fileNames: List<String>, dumpFolderPath: String) : Oran
                     @TRX_HP
                 )
                 SET
-                    CELL_IDENTIFIER = NULLIF(@CELL_ID, ''),
+                    ID_ORF = NULLIF(@CELL_ID, ''),
                     CELL_TYPE = NULLIF(@CELL_TYPE, ''),
                     NETWORK_ELEMENT_ID = NULLIF(@NETWORK_ELEMENT_ID, ''),
                     NODE_ID = NULLIF(@NODE_ID, ''),

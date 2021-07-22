@@ -19,10 +19,14 @@ object OrangeDatabase : Database() {
 
     override val filesToProcess = listOf(
         ProcedureSites,
-        ProcedureAntennas,
         ProcedureCells2G,
         ProcedureCells3G,
         ProcedureCells4G,
+        ProcedureAntennas,
+        ProcedureAntenna.Cell2G,
+        ProcedureAntenna.Cell3G,
+        ProcedureAntenna.Cell4G,
+        ProcedureAntenna.Cell5G,
         ProcedureAntennaTilts
     )
 
@@ -88,7 +92,7 @@ object OrangeDatabase : Database() {
         println()
 
         // Truncate ORF tables
-        filesToProcess.asReversed().forEach { file ->
+        filesToProcess.asReversed().filter { it.shouldTruncate }.forEach { file ->
             print("    > Truncating table ${file.tableName}...")
             dbConnection.execute(file.emptyTableSql)
             println(" done!")

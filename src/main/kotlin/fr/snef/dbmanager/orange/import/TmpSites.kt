@@ -31,6 +31,10 @@ class TmpSites(fileNames: List<String>, dumpFolderPath: String) : OrangeImportDa
         );
     """
 
+    override val createIndexesQueries = listOf(
+        "ALTER TABLE $tableName ADD INDEX index2 (SITE_ID);"
+    )
+
     override val populateTemporaryTableQueries = fileNames.map { fileName ->
         val isPrev = fileName.contains(prevString)
         return@map """

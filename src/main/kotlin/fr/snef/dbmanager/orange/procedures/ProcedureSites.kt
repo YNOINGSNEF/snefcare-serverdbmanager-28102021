@@ -7,16 +7,24 @@ object ProcedureSites : OrangeProcedureDataFile() {
     override val procedureQuery = """
         INSERT INTO SITE(id, id_orf, code, name, latitude, longitude, altitude, is_prev)
         SELECT
-        	MAX(S.ID),
-            MAX(S.SITE_ID),
-            S.GEO_CODE, /* N.GN_CODE, */
+            I.ID,
+            I.SITE_ID,
+            MAX(I.GN_CODE) AS GN_CODE,
             S.SITE_NAME,
             LAMBERT_IIe_TO_WGS84_LAT(S.X_COORDINATE, S.Y_COORDINATE) AS LAT,
             LAMBERT_IIe_TO_WGS84_LNG(S.X_COORDINATE, S.Y_COORDINATE) AS LNG,
             S.Z_COORDINATE AS ALT,
-            MIN(S.IS_PREV)
-        FROM TMP_SITE S
-        /* INNER JOIN TMP_NETWORK_ELEMENT N ON S.SITE_NAME = N.GN_NAME */
-        GROUP BY S.GEO_CODE, S.SITE_NAME, LAT, LNG, ALT;
-    """ // TODO Use TMP_NETWORK_ELEMENT.GN_CODE for site_code
+            I.IS_PREV
+        FROM (
+            SELECT MAX(S.ID) AS ID, MAX(S.SITE_ID) AS SITE_ID, N.GN_CODE, MIN(S.IS_PREV) AS IS_PREV
+            FROM TMP_SITE S
+            JOIN TMP_EQUIPMENT E ON E.SITE_ID = S.SITE_ID
+            JOIN TMP_CELL C ON C.ID_ORF = E.CELLULAR_NODE_ID
+            JOIN TMP_NETWORK_ELEMENT N ON N.ID = C.NETWORK_ELEMENT_ID
+            GROUP BY N.GN_CODE
+            ORDER BY ID ASC
+        ) I
+        JOIN TMP_SITE S ON S.ID = I.ID
+        GROUP BY I.ID, I.SITE_ID, I.IS_PREV;
+    """
 }
