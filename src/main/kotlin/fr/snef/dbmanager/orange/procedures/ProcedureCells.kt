@@ -40,11 +40,8 @@ abstract class ProcedureCells : OrangeProcedureDataFile() {
 
     protected val fromAndJoins = """
         FROM TMP_CELL C
-        INNER JOIN TMP_EQUIPMENT E ON E.CELLULAR_NODE_ID = C.ID
-        INNER JOIN ANTENNA A
-            ON A.ID_ORF = E.EQPT_ID
-            AND C.SECTEUR = A.SECTOR_NUMBER
-            AND C.AZM_SYNOP = A.AZIMUTH
-            AND C.HBA = A.HBA
+        JOIN TMP_EQUIPMENT E ON E.CELLULAR_NODE_ID = C.ID_ORF AND $equipmentAntennaFilter
+		JOIN TMP_NETWORK_ELEMENT T ON T.ID = C.NETWORK_ELEMENT_ID
+		JOIN SITE S ON S.CODE = T.GN_CODE
     """
 }
