@@ -7,7 +7,7 @@ object ProcedureCells2G : ProcedureCells() {
         	id, num_ci, lac, rac, bcch, is_indoor, frequency, pw, in_service, system_id, carrier_id, mcc, mnc, antenna_id, site_id
         )
         SELECT
-        	C.ID,
+        	MIN(C.ID),
             C.CI,
             C.LAC,
             IFNULL(C.RAC, 0) AS C_RAC,
@@ -28,6 +28,6 @@ object ProcedureCells2G : ProcedureCells() {
         	C.CELL_TYPE = 'BTS_CELL'
         	AND C.CI REGEXP '^[0-9]+${'$'}'
             AND C.LAC REGEXP '^[0-9]+${'$'}'
-        GROUP BY C.ID, C.CI, C.LAC, C_RAC, C_BCCH, IS_INDOOR, FREQUENCY, PW, IN_SERVICE, SYSTEM_ID, CARRIER_ID, C_MCC, C_MNC, S.ID;
+        GROUP BY C.CI, C.LAC, C_RAC, C_BCCH, IS_INDOOR, FREQUENCY, PW, IN_SERVICE, SYSTEM_ID, CARRIER_ID, C_MCC, C_MNC, S.ID;
     """
 }

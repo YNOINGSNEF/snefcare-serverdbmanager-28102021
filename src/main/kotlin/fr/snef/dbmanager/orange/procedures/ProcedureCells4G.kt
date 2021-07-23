@@ -7,7 +7,7 @@ object ProcedureCells4G : ProcedureCells() {
             id, eci, tac, pci, is_indoor, frequency, pw, in_service, system_id, carrier_id, mcc, mnc, antenna_id, site_id
         )
         SELECT
-            C.ID,
+            MIN(C.ID),
             C.ECI,
             C.TAC,
             C.PCI,
@@ -27,6 +27,6 @@ object ProcedureCells4G : ProcedureCells() {
             AND C.ECI REGEXP '^[0-9]+${'$'}'
             AND C.PCI IS NOT NULL
             AND C.TAC IS NOT NULL
-        GROUP BY C.ID, C.ECI, C.TAC, C.PCI, IS_INDOOR, FREQUENCY, PW, IN_SERVICE, SYSTEM_ID, CARRIER_ID, C_MCC, C_MNC, S.ID;
+        GROUP BY C.ECI, C.TAC, C.PCI, IS_INDOOR, FREQUENCY, PW, IN_SERVICE, SYSTEM_ID, CARRIER_ID, C_MCC, C_MNC, S.ID;
     """
 }

@@ -6,7 +6,7 @@ object ProcedureCells3G : ProcedureCells() {
         	id, num_ci, lac, rac, scrambling_code, is_indoor, frequency, pw, in_service, system_id, carrier_id, mcc, mnc, antenna_id, site_id
         )
         SELECT
-        	C.ID,
+        	MIN(C.ID),
             C.CID,
             C.LAC,
             C.RAC,
@@ -26,7 +26,7 @@ object ProcedureCells3G : ProcedureCells() {
             C.CELL_TYPE = 'NODEB_CELL'
             AND C.SCRAMBLING_CODE IS NOT NULL
             AND C.LAC IS NOT NULL
-        GROUP BY C.ID, C.CID, C.LAC, C.RAC, C.SCRAMBLING_CODE, IS_INDOOR, FREQUENCY, PW, IN_SERVICE, SYSTEM_ID, CARRIER_ID, C_MCC, C_MNC, S.ID;
+        GROUP BY C.CID, C.LAC, C.RAC, C.SCRAMBLING_CODE, IS_INDOOR, FREQUENCY, PW, IN_SERVICE, SYSTEM_ID, CARRIER_ID, C_MCC, C_MNC, S.ID;
     """
     override val tableName = "CELL_3G"
 }
