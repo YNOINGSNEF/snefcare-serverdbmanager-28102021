@@ -1,13 +1,14 @@
 package fr.snef.dbmanager.free
 
 import fr.snef.dbmanager.Database
+import fr.snef.dbmanager.config
 import fr.snef.dbmanager.free.model.*
 import java.io.File
 import java.sql.Connection
 
 object FreeDatabase : Database() {
     override val dumpFolder = "free" + File.separator + "radio" + File.separator
-    override val dbName = "dump_free"
+    override val dbName get() = if (config.isDebug) "dump_free_dev" else "dump_free"
 
     private val dumpFileNames = getDumpFile()
             .takeIf { it.isDirectory }
