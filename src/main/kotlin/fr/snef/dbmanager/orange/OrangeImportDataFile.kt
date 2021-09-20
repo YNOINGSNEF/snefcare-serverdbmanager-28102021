@@ -5,7 +5,8 @@ import java.io.File
 abstract class OrangeImportDataFile(private val dumpFolderPath: String) : OrangeDataFile() {
 
     companion object {
-        const val prevString = "PREV"
+        const val validFileSuffix = "PREV_RADIO"
+        const val complementSuffix = "COMPLEMENT"
     }
 
     val dropTemporaryTableQuery get() = "DROP TABLE IF EXISTS $tableName"

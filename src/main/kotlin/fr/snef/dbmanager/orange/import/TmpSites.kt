@@ -7,12 +7,10 @@ class TmpSites(fileNames: List<String>, dumpFolderPath: String) : OrangeImportDa
     companion object {
         private const val filePrefix = "NORIA_FLUX_GENERIQUE_SITE"
 
-        fun from(fileNames: List<String>, dumpFolderPath: String): TmpSites {
-            return TmpSites(
-                fileNames.filter { it.startsWith(filePrefix) },
-                dumpFolderPath
-            )
-        }
+        fun from(fileNames: List<String>, dumpFolderPath: String) = TmpSites(
+            fileNames.filter { it.startsWith(filePrefix) && it.contains(prevSuffix) },
+            dumpFolderPath
+        )
     }
 
     override val tableName = "TMP_SITE"
@@ -36,7 +34,6 @@ class TmpSites(fileNames: List<String>, dumpFolderPath: String) : OrangeImportDa
     )
 
     override val populateTemporaryTableQueries = fileNames.map { fileName ->
-        val isPrev = fileName.contains(prevString)
         return@map """
                 LOAD DATA LOCAL INFILE '${fullPath(fileName)}'
                 INTO TABLE $tableName
@@ -73,16 +70,17 @@ class TmpSites(fileNames: List<String>, dumpFolderPath: String) : OrangeImportDa
                     @LATITUDE_WGS84,
                     @CODE_PRG_REG,
                     @CODE_ZONE_REG,
-                    @GEST_SITE
+                    @GEST_SITE,
+                    @FLAG
                 )
-                SET SITE_ID=@ID,
-                    GEO_CODE=@GEO_CODE,
-                    SITE_TYPE=@SITE_TYPE,
-                    SITE_NAME=@SITE_NAME,
-                    X_COORDINATE=@X_COORDINATE,
-                    Y_COORDINATE=@Y_COORDINATE,
-                    Z_COORDINATE=@Z_COORDINATE,
-                    IS_PREV=$isPrev;
+                SET SITE_ID = @ID,
+                    GEO_CODE = @GEO_CODE,
+                    SITE_TYPE = @SITE_TYPE,
+                    SITE_NAME = @SITE_NAME,
+                    X_COORDINATE = @X_COORDINATE,
+                    Y_COORDINATE = @Y_COORDINATE,
+                    Z_COORDINATE = @Z_COORDINATE,
+                    IS_PREV = IF(@FLAG = 'PREV', true, false);
             """
     }
 }

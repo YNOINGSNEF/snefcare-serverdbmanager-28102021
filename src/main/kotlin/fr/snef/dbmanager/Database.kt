@@ -147,7 +147,7 @@ abstract class Database {
     protected fun getBackupFile(filename: String = "") = File(archiveFolderPath + filename)
 
     protected fun extractArchive(archiveFilename: String) {
-        when (archiveFilename.substringAfterLast(".").toLowerCase()) {
+        when (archiveFilename.substringAfterLast(".").lowercase(Locale.getDefault())) {
             "zip" -> extractZip(archiveFilename)
             "tar" -> extractTar(archiveFilename)
             "taz" -> extractTaz(archiveFilename)
@@ -212,12 +212,14 @@ abstract class Database {
         return CSVParser(reader, csvFormat)
     }
 
-    private fun getDatabaseConnection() = DriverManager.getConnection("${config.databaseUrl}/$dbName?" +
-            "rewriteBatchedStatements=true" +
-            "&verifyServerCertificate=false" +
-            "&useSSL=" + (if (config.isDebug) "false" else "true") +
-            "&requireSSL=" + (if (config.isDebug) "false" else "true") +
-            "&serverTimezone=Europe/Paris",
+    private fun getDatabaseConnection() = DriverManager.getConnection(
+        "${config.databaseUrl}/$dbName?" +
+                "rewriteBatchedStatements=true" +
+                "&verifyServerCertificate=false" +
+                "&useSSL=" + (if (config.isDebug) "false" else "true") +
+                "&requireSSL=" + (if (config.isDebug) "false" else "true") +
+                "&allowLoadLocalInfile=true" +
+                "&serverTimezone=Europe/Paris",
             config.databaseUser, config.databasePassword)
 
     protected fun Connection.setUniqueChecksEnabled(enable: Boolean) {

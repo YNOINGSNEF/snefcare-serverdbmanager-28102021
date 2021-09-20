@@ -7,12 +7,10 @@ class TmpCells(fileNames: List<String>, dumpFolderPath: String) : OrangeImportDa
     companion object {
         const val filePrefix = "NORIA_FLUX_GENERIQUE_CELLULE"
 
-        fun from(fileNames: List<String>, dumpFolderPath: String): TmpCells {
-            return TmpCells(
-                fileNames.filter { it.startsWith(filePrefix) && !it.contains(TmpCellComplements.complementSuffix) },
-                dumpFolderPath
-            )
-        }
+        fun from(fileNames: List<String>, dumpFolderPath: String) = TmpCells(
+            fileNames.filter { it.startsWith(filePrefix) && !it.contains(complementSuffix) && it.contains(prevSuffix) },
+            dumpFolderPath
+        )
     }
 
     override val tableName = "TMP_CELL"
@@ -146,7 +144,13 @@ class TmpCells(fileNames: List<String>, dumpFolderPath: String) : OrangeImportDa
         	SSB_FREQUENCY_AUTO TEXT,
         	AZIMUTH_OPENNING_ANG TEXT,
         	GSCN NUMERIC,
-            IS_PREV BOOLEAN NOT NULL
+            IS_RADIO BOOLEAN NOT NULL,
+            AZIMUT_MIN TEXT,
+            TILT_MAX TEXT,
+            PUISSANCE_MAX TEXT,
+            TILT_MIN TEXT,
+            PIRE_MAX TEXT,
+            AZIMUT_MAX TEXT
         );
     """
 
@@ -157,7 +161,6 @@ class TmpCells(fileNames: List<String>, dumpFolderPath: String) : OrangeImportDa
     )
 
     override val populateTemporaryTableQueries = fileNames.map { fileName ->
-        val isPrev = fileName.contains(prevString)
         return@map """
                 LOAD DATA LOCAL INFILE '${fullPath(fileName)}'
                 INTO TABLE $tableName
@@ -290,7 +293,14 @@ class TmpCells(fileNames: List<String>, dumpFolderPath: String) : OrangeImportDa
                     @ANTENNA_SSB_PATTERN,
                     @SSB_FREQUENCY_AUTO,
                     @AZIMUTH_OPENNING_ANG,
-                    @GSCN
+                    @GSCN,
+                    @IS_RADIO,
+                    @AZIMUT_MIN,
+                    @TILT_MAX,
+                    @PUISSANCE_MAX,
+                    @TILT_MIN,
+                    @PIRE_MAX,
+                    @AZIMUT_MAX
                 )
                 SET
                     ID_ORF = NULLIF(@CELL_ID, ''),
@@ -419,7 +429,13 @@ class TmpCells(fileNames: List<String>, dumpFolderPath: String) : OrangeImportDa
                     SSB_FREQUENCY_AUTO = NULLIF(@SSB_FREQUENCY_AUTO, ''),
                     AZIMUTH_OPENNING_ANG = NULLIF(@AZIMUTH_OPENNING_ANG, ''),
                     GSCN = NULLIF(@GSCN, ''),
-                    IS_PREV=$isPrev;
+                    IS_RADIO = IF(@IS_RADIO = 'TRUE', true, false),
+                    AZIMUT_MIN = NULLIF(@AZIMUT_MIN, ''),
+                    TILT_MAX = NULLIF(@TILT_MAX, ''),
+                    PUISSANCE_MAX = NULLIF(@PUISSANCE_MAX, ''),
+                    TILT_MIN = NULLIF(@TILT_MIN, ''),
+                    PIRE_MAX = NULLIF(@PIRE_MAX, ''),
+                    AZIMUT_MAX = NULLIF(@AZIMUT_MAX, '');
             """
     }
 }
