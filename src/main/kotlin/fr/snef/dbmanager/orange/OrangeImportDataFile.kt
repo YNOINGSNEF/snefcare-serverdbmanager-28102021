@@ -5,7 +5,7 @@ import java.io.File
 abstract class OrangeImportDataFile(private val dumpFolderPath: String) : OrangeDataFile() {
 
     companion object {
-        const val validFileSuffix = "PREV_RADIO"
+        const val prevSuffix = "PREV_RADIO"
         const val complementSuffix = "COMPLEMENT"
     }
 

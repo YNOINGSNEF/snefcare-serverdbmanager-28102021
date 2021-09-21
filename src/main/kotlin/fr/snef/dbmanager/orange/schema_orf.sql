@@ -303,6 +303,7 @@ CREATE TABLE CELL_2G (
     frequency FLOAT NOT NULL,
     pw FLOAT NOT NULL,
     in_service TINYINT UNSIGNED NOT NULL,
+    is_prev TINYINT UNSIGNED NOT NULL,
     system_id TINYINT NOT NULL,
     carrier_id TINYINT NOT NULL,
     mcc TINYINT UNSIGNED NOT NULL,
@@ -323,13 +324,14 @@ create index fk_CELL_ANTENNA1_idx on CELL_2G (antenna_id);
 
 CREATE TABLE CELL_5G (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    eci BIGINT UNSIGNED NOT NULL,
+    nci BIGINT UNSIGNED NOT NULL,
     tac MEDIUMINT UNSIGNED NOT NULL,
     pci SMALLINT UNSIGNED NOT NULL,
     is_indoor TINYINT UNSIGNED NOT NULL,
     frequency FLOAT NOT NULL,
     pw FLOAT NOT NULL,
     in_service TINYINT UNSIGNED NOT NULL,
+    is_prev TINYINT UNSIGNED NOT NULL,
     system_id TINYINT NOT NULL,
     carrier_id TINYINT NOT NULL,
     mcc TINYINT UNSIGNED NOT NULL,
@@ -344,7 +346,7 @@ CREATE TABLE CELL_5G (
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-create index cell_identity on CELL_5G (eci, tac, mcc, mnc);
+create index cell_identity on CELL_5G (nci, tac, mcc, mnc);
 create index fk_CARRIER1 on CELL_5G (carrier_id);
 create index fk_CELL_4G_SYSTEM1_idx on CELL_5G (system_id);
 create index fk_CELL_ANTENNA1_idx on CELL_5G (antenna_id);
@@ -446,6 +448,7 @@ CREATE TABLE CELL_3G (
     frequency FLOAT NOT NULL,
     pw FLOAT NOT NULL,
     in_service TINYINT UNSIGNED NOT NULL,
+    is_prev TINYINT UNSIGNED NOT NULL,
     system_id TINYINT NOT NULL,
     carrier_id TINYINT NOT NULL,
     mcc TINYINT UNSIGNED NOT NULL,
@@ -480,6 +483,7 @@ CREATE TABLE CELL_4G (
     frequency FLOAT NOT NULL,
     pw FLOAT NOT NULL,
     in_service TINYINT UNSIGNED NOT NULL,
+    is_prev TINYINT UNSIGNED NOT NULL,
     system_id TINYINT NOT NULL,
     carrier_id TINYINT NOT NULL,
     mcc TINYINT UNSIGNED NOT NULL,
