@@ -22,6 +22,7 @@ object OrangeDatabase : Database() {
         ProcedureCells2G,
         ProcedureCells3G,
         ProcedureCells4G,
+        ProcedureCells5G,
         ProcedureAntennas,
         ProcedureAntenna.Cell2G,
         ProcedureAntenna.Cell3G,

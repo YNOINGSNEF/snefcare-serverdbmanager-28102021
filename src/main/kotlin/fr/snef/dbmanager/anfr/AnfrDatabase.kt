@@ -36,14 +36,14 @@ object AnfrDatabase : Database() {
             val anfrResourceInfo = RestApi.getAnfrResources()
 
             val referenceResource = anfrResourceInfo.resources
-                    // .filter { it.title.contains("Table de référence") }
-                    .filter { it.title.contains("référence") }
-                    .maxBy { it.lastModifiedDateTime }
+                // .filter { it.title.contains("Table de référence") }
+                .filter { it.title.contains("référence") }
+                .maxByOrNull { it.lastModifiedDateTime }
 
             val dataResource = anfrResourceInfo.resources
-                    // .filter { it.title.contains("Tables supports antennes emetteurs bandes") }
-                    .filter { it.title.contains("supports antennes") }
-                    .maxBy { it.lastModifiedDateTime }
+                // .filter { it.title.contains("Tables supports antennes emetteurs bandes") }
+                .filter { it.title.contains("supports antennes") }
+                .maxByOrNull { it.lastModifiedDateTime }
 
             return if (referenceResource != null
                     && dataResource != null
@@ -82,13 +82,13 @@ object AnfrDatabase : Database() {
     }
 
     private fun getLastDumpUpdate(): Date? = getBackupFile()
-            .listFiles()
-            ?.mapNotNull {
-                try {
-                    dateFormat.parse(it.nameWithoutExtension.take(10))
-                } catch (ex: ParseException) {
-                    null
-                }
+        .listFiles()
+        ?.mapNotNull {
+            try {
+                dateFormat.parse(it.nameWithoutExtension.take(10))
+            } catch (ex: ParseException) {
+                null
             }
-            ?.max()
+        }
+        ?.maxOrNull()
 }

@@ -7,12 +7,10 @@ class TmpNetworkElements(fileNames: List<String>, dumpFolderPath: String) : Oran
     companion object {
         private const val filePrefix = "NORIA_FLUX_GENERIQUE_NETWORK_ELEMENT"
 
-        fun from(fileNames: List<String>, dumpFolderPath: String): TmpNetworkElements {
-            return TmpNetworkElements(
-                fileNames.filter { it.startsWith(filePrefix) },
-                dumpFolderPath
-            )
-        }
+        fun from(fileNames: List<String>, dumpFolderPath: String) = TmpNetworkElements(
+            fileNames.filter { it.startsWith(filePrefix) && !it.contains(complementSuffix) },
+            dumpFolderPath
+        )
     }
 
     override val tableName = "TMP_NETWORK_ELEMENT"
@@ -33,7 +31,6 @@ class TmpNetworkElements(fileNames: List<String>, dumpFolderPath: String) : Oran
     """
 
     override val populateTemporaryTableQueries = fileNames.map { fileName ->
-        val isPrev = fileName.contains(prevString)
         return@map """
                 LOAD DATA LOCAL INFILE '${fullPath(fileName)}'
                 INTO TABLE $tableName
@@ -180,7 +177,7 @@ class TmpNetworkElements(fileNames: List<String>, dumpFolderPath: String) : Oran
                     NAME = @NAME,
                     NET_STAT = @NET_STAT,
                     NODE_ID = @NODE_ID,
-                    IS_PREV=$isPrev;
+                    IS_PREV = ${fileName.contains(prevSuffix)};
             """
     }
 }

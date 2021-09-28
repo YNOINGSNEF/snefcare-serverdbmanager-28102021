@@ -6,6 +6,7 @@ abstract class ProcedureCells : OrangeProcedureDataFile() {
 
     protected val selectFieldIsIndoor = "IFNULL(C.COUV = 'INDOOR', false) AS IS_INDOOR"
     protected val selectFieldInService = "C.NET_STATUS = 'OPERATIONAL' AS IN_SERVICE"
+    protected val selectFieldIsPrev = "NOT MAX(C.IS_RADIO) AS IS_PREV"
 
     protected val selectFieldSystemId = """
         CASE C.BAND
@@ -20,6 +21,11 @@ abstract class ProcedureCells : OrangeProcedureDataFile() {
             WHEN 'LTE1800' THEN 7
             WHEN 'LTE2100' THEN 8
             WHEN 'LTE2600' THEN 9
+            WHEN 'LTE3500' THEN 10
+            
+            WHEN 'NR_3500' THEN 11
+            WHEN 'NR_2100' THEN 13
+            WHEN 'NR_26_GHZ_000' THEN -1 /* UNSUPPORTED SYSTEM */ 
             
             ELSE -1 /* UNSUPPORTED SYSTEM */
         END AS SYSTEM_ID

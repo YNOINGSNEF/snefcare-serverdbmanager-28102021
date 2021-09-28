@@ -7,12 +7,10 @@ class TmpEquipments(fileNames: List<String>, dumpFolderPath: String) : OrangeImp
     companion object {
         private const val filePrefix = "NORIA_FLUX_GENERIQUE_EQPT"
 
-        fun from(fileNames: List<String>, dumpFolderPath: String): TmpEquipments {
-            return TmpEquipments(
-                fileNames.filter { it.startsWith(filePrefix) },
-                dumpFolderPath
-            )
-        }
+        fun from(fileNames: List<String>, dumpFolderPath: String) = TmpEquipments(
+            fileNames.filter { it.startsWith(filePrefix) },
+            dumpFolderPath
+        )
     }
 
     override val tableName = "TMP_EQUIPMENT"
@@ -114,7 +112,6 @@ class TmpEquipments(fileNames: List<String>, dumpFolderPath: String) : OrangeImp
     )
 
     override val populateTemporaryTableQueries = fileNames.map { fileName ->
-        val isPrev = fileName.contains(prevString)
         return@map """
                 LOAD DATA LOCAL INFILE '${fullPath(fileName)}'
                 INTO TABLE $tableName
@@ -353,18 +350,19 @@ class TmpEquipments(fileNames: List<String>, dumpFolderPath: String) : OrangeImp
                     @RAPPORT_AV_AR_3500_DB,
                     @ROS_3500,
                     @GAIN_NR2100_DBI,
-                    @PERTE_DUPLEXEUR_2100_DB,
-                    @PERTE_D_INSERTION_DB,
-                    @PUISSANCE_NR2100_W,
                     @PUISSANCE_LTE2100_W,
-                    @BANDE_DE_FREQUENCE_NR3500_MHZ,
-                    @PUISSANCE_LTE1800_W,
-                    @TILT_ELECTRIQUE_RN3500_,
-                    @RAPPORT_AV_AR_NR3500_DB,
-                    @BANDE_PASSANTE_MHZ,
+                    @OUVERTURE_HORIZONTALE_2100,
                     @GAIN_2100_DB,
+                    @PERTE_D_INSERTION_DB,
+                    @BANDE_PASSANTE_MHZ,
+                    @PUISSANCE_UMTS2200_W,
                     @ROS_NR3500,
-                    @PUISSANCE_UMTS2200_W
+                    @PUISSANCE_NR2100_W,
+                    @CLASSE_2100,
+                    @RET_INTEGRE,
+                    @RAPPORT_AV_AR_NR3500_DB,
+                    @PUISSANCE_LTE1800_W,
+                    @PERTE_DUPLEXEUR_2100_DB
                 )
                 SET
                     EQPT_ID = NULLIF(@ID, ''),
@@ -449,7 +447,7 @@ class TmpEquipments(fileNames: List<String>, dumpFolderPath: String) : OrangeImp
                     PUISSANCE_3500_W = NULLIF(@PUISSANCE_3500_W, ''),
                     TILT_ELECTRIQUE_3500 = NULLIF(@TILT_ELECTRIQUE_3500, ''),
                     BANDE_DE_FREQUENCE_3500_MHZ = NULLIF(@BANDE_DE_FREQUENCE_3500_MHZ, ''),
-                    IS_PREV=$isPrev;
+                    IS_PREV = ${fileName.contains(prevSuffix)};
             """
     }
 }

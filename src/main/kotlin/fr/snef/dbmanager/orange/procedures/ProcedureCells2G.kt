@@ -4,7 +4,7 @@ object ProcedureCells2G : ProcedureCells() {
     override val tableName = "CELL_2G"
     override val procedureQuery = """
         INSERT INTO CELL_2G(
-        	id, num_ci, lac, rac, bcch, is_indoor, frequency, pw, in_service, system_id, carrier_id, mcc, mnc, antenna_id, site_id
+        	id, num_ci, lac, rac, bcch, is_indoor, frequency, pw, in_service, is_prev, system_id, carrier_id, mcc, mnc, antenna_id, site_id
         )
         SELECT
         	MIN(C.ID),
@@ -16,6 +16,7 @@ object ProcedureCells2G : ProcedureCells() {
             0 AS FREQUENCY, /* UNKNOWN FOR 2G */
             0 AS PW, /* UNKNOWN FOR 2G */
             $selectFieldInService,
+            $selectFieldIsPrev,
             $selectFieldSystemId,
             $selectFieldCarrier,
             $selectFieldMcc,

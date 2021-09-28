@@ -5,14 +5,10 @@ import fr.snef.dbmanager.orange.OrangeImportDataFile
 class TmpCellComplements(fileNames: List<String>, dumpFolderPath: String) : OrangeImportDataFile(dumpFolderPath) {
 
     companion object {
-        const val complementSuffix = "COMPLEMENT"
-
-        fun from(fileNames: List<String>, dumpFolderPath: String): TmpCellComplements {
-            return TmpCellComplements(
-                fileNames.filter { it.startsWith(TmpCells.filePrefix) && it.contains(complementSuffix) },
-                dumpFolderPath
-            )
-        }
+        fun from(fileNames: List<String>, dumpFolderPath: String) = TmpCellComplements(
+            fileNames.filter { it.startsWith(TmpCells.filePrefix) && it.contains(complementSuffix) },
+            dumpFolderPath
+        )
     }
 
     override val tableName = "TMP_CELL_COMP"
@@ -35,7 +31,6 @@ class TmpCellComplements(fileNames: List<String>, dumpFolderPath: String) : Oran
     )
 
     override val populateTemporaryTableQueries = fileNames.map { fileName ->
-        val isPrev = fileName.contains(prevString)
         return@map """
                 LOAD DATA LOCAL INFILE '${fullPath(fileName)}'
                 INTO TABLE $tableName
@@ -331,7 +326,7 @@ class TmpCellComplements(fileNames: List<String>, dumpFolderPath: String) : Oran
                     NODE_ID = NULLIF(@NODE_ID, ''),
                     DESCRIPTION = NULLIF(@DESCRIPTION, ''),
                     BCCH = NULLIF(@BCCH, ''),
-                    IS_PREV=$isPrev;
+                    IS_PREV = ${fileName.contains(prevSuffix)};
             """
     }
 }

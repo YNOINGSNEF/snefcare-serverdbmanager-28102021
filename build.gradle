@@ -1,21 +1,3 @@
-buildscript {
-    ext {
-        apacheCompressVersion = '1.18'
-        apacheCsvVersion = '1.6'
-        kotlinVersion = '1.3.40'
-        mysqlConnectorVersion = '8.0.13'
-        retrofitVersion = '2.4.0'
-    }
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    }
-}
-
 /**
  * Pour créer l'exécutable à placer sur le serveur de production :
  * 1. Vérifier que [isDebugEnabled] est à false dans Application.kt
@@ -27,13 +9,33 @@ buildscript {
  * 7. Done! L'application sera lancée automatiquement toutes les nuits (00h00) via une tâche CRON
  */
 
-group = "fr.careapps.dbmanager"
+buildscript {
+    ext {
+        apacheCompressVersion = '1.21'
+        apacheCsvVersion = '1.8'
+        kotlinVersion = '1.5.10'
+        mysqlConnectorVersion = '8.0.25'
+        retrofitVersion = '2.9.0'
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
+    id 'application'
+}
+
+group = 'fr.careapps.dbmanager'
 version = '1.0.0'
 
-apply plugin: 'kotlin'
-apply plugin: 'application'
-
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -51,5 +53,5 @@ dependencies {
 mainClassName = "fr.snef.dbmanager.ApplicationKt"
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = 11
 }
