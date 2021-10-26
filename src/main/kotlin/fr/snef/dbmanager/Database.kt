@@ -34,7 +34,11 @@ abstract class Database {
 
     fun update(): Boolean {
         if (!config.isDebug) {
-            if (!retrieveNewDump()) return false
+            println("  > Checking for new dump...")
+            if (!retrieveNewDump()) {
+                println("  > No dump available, skipping database update")
+                return false
+            }
 
             println("  > New dump available, backing it up")
             archiveDump()
@@ -158,9 +162,13 @@ abstract class Database {
     private fun extractZip(archiveFilename: String) {
         ZipFile(getDumpFile(archiveFilename)).use { zipFile ->
             zipFile.entries().asSequence().forEach { zipEntry ->
-                zipFile.getInputStream(zipEntry).use { inputStream ->
-                    getDumpFile(zipEntry.name).outputStream().use { outputStream ->
-                        inputStream.copyTo(outputStream)
+                if (zipEntry.isDirectory) {
+                    getDumpFile(zipEntry.name).mkdirs()
+                } else {
+                    zipFile.getInputStream(zipEntry).use { inputStream ->
+                        getDumpFile(zipEntry.name).outputStream().use { outputStream ->
+                            inputStream.copyTo(outputStream)
+                        }
                     }
                 }
             }

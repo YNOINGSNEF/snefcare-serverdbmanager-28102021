@@ -8,6 +8,7 @@ import fr.snef.dbmanager.toFormattedElapsedTime
 import java.io.File
 import java.sql.Connection
 import java.sql.Statement
+import java.text.SimpleDateFormat
 import kotlin.system.measureTimeMillis
 
 object OrangeDatabase : Database() {
@@ -15,7 +16,8 @@ object OrangeDatabase : Database() {
 
     override val dbName get() = if (config.isDebug) "dump_orf_dev" else "dump_orf"
 
-    private const val dumpFileName = "dump.zip"
+    // Populated during `retrieveNewDump` step
+    private var dumpFileName = "--"
 
     override val filesToProcess = listOf(
         ProcedureSites,
@@ -31,7 +33,31 @@ object OrangeDatabase : Database() {
         ProcedureAntennaTilts
     )
 
-    override fun retrieveNewDump(): Boolean = getDumpFile(dumpFileName).isFile
+    override fun retrieveNewDump(): Boolean {
+        val dumpNameRegex = "FLUX_GENERIQUE_NORIA_([0-9]{8}).*".toRegex()
+        val dumpDateFormat = SimpleDateFormat("ddMMyyyy")
+        val files = getDumpFile().listFiles { _, name -> name.matches(dumpNameRegex) } ?: emptyArray()
+
+        println("    > Found ${files.count()} new dump file(s)")
+
+        val latestDumpFile = files
+            .mapNotNull { file ->
+                println("      > $file")
+
+                val rawDate = dumpNameRegex.find(file.name)?.groups?.get(1)?.value ?: return@mapNotNull null
+                val date = dumpDateFormat.parse(rawDate)
+
+                file to date
+            }
+            .maxByOrNull { (_, date) -> date }
+            ?.first
+            ?: return false
+
+        dumpFileName = latestDumpFile.name
+        println("    > Using latest dump file: $dumpFileName")
+
+        return true
+    }
 
     override fun archiveDump() {
         getDumpFile(dumpFileName).copyTo(getBackupFile("ORF $formattedDate.zip"), true)
