@@ -30,7 +30,8 @@ object OrangeDatabase : Database() {
         ProcedureAntenna.Cell3G,
         ProcedureAntenna.Cell4G,
         ProcedureAntenna.Cell5G,
-        ProcedureAntennaTilts
+        ProcedureAntennaTilts,
+        ProcedureAntennaState
     )
 
     override fun retrieveNewDump(): Boolean {
