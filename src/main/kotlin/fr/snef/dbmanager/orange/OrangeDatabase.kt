@@ -70,18 +70,19 @@ object OrangeDatabase : Database() {
 
     override fun importFilesToDatabase(dbConnection: Connection) {
         // Setup import files
-        val dumpFileNames = getDumpFile()
+        val dumpFileNames = getDumpFile(dumpFileName)
             .takeIf { it.isDirectory }
             ?.listFiles { _, name -> name.endsWith(".csv", true) }
             ?.map { it.nameWithoutExtension }
             ?: emptyList()
 
+        val dumpFolder = dumpFolderPath + dumpFileName + File.separator
         val importFiles = listOf(
-            TmpSites.from(dumpFileNames, dumpFolderPath),
-            TmpNetworkElements.from(dumpFileNames, dumpFolderPath),
-            TmpEquipments.from(dumpFileNames, dumpFolderPath),
-            TmpCells.from(dumpFileNames, dumpFolderPath),
-            TmpCellComplements.from(dumpFileNames, dumpFolderPath)
+            TmpSites.from(dumpFileNames, dumpFolder),
+            TmpNetworkElements.from(dumpFileNames, dumpFolder),
+            TmpEquipments.from(dumpFileNames, dumpFolder),
+            TmpCells.from(dumpFileNames, dumpFolder),
+            TmpCellComplements.from(dumpFileNames, dumpFolder)
         )
 
         // Setup DB
@@ -106,9 +107,9 @@ object OrangeDatabase : Database() {
 
         // Populate TMP tables
         importFiles.forEach { file ->
-            val count = file.populateTemporaryTableQueries.count()
-            file.populateTemporaryTableQueries.forEachIndexed { index, query ->
-                print("    > Populating table ${file.tableName} (${index + 1}/$count)...")
+            val queries = file.makePopulateTemporaryTableQueries()
+            queries.forEachIndexed { index, query ->
+                print("    > Populating table ${file.tableName} (${index + 1}/${queries.count()})...")
                 var updateCount = -1
                 val timeMillis = measureTimeMillis {
                     dbConnection.execute(query) { stmt -> updateCount = stmt.updateCount }

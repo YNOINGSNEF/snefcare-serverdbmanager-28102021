@@ -33,13 +33,13 @@ abstract class Database {
     protected abstract val filesToProcess: List<DataFile>
 
     fun update(): Boolean {
-        if (!config.isDebug) {
-            println("  > Checking for new dump...")
-            if (!retrieveNewDump()) {
-                println("  > No dump available, skipping database update")
-                return false
-            }
+        println("  > Checking for new dump...")
+        if (!retrieveNewDump()) {
+            println("  > No dump available, skipping database update")
+            return false
+        }
 
+        if (!config.isDebug) {
             println("  > New dump available, backing it up")
             archiveDump()
             println("  > Preparing dump (unzipping, etc.)")
