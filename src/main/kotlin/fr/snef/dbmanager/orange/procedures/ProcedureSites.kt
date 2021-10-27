@@ -11,6 +11,7 @@ object ProcedureSites : OrangeProcedureDataFile() {
             I.SITE_ID,
             MAX(I.GN_CODE) AS GN_CODE,
             S.SITE_NAME,
+            S.UR_NAME,
             LAMBERT_IIe_TO_WGS84_LAT(S.X_COORDINATE, S.Y_COORDINATE) AS LAT,
             LAMBERT_IIe_TO_WGS84_LNG(S.X_COORDINATE, S.Y_COORDINATE) AS LNG,
             S.Z_COORDINATE AS ALT,
