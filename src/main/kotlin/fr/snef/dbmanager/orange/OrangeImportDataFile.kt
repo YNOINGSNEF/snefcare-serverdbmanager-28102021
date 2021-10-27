@@ -4,6 +4,7 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.File
 import java.nio.file.Files
+import java.text.Normalizer
 
 abstract class OrangeImportDataFile(
     protected val fileNames: List<String>,
@@ -33,11 +34,29 @@ abstract class OrangeImportDataFile(
             .withIgnoreEmptyLines(ignoreEmptyLines)
             .withQuote(quoteChar)
 
-        val record: Iterable<String>?
+        val fileHeaderColumns: Iterable<String>?
         CSVParser(reader, csvFormat).use { csvParser ->
-            record = csvParser.firstOrNull()
+            fileHeaderColumns = csvParser.firstOrNull()?.map { column ->
+                column
+                    .replace(' ', '_')
+                    .replace("-", "_")
+                    .replace("/", "_")
+                    .replace("'", "_")
+                    .replace(".", "")
+                    .replace("%", "")
+                    .replace("°", "")
+                    .replace("(", "")
+                    .replace(")", "")
+                    .dropLastWhile { it == '_' }
+                    .removeNonSpacingMarks()
+                    .uppercase()
+            }
         }
 
-        return (record ?: defaultFileHeaderColumns).joinToString(",") { "@$it" }
+        return (fileHeaderColumns ?: defaultFileHeaderColumns).joinToString(",") { "@$it" }
     }
+
+    private fun String.removeNonSpacingMarks() =
+        Normalizer.normalize(this, Normalizer.Form.NFD)
+            .replace("\\p{Mn}+".toRegex(), "")
 }

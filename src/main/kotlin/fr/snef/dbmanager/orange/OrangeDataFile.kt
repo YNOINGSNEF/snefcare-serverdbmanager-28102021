@@ -8,7 +8,7 @@ abstract class OrangeDataFile : DataFile() {
 
     override val fileName get() = throw UnsupportedOperationException()
     override val fileHeader get() = throw UnsupportedOperationException()
-    override val fileCharset = CHARSET_ANSI
+    override val fileCharset = CHARSET_UTF_8
     override val fileExtension = "csv"
 
     override val tableHeader get() = throw UnsupportedOperationException()
