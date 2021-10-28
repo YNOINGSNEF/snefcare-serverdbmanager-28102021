@@ -13,7 +13,11 @@ import java.util.*
 import kotlin.system.measureTimeMillis
 
 object OrangeDatabase : Database() {
-    override val dumpFolder = "orange" + File.separator + "radio" + File.separator
+    override val dumpFolder = if (config.isDebug) {
+        "orange" + File.separator + "radio" + File.separator
+    } else {
+        "orange" + File.separator + "noria" + File.separator
+    }
 
     override val dbName get() = if (config.isDebug) "dump_orf_dev" else "dump_orf"
 

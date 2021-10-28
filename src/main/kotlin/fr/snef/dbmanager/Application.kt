@@ -15,7 +15,7 @@ import kotlin.system.measureTimeMillis
  * - Config.Debug --> will use development settings (folder paths, databases, etc.)
  * - Config.Release --> will use production settings
  */
-var config: Config = Config.Debug
+var config: Config = Config.Release
 
 private val databases get() = if (config.isDebug) debugDatabases else releaseDatabases
 private val debugDatabases = listOf(
