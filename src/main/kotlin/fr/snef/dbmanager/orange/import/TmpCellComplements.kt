@@ -42,7 +42,7 @@ class TmpCellComplements(
                 IGNORE 1 LINES
                 ( ${retrieveHeaderColumns()} )
                 SET
-                    ID_ORF = NULLIF(@CELL_ID, ''),
+                    ID_ORF = NULLIF(@ID, ''),
                     CELL_TYPE = NULLIF(@CELL_TYPE, ''),
                     NETWORK_ELEMENT_ID = NULLIF(@NETWORK_ELEMENT_ID, ''),
                     NODE_ID = NULLIF(@NODE_ID, ''),
@@ -53,7 +53,7 @@ class TmpCellComplements(
     }
 
     override val defaultFileHeaderColumns = listOf(
-        "CELL_ID",
+        "ID",
         "CELL_TYPE",
         "NETWORK_ELEMENT_ID",
         "NODE_ID",
