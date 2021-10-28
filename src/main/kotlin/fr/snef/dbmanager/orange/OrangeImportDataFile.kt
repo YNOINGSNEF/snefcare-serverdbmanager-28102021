@@ -21,7 +21,7 @@ abstract class OrangeImportDataFile(
     abstract val createTemporaryTableQuery: String
     open val createIndexesQueries = emptyList<String>()
     abstract val defaultFileHeaderColumns: List<String>
-    abstract fun makePopulateTemporaryTableQueries(): List<String>
+    abstract fun makePopulateTemporaryTableQueries(): List<Pair<String, String>> // List<(filename, query)>
 
     protected fun fullPath(fileName: String) = dumpFolderPath + File.separatorChar + fileName + "." + fileExtension
 

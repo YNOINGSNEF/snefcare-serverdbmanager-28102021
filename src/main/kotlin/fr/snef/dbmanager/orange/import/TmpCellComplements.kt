@@ -34,7 +34,7 @@ class TmpCellComplements(
     )
 
     override fun makePopulateTemporaryTableQueries() = fileNames.map { fileName ->
-        return@map """
+        return@map fileName to """
                 LOAD DATA LOCAL INFILE '${fullPath(fileName)}'
                 INTO TABLE $tableName
                 FIELDS TERMINATED BY ';'

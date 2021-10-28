@@ -2,13 +2,14 @@ package fr.snef.dbmanager.orange
 
 import fr.snef.dbmanager.Database
 import fr.snef.dbmanager.config
-import fr.snef.dbmanager.orange.import.*
+import fr.snef.dbmanager.orange.import.TmpCells
 import fr.snef.dbmanager.orange.procedures.*
 import fr.snef.dbmanager.toFormattedElapsedTime
 import java.io.File
 import java.sql.Connection
 import java.sql.Statement
 import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.system.measureTimeMillis
 
 object OrangeDatabase : Database() {
@@ -52,6 +53,7 @@ object OrangeDatabase : Database() {
             }
             .maxByOrNull { (_, date) -> date }
             ?.first
+            ?: files.firstOrNull() // In case ORF changes the file name pattern...
             ?: return false
 
         dumpFileName = latestDumpFile.name
@@ -107,14 +109,14 @@ object OrangeDatabase : Database() {
 
         // Populate TMP tables
         importFiles.forEach { file ->
-            val queries = file.makePopulateTemporaryTableQueries()
-            queries.forEachIndexed { index, query ->
-                print("    > Populating table ${file.tableName} (${index + 1}/${queries.count()})...")
+            val fileQueries = file.makePopulateTemporaryTableQueries()
+            fileQueries.forEachIndexed { index, (fileName, query) ->
+                print("    > Populating table ${file.tableName} (${index + 1}/${fileQueries.count()}, $fileName)...")
                 var updateCount = -1
                 val timeMillis = measureTimeMillis {
                     dbConnection.execute(query) { stmt -> updateCount = stmt.updateCount }
                 }
-                println(" $updateCount lines updated in ${timeMillis.toFormattedElapsedTime()}")
+                println(" $updateCount lines updated in ${timeMillis.toFormattedElapsedTime()} (ended on ${Date()})")
             }
         }
 
@@ -136,7 +138,7 @@ object OrangeDatabase : Database() {
             val timeMillis = measureTimeMillis {
                 dbConnection.execute(file.procedureQuery) { stmt -> updateCount = stmt.updateCount }
             }
-            println(" $updateCount lines updated in ${timeMillis.toFormattedElapsedTime()}")
+            println(" $updateCount lines updated in ${timeMillis.toFormattedElapsedTime()} (ended on ${Date()})")
         }
 
         dbConnection.setUniqueChecksEnabled(true)

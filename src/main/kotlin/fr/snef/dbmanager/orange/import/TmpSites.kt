@@ -37,26 +37,24 @@ class TmpSites(
         "ALTER TABLE $tableName ADD INDEX index2 (SITE_ID);"
     )
 
-    override fun makePopulateTemporaryTableQueries(): List<String> {
-        return fileNames.map { fileName ->
-            return@map """
-                    LOAD DATA LOCAL INFILE '${fullPath(fileName)}'
-                    INTO TABLE $tableName
-                    FIELDS TERMINATED BY ';'
-                    LINES TERMINATED BY '\n'
-                    IGNORE 1 LINES
-                    ( ${retrieveHeaderColumns()} )
-                    SET SITE_ID = @ID,
-                        GEO_CODE = @GEO_CODE,
-                        SITE_TYPE = @SITE_TYPE,
-                        SITE_NAME = @SITE_NAME,
-                        UR_NAME = @UR_NAME,
-                        X_COORDINATE = @X_COORDINATE,
-                        Y_COORDINATE = @Y_COORDINATE,
-                        Z_COORDINATE = @Z_COORDINATE,
-                        IS_PREV = IF(@FLAG = 'PREV', true, false);
-                """
-        }
+    override fun makePopulateTemporaryTableQueries() = fileNames.map { fileName ->
+        return@map fileName to """
+                LOAD DATA LOCAL INFILE '${fullPath(fileName)}'
+                INTO TABLE $tableName
+                FIELDS TERMINATED BY ';'
+                LINES TERMINATED BY '\n'
+                IGNORE 1 LINES
+                ( ${retrieveHeaderColumns()} )
+                SET SITE_ID = @ID,
+                    GEO_CODE = @GEO_CODE,
+                    SITE_TYPE = @SITE_TYPE,
+                    SITE_NAME = @SITE_NAME,
+                    UR_NAME = @UR_NAME,
+                    X_COORDINATE = @X_COORDINATE,
+                    Y_COORDINATE = @Y_COORDINATE,
+                    Z_COORDINATE = @Z_COORDINATE,
+                    IS_PREV = IF(@FLAG = 'PREV', true, false);
+            """
     }
 
     override val defaultFileHeaderColumns = listOf(

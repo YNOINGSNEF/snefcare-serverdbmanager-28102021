@@ -5,7 +5,7 @@ import fr.snef.dbmanager.orange.OrangeProcedureDataFile
 object ProcedureSites : OrangeProcedureDataFile() {
     override val tableName = "SITE"
     override val procedureQuery = """
-        INSERT INTO SITE(id, id_orf, code, name, latitude, longitude, altitude, is_prev)
+        INSERT INTO SITE(id, id_orf, code, name, ur_name, latitude, longitude, altitude, is_prev)
         SELECT
             I.ID,
             I.SITE_ID,
