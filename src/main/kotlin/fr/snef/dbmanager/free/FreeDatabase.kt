@@ -12,17 +12,20 @@ object FreeDatabase : Database() {
 
     private val dumpFileNames = getDumpFile()
             .takeIf { it.isDirectory }
-            ?.listFiles { _, name -> name.endsWith(".csv", true) }
-            ?.map { it.nameWithoutExtension }
-            ?: emptyList()
+        ?.listFiles { _, name -> name.endsWith(".csv", true) }
+        ?.map { it.nameWithoutExtension }
+        ?: emptyList()
 
     override val filesToProcess = dumpFileNames.map { Site(it) }
-            .plus(dumpFileNames.map { Antenna(it) })
-            .plus(dumpFileNames.map { AntennaTilt(it) })
-            .plus(dumpFileNames.map { Cell3G(it) })
-            .plus(dumpFileNames.map { Cell4G(it) })
+        .plus(dumpFileNames.map { Antenna(it) })
+        .plus(dumpFileNames.map { AntennaTilt(it) })
+        .plus(dumpFileNames.map { Cell3G(it) })
+        .plus(dumpFileNames.map { Cell4G(it) })
 
-    override fun retrieveNewDump(): Boolean = dumpFileNames.isNotEmpty()
+    override fun retrieveNewDump(): Boolean {
+        if (config.isDebug) return true
+        return dumpFileNames.isNotEmpty()
+    }
 
     override fun archiveDump() {
         // Nothing to do

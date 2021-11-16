@@ -1,6 +1,7 @@
 package fr.snef.dbmanager.ocean
 
 import fr.snef.dbmanager.Database
+import fr.snef.dbmanager.config
 import fr.snef.dbmanager.ocean.model.*
 import java.io.File
 import java.sql.Connection
@@ -92,17 +93,20 @@ object OceanDatabase : Database() {
 //            CellVoisOptiers(), // OCEAN_CELL_VOIS_OPTIERS
             ConfBaie(), // OCEAN_CONFBAIE
 //            OdtCfb(), // OCEAN_ODT_CFB
-            CfbCell(), // OCEAN_CFB_CELL
-            Frequence2g(), // OCEAN_FREQUENCE2G
-            ModAnt(), // OCEAN_MODANT
+        CfbCell(), // OCEAN_CFB_CELL
+        Frequence2g(), // OCEAN_FREQUENCE2G
+        ModAnt(), // OCEAN_MODANT
 //            Feeder(), // OCEAN_FEEDER
 //            OdtMda(), // OCEAN_ODT_MDA
-            MdaCell() // OCEAN_MDA_CELL
+        MdaCell() // OCEAN_MDA_CELL
     )
 
     private const val dumpFileName = "dump.zip"
 
-    override fun retrieveNewDump(): Boolean = getDumpFile(dumpFileName).isFile
+    override fun retrieveNewDump(): Boolean {
+        if (config.isDebug) return true
+        return getDumpFile(dumpFileName).isFile
+    }
 
     override fun archiveDump() {
         getDumpFile(dumpFileName).copyTo(getBackupFile("SFR $formattedDate.zip"), true)

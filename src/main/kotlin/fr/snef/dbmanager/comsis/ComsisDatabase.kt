@@ -2,6 +2,7 @@ package fr.snef.dbmanager.comsis
 
 import fr.snef.dbmanager.Database
 import fr.snef.dbmanager.comsis.model.LastComsis
+import fr.snef.dbmanager.config
 import java.io.File
 import java.sql.Connection
 
@@ -13,7 +14,10 @@ object ComsisDatabase : Database() {
 
     private val dumpFilename = with(LastComsis()) { "$fileName.$fileExtension" }
 
-    override fun retrieveNewDump(): Boolean = getDumpFile(dumpFilename).isFile
+    override fun retrieveNewDump(): Boolean {
+        if (config.isDebug) return true
+        return getDumpFile(dumpFilename).isFile
+    }
 
     override fun archiveDump() {
         getDumpFile(dumpFilename).copyTo(getBackupFile("$formattedDate.csv"), true)
