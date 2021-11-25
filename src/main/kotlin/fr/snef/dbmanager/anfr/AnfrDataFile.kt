@@ -11,5 +11,5 @@ abstract class AnfrDataFile : DataFile() {
     override val tableHeader get() = fileHeader.enumConstants.map { it.name }
 
     private fun String.toUpperCaseUnderscore() =
-            replace(Regex("(?<=[a-z])[A-Z]")) { match -> "_" + match.value }.toUpperCase()
+        replace(Regex("(?<=[a-z])[A-Z]")) { match -> "_" + match.value }.uppercase()
 }

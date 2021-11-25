@@ -33,9 +33,16 @@ abstract class Database {
     protected abstract val filesToProcess: List<DataFile>
 
     fun update(): Boolean {
-        if (!config.isDebug) {
-            if (!retrieveNewDump()) return false
+        println("  > Checking for new dump...")
+        if (!retrieveNewDump()) {
+            println("  > No dump available, skipping database update")
+            return false
+        }
 
+        if (config.isLocal) {
+            println("  > Skipping dump backup as local configuration is used")
+            println("  > Skipping dump unzipping as local configuration is used")
+        } else {
             println("  > New dump available, backing it up")
             archiveDump()
             println("  > Preparing dump (unzipping, etc.)")
@@ -49,7 +56,9 @@ abstract class Database {
             executePostImportActions(dbConnection)
         }
 
-        if (!config.isDebug) {
+        if (config.isLocal) {
+            println("  > Skipping dump cleaning as local configuration is used")
+        } else {
             println("  > Cleaning dump")
             cleanDump()
         }
@@ -158,9 +167,13 @@ abstract class Database {
     private fun extractZip(archiveFilename: String) {
         ZipFile(getDumpFile(archiveFilename)).use { zipFile ->
             zipFile.entries().asSequence().forEach { zipEntry ->
-                zipFile.getInputStream(zipEntry).use { inputStream ->
-                    getDumpFile(zipEntry.name).outputStream().use { outputStream ->
-                        inputStream.copyTo(outputStream)
+                if (zipEntry.isDirectory) {
+                    getDumpFile(zipEntry.name).mkdirs()
+                } else {
+                    zipFile.getInputStream(zipEntry).use { inputStream ->
+                        getDumpFile(zipEntry.name).outputStream().use { outputStream ->
+                            inputStream.copyTo(outputStream)
+                        }
                     }
                 }
             }
@@ -216,8 +229,8 @@ abstract class Database {
         "${config.databaseUrl}/$dbName?" +
                 "rewriteBatchedStatements=true" +
                 "&verifyServerCertificate=false" +
-                "&useSSL=" + (if (config.isDebug) "false" else "true") +
-                "&requireSSL=" + (if (config.isDebug) "false" else "true") +
+                "&useSSL=" + (if (config.isLocal) "false" else "true") +
+                "&requireSSL=" + (if (config.isLocal) "false" else "true") +
                 "&allowLoadLocalInfile=true" +
                 "&serverTimezone=Europe/Paris",
             config.databaseUser, config.databasePassword)

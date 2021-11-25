@@ -5,12 +5,13 @@ import fr.snef.dbmanager.orange.OrangeProcedureDataFile
 object ProcedureSites : OrangeProcedureDataFile() {
     override val tableName = "SITE"
     override val procedureQuery = """
-        INSERT INTO SITE(id, id_orf, code, name, latitude, longitude, altitude, is_prev)
+        INSERT INTO SITE(id, id_orf, code, name, ur_name, latitude, longitude, altitude, is_prev)
         SELECT
             I.ID,
             I.SITE_ID,
             MAX(I.GN_CODE) AS GN_CODE,
             S.SITE_NAME,
+            S.UR_NAME,
             LAMBERT_IIe_TO_WGS84_LAT(S.X_COORDINATE, S.Y_COORDINATE) AS LAT,
             LAMBERT_IIe_TO_WGS84_LNG(S.X_COORDINATE, S.Y_COORDINATE) AS LNG,
             S.Z_COORDINATE AS ALT,

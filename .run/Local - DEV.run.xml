@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="Local - DEV" type="JetRunConfigurationType">
+        <option name="MAIN_CLASS_NAME" value="fr.snef.dbmanager.ApplicationKt"/>
+        <module name="dbManager"/>
+        <option name="PROGRAM_PARAMETERS" value="local dev"/>
+        <shortenClasspath name="NONE"/>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+    </configuration>
+</component>

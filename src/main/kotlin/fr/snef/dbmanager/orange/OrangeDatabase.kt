@@ -8,14 +8,16 @@ import fr.snef.dbmanager.toFormattedElapsedTime
 import java.io.File
 import java.sql.Connection
 import java.sql.Statement
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.system.measureTimeMillis
 
 object OrangeDatabase : Database() {
-    override val dumpFolder = "orange" + File.separator + "radio" + File.separator
+    override val dumpFolder = "orange" + File.separator + "quartz" + File.separator
+    override val dbName get() = if (config.useDevelopmentDb) "dump_orf_dev" else "dump_orf"
 
-    override val dbName get() = if (config.isDebug) "dump_orf_dev" else "dump_orf"
-
-    private const val dumpFileName = "dump.zip"
+    // Populated during `retrieveNewDump` step
+    private var dumpFileName = "--"
 
     override val filesToProcess = listOf(
         ProcedureSites,
@@ -28,10 +30,36 @@ object OrangeDatabase : Database() {
         ProcedureAntenna.Cell3G,
         ProcedureAntenna.Cell4G,
         ProcedureAntenna.Cell5G,
-        ProcedureAntennaTilts
+        ProcedureAntennaTilts,
+        ProcedureAntennaState
     )
 
-    override fun retrieveNewDump(): Boolean = getDumpFile(dumpFileName).isFile
+    override fun retrieveNewDump(): Boolean {
+        val dumpNameRegex = "FLUX_GENERIQUE_NORIA_([0-9]{8}).*".toRegex()
+        val dumpDateFormat = SimpleDateFormat("ddMMyyyy")
+        val files = getDumpFile().listFiles { _, name -> name.matches(dumpNameRegex) } ?: emptyArray()
+
+        println("    > Found ${files.count()} new dump file(s)")
+
+        val latestDumpFile = files
+            .mapNotNull { file ->
+                println("      > $file")
+
+                val rawDate = dumpNameRegex.find(file.name)?.groups?.get(1)?.value ?: return@mapNotNull null
+                val date = dumpDateFormat.parse(rawDate)
+
+                file to date
+            }
+            .maxByOrNull { (_, date) -> date }
+            ?.first
+            ?: files.firstOrNull() // In case ORF changes the file name pattern...
+            ?: return false
+
+        dumpFileName = latestDumpFile.name
+        println("    > Using latest dump file: $dumpFileName")
+
+        return true
+    }
 
     override fun archiveDump() {
         getDumpFile(dumpFileName).copyTo(getBackupFile("ORF $formattedDate.zip"), true)
@@ -43,19 +71,25 @@ object OrangeDatabase : Database() {
 
     override fun importFilesToDatabase(dbConnection: Connection) {
         // Setup import files
-        val dumpFileNames = getDumpFile()
+        val dumpFileNames = getDumpFile(dumpFileName)
             .takeIf { it.isDirectory }
             ?.listFiles { _, name -> name.endsWith(".csv", true) }
             ?.map { it.nameWithoutExtension }
             ?: emptyList()
 
+        val dumpFolder = dumpFolderPath + dumpFileName + File.separator
         val importFiles = listOf(
-            TmpSites.from(dumpFileNames, dumpFolderPath),
-            TmpNetworkElements.from(dumpFileNames, dumpFolderPath),
-            TmpEquipments.from(dumpFileNames, dumpFolderPath),
-            TmpCells.from(dumpFileNames, dumpFolderPath),
-            TmpCellComplements.from(dumpFileNames, dumpFolderPath)
+            TmpSites.from(dumpFileNames, dumpFolder),
+            TmpNetworkElements.from(dumpFileNames, dumpFolder),
+            TmpEquipments.from(dumpFileNames, dumpFolder),
+            TmpCells.from(dumpFileNames, dumpFolder),
+            TmpCellComplements.from(dumpFileNames, dumpFolder)
         )
+
+        if (importFiles.isEmpty()) {
+            print("    > ⚠️ Skipping database update as no dump file is available...")
+            return
+        }
 
         // Setup DB
         dbConnection.setUniqueChecksEnabled(false)
@@ -79,14 +113,14 @@ object OrangeDatabase : Database() {
 
         // Populate TMP tables
         importFiles.forEach { file ->
-            val count = file.populateTemporaryTableQueries.count()
-            file.populateTemporaryTableQueries.forEachIndexed { index, query ->
-                print("    > Populating table ${file.tableName} (${index + 1}/$count)...")
+            val fileQueries = file.makePopulateTemporaryTableQueries()
+            fileQueries.forEachIndexed { index, (fileName, query) ->
+                print("    > Populating table ${file.tableName} (${index + 1}/${fileQueries.count()}, $fileName)...")
                 var updateCount = -1
                 val timeMillis = measureTimeMillis {
                     dbConnection.execute(query) { stmt -> updateCount = stmt.updateCount }
                 }
-                println(" $updateCount lines updated in ${timeMillis.toFormattedElapsedTime()}")
+                println(" $updateCount lines updated in ${timeMillis.toFormattedElapsedTime()} (ended on ${Date()})")
             }
         }
 
@@ -108,7 +142,7 @@ object OrangeDatabase : Database() {
             val timeMillis = measureTimeMillis {
                 dbConnection.execute(file.procedureQuery) { stmt -> updateCount = stmt.updateCount }
             }
-            println(" $updateCount lines updated in ${timeMillis.toFormattedElapsedTime()}")
+            println(" $updateCount lines updated in ${timeMillis.toFormattedElapsedTime()} (ended on ${Date()})")
         }
 
         dbConnection.setUniqueChecksEnabled(true)

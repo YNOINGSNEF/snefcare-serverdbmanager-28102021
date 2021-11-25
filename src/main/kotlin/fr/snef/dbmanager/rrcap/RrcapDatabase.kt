@@ -1,6 +1,7 @@
 package fr.snef.dbmanager.rrcap
 
 import fr.snef.dbmanager.Database
+import fr.snef.dbmanager.config
 import fr.snef.dbmanager.rrcap.model.*
 import java.io.File
 import java.sql.Connection
@@ -23,17 +24,20 @@ object RrcapDatabase : Database() {
             .plus(Region.values().map { DptIma(it) })
             .plus(Region.values().map { Fh(it) })
             .plus(Region.values().map { DummyVlan(it) })
-            .plus(Region.values().map { PdhLink(it) })
-            .plus(Region.values().map { AbisOverIpNsnAlu(it) })
-            .plus(Region.values().map { AbisIpAddresses(it) })
-            .plus(Region.values().map { Dpt3gIpHuawei(it) })
-            .plus(Region.values().map { Dpt3gIpNokia(it) })
-            .plus(Region.values().map { S1IpAddresses(it) })
-            .toList()
+        .plus(Region.values().map { PdhLink(it) })
+        .plus(Region.values().map { AbisOverIpNsnAlu(it) })
+        .plus(Region.values().map { AbisIpAddresses(it) })
+        .plus(Region.values().map { Dpt3gIpHuawei(it) })
+        .plus(Region.values().map { Dpt3gIpNokia(it) })
+        .plus(Region.values().map { S1IpAddresses(it) })
+        .toList()
 
     private val dumpFileNames = Region.values().map { it.name + ".taz" }
 
-    override fun retrieveNewDump(): Boolean = dumpFileNames.map { getDumpFile(it).isFile }.all { it }
+    override fun retrieveNewDump(): Boolean {
+        if (config.isLocal) return true
+        return dumpFileNames.map { getDumpFile(it).isFile }.all { it }
+    }
 
     override fun archiveDump() {
         dumpFileNames.forEach {

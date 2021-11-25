@@ -13,7 +13,7 @@ buildscript {
     ext {
         apacheCompressVersion = '1.21'
         apacheCsvVersion = '1.8'
-        kotlinVersion = '1.5.10'
+        kotlinVersion = '1.6.0'
         mysqlConnectorVersion = '8.0.25'
         retrofitVersion = '2.9.0'
     }

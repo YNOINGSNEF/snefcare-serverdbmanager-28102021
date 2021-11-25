@@ -356,6 +356,7 @@ CREATE TABLE SITE (
     id_orf INT NOT NULL,
     code VARCHAR(10) NOT NULL,
     name VARCHAR(50) NOT NULL,
+    ur_name VARCHAR(50) NOT NULL,
     latitude FLOAT NOT NULL,
     longitude FLOAT NOT NULL,
     altitude MEDIUMINT NOT NULL,

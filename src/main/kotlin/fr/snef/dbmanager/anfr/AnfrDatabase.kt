@@ -3,6 +3,7 @@ package fr.snef.dbmanager.anfr
 import fr.snef.dbmanager.Database
 import fr.snef.dbmanager.anfr.api.RestApi
 import fr.snef.dbmanager.anfr.model.*
+import fr.snef.dbmanager.config
 import java.io.File
 import java.io.IOException
 import java.sql.Connection
@@ -29,6 +30,8 @@ object AnfrDatabase : Database() {
     private const val dumpDataArchiveFilename = "DataTables.zip"
 
     override fun retrieveNewDump(): Boolean {
+        if (config.isLocal) return true
+
         val lastDumpDate = getLastDumpUpdate()
         cleanDump()
 

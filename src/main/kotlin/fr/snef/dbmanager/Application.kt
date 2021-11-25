@@ -10,18 +10,17 @@ import java.io.PrintStream
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
 
-/**
- * Possible values are:
- * - Config.Debug --> will use development settings (folder paths, databases, etc.)
- * - Config.Release --> will use production settings
- */
-var config: Config = Config.Debug
+lateinit var config: Config
 
-private val databases get() = if (config.isDebug) debugDatabases else releaseDatabases
-private val debugDatabases = listOf(
+private val databases get() = if (config.isLocal) databasesForLocalConfig else databasesForServerConfig
+
+// Databases to be updated when local configuration is used, usually for testing from a local machine
+private val databasesForLocalConfig = listOf(
     OrangeDatabase
 )
-private val releaseDatabases = listOf(
+
+// Databases to be updated when server configuration is used
+private val databasesForServerConfig = listOf(
     ComsisDatabase,
     AnfrDatabase,
     RrcapDatabase,
@@ -30,7 +29,23 @@ private val releaseDatabases = listOf(
     OrangeDatabase
 )
 
-fun main() {
+// By default, this will run the server configuration, and update the PROD databases
+// --> you can use `local` as program argument to use the local configuration
+// --> you can use `dev` as program argument to update DEV databases, otherwise PROD ones will be updated
+fun main(args: Array<String>) {
+    val useLocalConfiguration = args.contains("local")
+    val updateDevDatabases = args.contains("dev")
+
+    config = if (useLocalConfiguration) {
+        Config.Local(updateDevDatabases)
+    } else {
+        Config.Server(updateDevDatabases)
+    }
+
+    println("> Starting with following settings: isLocal=$useLocalConfiguration, updateDevDatabases=$updateDevDatabases\n")
+
+    println("> Initialising tasks\n")
+
     if (config.shouldLogInFile) {
         config.logFolder.mkdirs()
         val output = PrintStream(config.logFile)

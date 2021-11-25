@@ -76,7 +76,8 @@ abstract class DataFile {
 
     abstract fun addBatch(stmt: PreparedStatement, record: CSVRecord): Boolean
 
-    fun getFullPath(rootPath: String): Path = Paths.get(rootPath + File.separatorChar + fileName + "." + fileExtension)
+    fun getFullPath(rootPath: String, fileName: String? = null): Path =
+        Paths.get(rootPath + File.separatorChar + (fileName ?: this.fileName) + "." + fileExtension)
 
     protected fun PreparedStatement.setNullableString(parameterIndex: Int, x: String?) {
         if (x != null) setString(parameterIndex, x)
