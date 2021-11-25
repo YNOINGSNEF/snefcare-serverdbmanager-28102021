@@ -104,7 +104,7 @@ object OceanDatabase : Database() {
     private const val dumpFileName = "dump.zip"
 
     override fun retrieveNewDump(): Boolean {
-        if (config.isDebug) return true
+        if (config.isLocal) return true
         return getDumpFile(dumpFileName).isFile
     }
 

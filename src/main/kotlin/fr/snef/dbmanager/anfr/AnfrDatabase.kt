@@ -30,7 +30,7 @@ object AnfrDatabase : Database() {
     private const val dumpDataArchiveFilename = "DataTables.zip"
 
     override fun retrieveNewDump(): Boolean {
-        if (config.isDebug) return true
+        if (config.isLocal) return true
 
         val lastDumpDate = getLastDumpUpdate()
         cleanDump()

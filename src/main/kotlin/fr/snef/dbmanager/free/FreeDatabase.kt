@@ -8,22 +8,26 @@ import java.sql.Connection
 
 object FreeDatabase : Database() {
     override val dumpFolder = "free" + File.separator + "radio" + File.separator
-    override val dbName get() = if (config.isDebug) "dump_free_dev" else "dump_free"
+    override val dbName get() = if (config.useDevelopmentDb) "dump_free_dev" else "dump_free"
 
-    private val dumpFileNames = getDumpFile()
-            .takeIf { it.isDirectory }
-        ?.listFiles { _, name -> name.endsWith(".csv", true) }
-        ?.map { it.nameWithoutExtension }
-        ?: emptyList()
+    private val dumpFileNames by lazy { // Should be lazy because config property is initialized in main() of Application.kt
+        getDumpFile().takeIf { it.isDirectory }
+            ?.listFiles { _, name -> name.endsWith(".csv", true) }
+            ?.map { it.nameWithoutExtension }
+            ?: emptyList()
+    }
 
-    override val filesToProcess = dumpFileNames.map { Site(it) }
-        .plus(dumpFileNames.map { Antenna(it) })
-        .plus(dumpFileNames.map { AntennaTilt(it) })
-        .plus(dumpFileNames.map { Cell3G(it) })
-        .plus(dumpFileNames.map { Cell4G(it) })
+    override val filesToProcess by lazy {
+        dumpFileNames.asSequence().map { Site(it) }
+            .plus(dumpFileNames.map { Antenna(it) })
+            .plus(dumpFileNames.map { AntennaTilt(it) })
+            .plus(dumpFileNames.map { Cell3G(it) })
+            .plus(dumpFileNames.map { Cell4G(it) })
+            .toList()
+    }
 
     override fun retrieveNewDump(): Boolean {
-        if (config.isDebug) return true
+        if (config.isLocal) return true
         return dumpFileNames.isNotEmpty()
     }
 

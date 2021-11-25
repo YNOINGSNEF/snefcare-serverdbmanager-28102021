@@ -15,7 +15,7 @@ object ComsisDatabase : Database() {
     private val dumpFilename = with(LastComsis()) { "$fileName.$fileExtension" }
 
     override fun retrieveNewDump(): Boolean {
-        if (config.isDebug) return true
+        if (config.isLocal) return true
         return getDumpFile(dumpFilename).isFile
     }
 

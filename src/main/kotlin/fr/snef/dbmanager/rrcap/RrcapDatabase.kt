@@ -35,10 +35,7 @@ object RrcapDatabase : Database() {
     private val dumpFileNames = Region.values().map { it.name + ".taz" }
 
     override fun retrieveNewDump(): Boolean {
-        if (config.isDebug) {
-            return true
-        }
-
+        if (config.isLocal) return true
         return dumpFileNames.map { getDumpFile(it).isFile }.all { it }
     }
 

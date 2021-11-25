@@ -39,7 +39,10 @@ abstract class Database {
             return false
         }
 
-        if (!config.isDebug) {
+        if (config.isLocal) {
+            println("  > Skipping dump backup as local configuration is used")
+            println("  > Skipping dump unzipping as local configuration is used")
+        } else {
             println("  > New dump available, backing it up")
             archiveDump()
             println("  > Preparing dump (unzipping, etc.)")
@@ -53,7 +56,9 @@ abstract class Database {
             executePostImportActions(dbConnection)
         }
 
-        if (!config.isDebug) {
+        if (config.isLocal) {
+            println("  > Skipping dump cleaning as local configuration is used")
+        } else {
             println("  > Cleaning dump")
             cleanDump()
         }
@@ -224,8 +229,8 @@ abstract class Database {
         "${config.databaseUrl}/$dbName?" +
                 "rewriteBatchedStatements=true" +
                 "&verifyServerCertificate=false" +
-                "&useSSL=" + (if (config.isDebug) "false" else "true") +
-                "&requireSSL=" + (if (config.isDebug) "false" else "true") +
+                "&useSSL=" + (if (config.isLocal) "false" else "true") +
+                "&requireSSL=" + (if (config.isLocal) "false" else "true") +
                 "&allowLoadLocalInfile=true" +
                 "&serverTimezone=Europe/Paris",
             config.databaseUser, config.databasePassword)

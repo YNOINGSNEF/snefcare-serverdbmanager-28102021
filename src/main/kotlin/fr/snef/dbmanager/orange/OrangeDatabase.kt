@@ -13,13 +13,8 @@ import java.util.*
 import kotlin.system.measureTimeMillis
 
 object OrangeDatabase : Database() {
-    override val dumpFolder = if (config.isDebug) {
-        "orange" + File.separator + "radio" + File.separator
-    } else {
-        "orange" + File.separator + "noria" + File.separator
-    }
-
-    override val dbName get() = if (config.isDebug) "dump_orf_dev" else "dump_orf"
+    override val dumpFolder = "orange" + File.separator + "quartz" + File.separator
+    override val dbName get() = if (config.useDevelopmentDb) "dump_orf_dev" else "dump_orf"
 
     // Populated during `retrieveNewDump` step
     private var dumpFileName = "--"
@@ -90,6 +85,11 @@ object OrangeDatabase : Database() {
             TmpCells.from(dumpFileNames, dumpFolder),
             TmpCellComplements.from(dumpFileNames, dumpFolder)
         )
+
+        if (importFiles.isEmpty()) {
+            print("    > ⚠️ Skipping database update as no dump file is available...")
+            return
+        }
 
         // Setup DB
         dbConnection.setUniqueChecksEnabled(false)
