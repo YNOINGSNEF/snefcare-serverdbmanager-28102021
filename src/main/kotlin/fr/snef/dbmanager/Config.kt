@@ -50,5 +50,6 @@ abstract class Config {
         override val logFolderPath = dumpsRootPath + "tools" + File.separator + "log" + File.separator
 
         override val databaseUrl = "jdbc:mysql://mysql"
+        //
     }
 }
