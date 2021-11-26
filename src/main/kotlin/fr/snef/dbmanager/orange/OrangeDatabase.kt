@@ -91,7 +91,7 @@ object OrangeDatabase : Database() {
         ).mapNotNull { it }
 
         if (importFiles.isEmpty()) {
-            print("    > WARNING: Skipping database update as no dump file is available...")
+            print("    > WARNING: Skipping database update as no dump file is available!")
             return
         }
 
