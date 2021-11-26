@@ -10,10 +10,10 @@ class TmpCells(
     companion object {
         const val filePrefix = "NORIA_FLUX_GENERIQUE_CELLULE"
 
-        fun from(fileNames: List<String>, dumpFolderPath: String) = TmpCells(
-            fileNames.filter { it.startsWith(filePrefix) && !it.contains(complementSuffix) && it.contains(prevSuffix) },
-            dumpFolderPath
-        )
+        fun from(fileNames: List<String>, dumpFolderPath: String) =
+            fileNames.filter { it.startsWith(filePrefix) && !it.contains(complementSuffix) && it.contains(prevSuffix) }
+                .takeIf { it.isNotEmpty() }
+                ?.let { TmpCells(it, dumpFolderPath) }
     }
 
     override val tableName = "TMP_CELL"

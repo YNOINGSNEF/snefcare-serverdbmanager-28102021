@@ -10,10 +10,10 @@ class TmpNetworkElements(
     companion object {
         private const val filePrefix = "NORIA_FLUX_GENERIQUE_NETWORK_ELEMENT"
 
-        fun from(fileNames: List<String>, dumpFolderPath: String) = TmpNetworkElements(
-            fileNames.filter { it.startsWith(filePrefix) && !it.contains(complementSuffix) },
-            dumpFolderPath
-        )
+        fun from(fileNames: List<String>, dumpFolderPath: String) =
+            fileNames.filter { it.startsWith(filePrefix) && !it.contains(complementSuffix) }
+                .takeIf { it.isNotEmpty() }
+                ?.let { TmpNetworkElements(it, dumpFolderPath) }
     }
 
     override val tableName = "TMP_NETWORK_ELEMENT"

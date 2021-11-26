@@ -10,10 +10,10 @@ class TmpSites(
     companion object {
         private const val filePrefix = "NORIA_FLUX_GENERIQUE_SITE"
 
-        fun from(fileNames: List<String>, dumpFolderPath: String) = TmpSites(
-            fileNames.filter { it.startsWith(filePrefix) && it.contains(prevSuffix) },
-            dumpFolderPath
-        )
+        fun from(fileNames: List<String>, dumpFolderPath: String) =
+            fileNames.filter { it.startsWith(filePrefix) && it.contains(prevSuffix) }
+                .takeIf { it.isNotEmpty() }
+                ?.let { TmpSites(it, dumpFolderPath) }
     }
 
     override val tableName = "TMP_SITE"

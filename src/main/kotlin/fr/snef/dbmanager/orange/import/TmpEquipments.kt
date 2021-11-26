@@ -10,10 +10,10 @@ class TmpEquipments(
     companion object {
         private const val filePrefix = "NORIA_FLUX_GENERIQUE_EQPT"
 
-        fun from(fileNames: List<String>, dumpFolderPath: String) = TmpEquipments(
-            fileNames.filter { it.startsWith(filePrefix) },
-            dumpFolderPath
-        )
+        fun from(fileNames: List<String>, dumpFolderPath: String) =
+            fileNames.filter { it.startsWith(filePrefix) }
+                .takeIf { it.isNotEmpty() }
+                ?.let { TmpEquipments(it, dumpFolderPath) }
     }
 
     override val tableName = "TMP_EQUIPMENT"

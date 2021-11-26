@@ -8,10 +8,10 @@ class TmpCellComplements(
 ) : OrangeImportDataFile(fileNames, dumpFolderPath) {
 
     companion object {
-        fun from(fileNames: List<String>, dumpFolderPath: String) = TmpCellComplements(
-            fileNames.filter { it.startsWith(TmpCells.filePrefix) && it.contains(complementSuffix) },
-            dumpFolderPath
-        )
+        fun from(fileNames: List<String>, dumpFolderPath: String) =
+            fileNames.filter { it.startsWith(TmpCells.filePrefix) && it.contains(complementSuffix) }
+                .takeIf { it.isNotEmpty() }
+                ?.let { TmpCellComplements(it, dumpFolderPath) }
     }
 
     override val tableName = "TMP_CELL_COMP"

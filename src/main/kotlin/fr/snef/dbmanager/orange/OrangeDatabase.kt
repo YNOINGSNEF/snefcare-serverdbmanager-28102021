@@ -70,24 +70,28 @@ object OrangeDatabase : Database() {
     }
 
     override fun importFilesToDatabase(dbConnection: Connection) {
+        val extractedDumpFolder = dumpFileName.substringBeforeLast(".")
+
         // Setup import files
-        val dumpFileNames = getDumpFile(dumpFileName)
+        val dumpFileNames = getDumpFile(extractedDumpFolder)
             .takeIf { it.isDirectory }
             ?.listFiles { _, name -> name.endsWith(".csv", true) }
             ?.map { it.nameWithoutExtension }
             ?: emptyList()
 
-        val dumpFolder = dumpFolderPath + dumpFileName + File.separator
+        val dumpFolder = dumpFolderPath + extractedDumpFolder + File.separator
+        println("    > Looking for files in following dump folder: '$dumpFolder'")
+
         val importFiles = listOf(
             TmpSites.from(dumpFileNames, dumpFolder),
             TmpNetworkElements.from(dumpFileNames, dumpFolder),
             TmpEquipments.from(dumpFileNames, dumpFolder),
             TmpCells.from(dumpFileNames, dumpFolder),
             TmpCellComplements.from(dumpFileNames, dumpFolder)
-        )
+        ).mapNotNull { it }
 
         if (importFiles.isEmpty()) {
-            print("    > ⚠️ Skipping database update as no dump file is available...")
+            print("    > WARNING: Skipping database update as no dump file is available...")
             return
         }
 
