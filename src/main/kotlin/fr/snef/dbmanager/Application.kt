@@ -16,15 +16,18 @@ private val databases get() = if (config.isLocal) databasesForLocalConfig else d
 
 // Databases to be updated when local configuration is used, usually for testing from a local machine
 private val databasesForLocalConfig = listOf(
+    OrangeDatabase,
+    AnfrDatabase,
+    RrcapDatabase,
     OrangeDatabase
 )
 
 // Databases to be updated when server configuration is used
 private val databasesForServerConfig = listOf(
-    ComsisDatabase,
+    //ComsisDatabase,
     AnfrDatabase,
     RrcapDatabase,
-    OceanDatabase,
+    //OceanDatabase,
     FreeDatabase,
     OrangeDatabase
 )
